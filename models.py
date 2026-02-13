@@ -18,12 +18,18 @@ MODEL_CONFIGS = {
         "model_id": "claude-opus-4-6",
         "display_name": "Claude Opus 4.6",
         "env_key": "ANTHROPIC_API_KEY",
+        "cost_in": 5.00,
+        "cost_out": 25.00,
+        "context_k": 200,
     },
     "claude-haiku-4-5": {
         "provider": "anthropic",
         "model_id": "claude-haiku-4-5",
         "display_name": "Claude Haiku 4.5",
         "env_key": "ANTHROPIC_API_KEY",
+        "cost_in": 1.00,
+        "cost_out": 5.00,
+        "context_k": 200,
     },
     # OpenAI
     "gpt-5.2": {
@@ -31,12 +37,18 @@ MODEL_CONFIGS = {
         "model_id": "gpt-5.2",
         "display_name": "GPT-5.2",
         "env_key": "OPENAI_API_KEY",
+        "cost_in": 1.75,
+        "cost_out": 14.00,
+        "context_k": 400,
     },
     "gpt-5-nano": {
         "provider": "openai",
         "model_id": "gpt-5-nano",
         "display_name": "GPT-5 Nano",
         "env_key": "OPENAI_API_KEY",
+        "cost_in": 0.05,
+        "cost_out": 0.40,
+        "context_k": 400,
     },
     # Google
     "gemini-3-pro": {
@@ -44,12 +56,18 @@ MODEL_CONFIGS = {
         "model_id": "gemini-3-pro-preview",
         "display_name": "Gemini 3 Pro",
         "env_key": "GOOGLE_API_KEY",
+        "cost_in": 2.00,
+        "cost_out": 12.00,
+        "context_k": 1000,
     },
     "gemini-3-flash": {
         "provider": "google",
         "model_id": "gemini-3-flash-preview",
         "display_name": "Gemini 3 Flash",
         "env_key": "GOOGLE_API_KEY",
+        "cost_in": 0.50,
+        "cost_out": 3.00,
+        "context_k": 1000,
     },
     # Together (dark horses)
     "deepseek-r1": {
@@ -57,12 +75,18 @@ MODEL_CONFIGS = {
         "model_id": "deepseek-ai/DeepSeek-R1",
         "display_name": "DeepSeek R1",
         "env_key": "TOGETHER_API_KEY",
+        "cost_in": 3.00,
+        "cost_out": 7.00,
+        "context_k": 164,
     },
     "qwen3-235b": {
         "provider": "together",
         "model_id": "Qwen/Qwen3-235B-A22B-Thinking-2507",
         "display_name": "Qwen3 235B",
         "env_key": "TOGETHER_API_KEY",
+        "cost_in": 0.65,
+        "cost_out": 3.00,
+        "context_k": 262,
     },
 }
 

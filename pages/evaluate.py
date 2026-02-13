@@ -123,12 +123,12 @@ def render_results_matrix(results_map: dict, versions: list, model_keys: list, s
     df.index.name = "Version"
 
     # Apply conditional coloring via Pandas Styler
-    styled = df.style.applymap(_score_bg)
+    styled = df.style.map(_score_bg)
 
     # Render with cell selection enabled
     event = st.dataframe(
         styled,
-        use_container_width=True,
+        width="stretch",
         hide_index=False,
         on_select="rerun",
         selection_mode="single-cell",
@@ -239,10 +239,10 @@ def render_results_matrix(results_map: dict, versions: list, model_keys: list, s
                 heatmap_df = pd.DataFrame(heatmap_rows, index=issue_labels)
                 heatmap_df.index.name = "Issue"
                 st.dataframe(
-                    heatmap_df.style.applymap(
+                    heatmap_df.style.map(
                         _score_bg, subset=["Score"]
                     ),
-                    use_container_width=True,
+                    width="stretch",
                     hide_index=False,
                 )
 
@@ -359,7 +359,7 @@ run_clicked = btn_col.button(
     "Run",
     disabled=not can_run or running,
     type="primary",
-    use_container_width=True,
+    width="stretch",
 )
 
 # Button click also triggers run

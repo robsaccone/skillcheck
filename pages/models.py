@@ -16,12 +16,13 @@ available = get_available_models()
 table_data = []
 for key, cfg in MODEL_CONFIGS.items():
     has_key = key in available
+    icon = "\u2705" if has_key else "\u26aa"
     table_data.append({
         "Model": cfg["display_name"],
         "Provider": cfg["provider"].capitalize(),
-        "Model ID": cfg["model_id"],
-        "API Key Env": cfg["env_key"],
-        "Status": "\u2705 Available" if has_key else "\u26aa Unavailable",
+        "Model ID": f"{icon} {cfg['model_id']}",
+        "Context": f"{cfg['context_k']}K",
+        "Cost ($/1M tok)": f"${cfg['cost_in']:.2f} in / ${cfg['cost_out']:.2f} out",
     })
 
 st.dataframe(table_data, width="stretch", hide_index=True)
