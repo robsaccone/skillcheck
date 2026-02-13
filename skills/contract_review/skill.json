@@ -1,0 +1,8 @@
+{
+  "skill_id": "contract_review",
+  "display_name": "Contract Review",
+  "description": "General contract review with playbook integration. Applicable to multiple contract types.",
+  "default_perspective": "Recipient",
+  "system_prompt_prefix": "You are an experienced corporate attorney reviewing a contract. Provide a thorough, structured review identifying all risks, issues, and recommended changes.",
+  "user_prompt_template": "I represent the {perspective} party in the following agreement. Please review this contract and identify all issues, risks, and recommended changes.\n\n---\n\n{document}"
+}

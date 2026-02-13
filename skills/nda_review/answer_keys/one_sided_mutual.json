@@ -1,0 +1,384 @@
+{
+  "doc_id": "one_sided_mutual",
+  "doc_title": "One-Sided 'Mutual' NDA \u2014 Acme Technologies",
+  "perspective": "Recipient / Counter-party to Acme",
+  "overall_risk": "RED",
+  "overall_risk_rationale": "Labeled 'Mutual' but one-sided in drafter's favor on every material term.",
+
+  "scoring_guidance": {
+    "must_catch": ["ISSUE-01", "ISSUE-02", "ISSUE-09", "ISSUE-11", "ISSUE-12", "ISSUE-13"],
+    "should_catch": ["ISSUE-03", "ISSUE-05", "ISSUE-06", "ISSUE-08", "ISSUE-10"],
+    "nice_to_catch": ["ISSUE-04", "ISSUE-07", "ISSUE-14", "ISSUE-15", "ISSUE-16"],
+    "weights": { "must_catch": 3, "should_catch": 2, "nice_to_catch": 1 }
+  },
+
+  "issues": [
+    {
+      "id": "ISSUE-01",
+      "section": "2.1 / 2.2",
+      "title": "Asymmetric Definition of Confidential Information",
+      "severity": "CRITICAL",
+      "tier": "must_catch",
+      "description": "Acme's Confidential Information requires no marking and includes an extremely broad catch-all. Recipient's Confidential Information must be conspicuously marked in writing, and oral disclosures must be summarized in writing within 5 business days. This creates a significant disparity: virtually everything Acme shares is protected, while Recipient's information is only protected if Recipient follows a burdensome administrative process.",
+      "what_good_looks_like": "Identifies the asymmetry in definitions, explains the practical impact of the marking requirement, and recommends symmetric treatment where both parties' information is protected under the same standard.",
+      "detection_keywords": [
+        "asymmetric definition",
+        "marking requirement",
+        "oral disclosure",
+        "written summary",
+        "5 business days",
+        "five business days",
+        "definition of confidential",
+        "no marking",
+        "deemed confidential",
+        "conspicuously marked",
+        "unequal definition"
+      ]
+    },
+    {
+      "id": "ISSUE-02",
+      "section": "3.4 / 3.5",
+      "title": "Asymmetric Disclosure Permissions",
+      "severity": "CRITICAL",
+      "tier": "must_catch",
+      "description": "Acme can disclose to officers, directors, employees, agents, advisors, consultants, affiliates, subsidiaries, parent companies, potential investors, and potential acquirers without written confidentiality agreements. Recipient can only disclose to employees who have signed written confidentiality agreements and been approved by Acme in advance by name. This is drastically one-sided.",
+      "what_good_looks_like": "Identifies the asymmetry, flags the named-list approval requirement as unusual and burdensome, notes the lack of NDA requirement for Acme's recipients, and recommends parallel treatment.",
+      "detection_keywords": [
+        "asymmetric disclosure",
+        "permitted disclosure",
+        "potential investors",
+        "potential acquirers",
+        "named list",
+        "approved by acme",
+        "advance approval",
+        "written confidentiality",
+        "no written agreement",
+        "unequal disclosure",
+        "employees only"
+      ]
+    },
+    {
+      "id": "ISSUE-03",
+      "section": "4",
+      "title": "Missing Third-Party Receipt Exclusion Standard",
+      "severity": "HIGH",
+      "tier": "should_catch",
+      "description": "Section 4(d) excludes information 'rightfully obtained from a third party who is not under an obligation of confidentiality.' However, this standard is incomplete \u2014 it does not address the common scenario where the third party lawfully possesses the information without a direct confidentiality obligation to the Disclosing Party but may have received it through a chain of custody. A standard exclusion would also specify that the third party has the right to disclose the information without restriction.",
+      "what_good_looks_like": "Flags the exclusion as narrower than market standard and recommends adding language requiring only that the third party is not known to be under a confidentiality obligation.",
+      "detection_keywords": [
+        "third party",
+        "third-party",
+        "exclusion",
+        "obligation of confidentiality",
+        "right to disclose",
+        "without restriction",
+        "chain of custody"
+      ]
+    },
+    {
+      "id": "ISSUE-04",
+      "section": "4(b) / 4(c)",
+      "title": "Onerous Proof Standards for Exclusions",
+      "severity": "MODERATE",
+      "tier": "nice_to_catch",
+      "description": "The exclusions for prior possession (4(b)) and independent development (4(c)) require 'documentary evidence predating the disclosure that was created in the ordinary course of business' and 'contemporaneous written records created in the ordinary course of business by individuals who had no access.' These are substantially higher proof standards than market norm, which typically requires only that the Receiving Party can 'demonstrate' or 'show' the exclusion applies.",
+      "what_good_looks_like": "Identifies the elevated proof standards as departing from market norms and recommends softening to a general 'can demonstrate by competent evidence' standard.",
+      "detection_keywords": [
+        "proof standard",
+        "burden of proof",
+        "documentary evidence",
+        "contemporaneous written records",
+        "ordinary course of business",
+        "onerous",
+        "high bar",
+        "difficult to prove",
+        "evidence requirement"
+      ]
+    },
+    {
+      "id": "ISSUE-05",
+      "section": "5.1 / 5.2",
+      "title": "One-Way Compelled Disclosure Obligations",
+      "severity": "HIGH",
+      "tier": "should_catch",
+      "description": "Section 5.1 imposes extensive obligations on Recipient when compelled to disclose Acme's information: notice, cooperation at Recipient's expense, minimize disclosure. Section 5.2 explicitly states Acme has NO obligation to provide notice if compelled to disclose Recipient's information and may disclose 'without liability.' This is starkly asymmetric.",
+      "what_good_looks_like": "Identifies the asymmetry between 5.1 and 5.2, flags the lack of notice requirement for Acme, and recommends making compelled disclosure obligations mutual.",
+      "detection_keywords": [
+        "compelled disclosure",
+        "no obligation to provide notice",
+        "without liability",
+        "one-way",
+        "one-sided",
+        "asymmetric",
+        "section 5",
+        "at recipient's expense",
+        "legally compelled",
+        "protective order"
+      ]
+    },
+    {
+      "id": "ISSUE-06",
+      "section": "6.1 / 6.2",
+      "title": "One-Way Return and Destruction Obligations",
+      "severity": "HIGH",
+      "tier": "should_catch",
+      "description": "Section 6.1 requires Recipient to return or destroy all of Acme's Confidential Information within 10 business days, with officer certification. Section 6.2 allows Acme to retain Recipient's Confidential Information indefinitely for 'archival, audit, and compliance purposes' with no obligation to return or destroy. This is entirely one-sided.",
+      "what_good_looks_like": "Identifies the asymmetry, flags the indefinite retention right for Acme, and recommends mutual return/destruction obligations with standard carve-outs for legal/compliance holds.",
+      "detection_keywords": [
+        "return and destruction",
+        "return or destroy",
+        "retain",
+        "archival",
+        "compliance purposes",
+        "officer certification",
+        "indefinite retention",
+        "no obligation to return",
+        "one-sided return",
+        "10 business days"
+      ]
+    },
+    {
+      "id": "ISSUE-07",
+      "section": "7.2",
+      "title": "One-Way Warranty Disclaimer",
+      "severity": "MODERATE",
+      "tier": "nice_to_catch",
+      "description": "Section 7.1 provides a mutual warranty that each party has the right to disclose. But Section 7.2 then adds a one-way 'AS IS' disclaimer only for Acme's Confidential Information, shielding Acme from any liability for inaccurate or incomplete information while providing no similar protection for Recipient.",
+      "what_good_looks_like": "Notes the one-way warranty disclaimer, explains that if the CI definition is broad enough to encompass business projections or technical specifications, reliance without warranty could create risk, and recommends making it mutual.",
+      "detection_keywords": [
+        "as is",
+        "warranty disclaimer",
+        "no representations",
+        "no warranties",
+        "fitness for purpose",
+        "accuracy",
+        "completeness",
+        "one-way disclaimer",
+        "no liability for reliance"
+      ]
+    },
+    {
+      "id": "ISSUE-08",
+      "section": "8.1",
+      "title": "Unilateral Termination Rights",
+      "severity": "HIGH",
+      "tier": "should_catch",
+      "description": "Acme can terminate on 15 days' notice. Recipient needs 90 days' notice AND Acme's written consent to terminate. This effectively means Recipient cannot terminate at will \u2014 Acme must agree. Combined with the non-solicitation (Section 10) that survives termination by 2 years, this creates a potentially indefinite entanglement.",
+      "what_good_looks_like": "Identifies the asymmetric termination rights, flags that requiring consent to terminate is unusual and problematic, and recommends mutual termination for convenience with equal notice periods.",
+      "detection_keywords": [
+        "unilateral termination",
+        "consent to terminate",
+        "15 days",
+        "90 days",
+        "written consent",
+        "termination at will",
+        "asymmetric termination",
+        "cannot terminate",
+        "acme may terminate"
+      ]
+    },
+    {
+      "id": "ISSUE-09",
+      "section": "8.2 / 8.3",
+      "title": "Perpetual vs. One-Year Survival of Obligations",
+      "severity": "CRITICAL",
+      "tier": "must_catch",
+      "description": "Recipient's obligations regarding Acme's Confidential Information survive in perpetuity (Section 8.2). Acme's obligations regarding Recipient's Confidential Information survive for only one (1) year (Section 8.3). This is one of the most significant asymmetries in the agreement \u2014 Recipient is bound forever while Acme's obligations expire quickly.",
+      "what_good_looks_like": "Identifies the perpetual vs. 1-year disparity, explains the practical impact, and recommends either mutual perpetual survival or a mutual fixed period (typically 3-5 years).",
+      "detection_keywords": [
+        "perpetual",
+        "in perpetuity",
+        "perpetuity",
+        "one year",
+        "1 year",
+        "survival",
+        "survive",
+        "asymmetric survival",
+        "unequal survival",
+        "forever",
+        "obligations expire"
+      ]
+    },
+    {
+      "id": "ISSUE-10",
+      "section": "9.1",
+      "title": "One-Way Injunctive Relief Without Bond",
+      "severity": "HIGH",
+      "tier": "should_catch",
+      "description": "Only Acme is entitled to seek injunctive relief, and it can do so without posting a bond and without proving actual damages. This is one-directional \u2014 if Acme breaches, Recipient has no corresponding right to expedited equitable relief without bond.",
+      "what_good_looks_like": "Flags the one-way injunctive relief, notes the bond waiver, and recommends making the provision mutual so both parties can seek equitable relief.",
+      "detection_keywords": [
+        "injunctive relief",
+        "specific performance",
+        "without bond",
+        "posting any bond",
+        "irreparable harm",
+        "equitable relief",
+        "one-way injunctive",
+        "only acme",
+        "recipient acknowledges"
+      ]
+    },
+    {
+      "id": "ISSUE-11",
+      "section": "9.2",
+      "title": "One-Way Indemnification",
+      "severity": "CRITICAL",
+      "tier": "must_catch",
+      "description": "Only Recipient indemnifies Acme. There is no reciprocal indemnification obligation. Recipient must defend, indemnify, and hold harmless Acme and all Acme Indemnified Parties from any claims arising from Recipient's breach, unauthorized disclosure, or negligence. This is uncapped indemnification flowing only one direction.",
+      "what_good_looks_like": "Identifies the one-way indemnification, flags that it is uncapped, and notes the dangerous combination with Section 9.3 (Acme's liability capped at $1,000). Recommends mutual indemnification or removal.",
+      "detection_keywords": [
+        "indemnif",
+        "one-way indemnif",
+        "defend and hold harmless",
+        "acme indemnified parties",
+        "no reciprocal",
+        "only recipient",
+        "uncapped indemnif",
+        "hold harmless"
+      ]
+    },
+    {
+      "id": "ISSUE-12",
+      "section": "9.3",
+      "title": "Absurdly Low Liability Cap for Acme",
+      "severity": "CRITICAL",
+      "tier": "must_catch",
+      "description": "Acme's total liability is capped at $1,000 regardless of the form of action, even if advised of the possibility of damages. Combined with the uncapped one-way indemnification in Section 9.2, this creates massive asymmetric risk: Recipient has unlimited financial exposure for breach while Acme's maximum liability is $1,000.",
+      "what_good_looks_like": "Identifies the $1,000 cap as commercially unreasonable, connects it to the uncapped indemnification in 9.2 as a combined risk exposure issue, and recommends either removing the cap or setting it at a reasonable level relative to the potential harm.",
+      "detection_keywords": [
+        "1,000",
+        "1000",
+        "one thousand",
+        "liability cap",
+        "limitation of liability",
+        "aggregate liability",
+        "regardless of",
+        "low cap",
+        "unreasonable cap",
+        "nominal cap"
+      ]
+    },
+    {
+      "id": "ISSUE-13",
+      "section": "10",
+      "title": "Non-Solicitation Clause in an NDA",
+      "severity": "CRITICAL",
+      "tier": "must_catch",
+      "description": "Section 10 is a non-solicitation clause with a 2-year tail that has no business being in an NDA. It prohibits Recipient from soliciting or hiring any Acme employee, contractor, or consultant \u2014 even if Recipient learned about them outside the NDA relationship. It includes liquidated damages of 100% of annual compensation. This is scope creep: using an NDA to impose employment restrictions.",
+      "what_good_looks_like": "Flags the non-solicitation as outside the scope of an NDA, identifies the broad application (regardless of how Recipient learned of the person), flags the punitive liquidated damages clause, and recommends removal or substantial narrowing.",
+      "detection_keywords": [
+        "non-solicitation",
+        "non solicitation",
+        "solicit",
+        "recruit",
+        "hire",
+        "scope creep",
+        "liquidated damages",
+        "100%",
+        "annual compensation",
+        "no business in",
+        "outside the scope",
+        "employment restriction"
+      ]
+    },
+    {
+      "id": "ISSUE-14",
+      "section": "11.2",
+      "title": "One-Sided Forum Selection",
+      "severity": "MODERATE",
+      "tier": "nice_to_catch",
+      "description": "Disputes must be resolved exclusively in Delaware courts (Acme's home jurisdiction). Recipient waives any objection to venue or inconvenient forum. Additionally, the attorneys' fees provision favors Acme: each party bears its own costs generally, but Acme can recover fees if it prevails in enforcement actions.",
+      "what_good_looks_like": "Notes the Delaware forum selection benefits Acme as the home party, flags the one-sided fee-shifting provision, and recommends either neutral venue or mutual fee-shifting.",
+      "detection_keywords": [
+        "forum selection",
+        "wilmington",
+        "delaware",
+        "inconvenient forum",
+        "exclusive jurisdiction",
+        "waives any objection",
+        "venue",
+        "attorneys' fees",
+        "attorney fees",
+        "prevailing party",
+        "one-sided fee"
+      ]
+    },
+    {
+      "id": "ISSUE-15",
+      "section": "11.3",
+      "title": "Asymmetric Assignment Rights",
+      "severity": "MODERATE",
+      "tier": "nice_to_catch",
+      "description": "Recipient cannot assign without Acme's prior written consent. Acme can freely assign to any affiliate, successor, or assignee without notice to or consent from Recipient. This means Acme could assign the agreement (and Recipient's confidential information along with it) to any entity without Recipient's knowledge.",
+      "what_good_looks_like": "Identifies the assignment asymmetry, flags the risk that Recipient's CI could be transferred to unknown parties, and recommends mutual assignment restrictions or at minimum requiring notice.",
+      "detection_keywords": [
+        "assignment",
+        "assign",
+        "transfer",
+        "without notice",
+        "without consent",
+        "freely assign",
+        "null and void",
+        "asymmetric assignment",
+        "affiliate",
+        "successor"
+      ]
+    },
+    {
+      "id": "ISSUE-16",
+      "section": "N/A (absent)",
+      "title": "Missing Residuals Clause",
+      "severity": "MODERATE",
+      "tier": "nice_to_catch",
+      "description": "The agreement contains no residuals clause \u2014 a provision that would permit each party to use general knowledge, ideas, concepts, know-how, and techniques retained in the unaided memory of its personnel. Without a residuals clause, personnel who work on the project could be accused of misappropriation simply for carrying general knowledge to future work.",
+      "what_good_looks_like": "Identifies the absence of a residuals clause, explains why it matters for employees involved in the Purpose, and recommends adding a standard residuals provision.",
+      "detection_keywords": [
+        "residuals",
+        "residual",
+        "retained in memory",
+        "unaided memory",
+        "general knowledge",
+        "know-how",
+        "missing provision",
+        "absent provision",
+        "no residuals"
+      ]
+    }
+  ],
+
+  "meta_issues": [
+    {
+      "id": "META-01",
+      "title": "Structural Asymmetry Pattern",
+      "description": "The agreement is labeled 'Mutual' but is systematically one-sided in Acme's favor on every material term: definitions, permitted disclosures, survival, remedies, termination, return/destruction, and assignment.",
+      "detection_keywords": [
+        "one-sided",
+        "one sided",
+        "asymmetric",
+        "not truly mutual",
+        "mutual in name only",
+        "systematically",
+        "pattern of",
+        "consistently favors",
+        "every material term",
+        "structurally"
+      ]
+    },
+    {
+      "id": "META-02",
+      "title": "Non-Compete Scope Creep",
+      "description": "The agreement uses an NDA as a vehicle to impose non-solicitation and potentially non-compete-like restrictions that go well beyond protecting confidential information.",
+      "detection_keywords": [
+        "scope creep",
+        "beyond confidentiality",
+        "beyond the scope",
+        "non-compete",
+        "not appropriate for",
+        "exceeds",
+        "overreach",
+        "disguised"
+      ]
+    }
+  ]
+}

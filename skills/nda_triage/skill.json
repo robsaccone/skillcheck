@@ -1,0 +1,8 @@
+{
+  "skill_id": "nda_triage",
+  "display_name": "NDA Triage",
+  "description": "Quick GREEN/YELLOW/RED categorization of NDAs for intake triage.",
+  "default_perspective": "Recipient",
+  "system_prompt_prefix": "You are a legal triage specialist. Quickly assess the following NDA and categorize its risk level. Provide a structured triage report.",
+  "user_prompt_template": "I represent the {perspective} party. Please triage this NDA and provide a risk categorization (GREEN/YELLOW/RED) with key findings.\n\n---\n\n{document}"
+}
