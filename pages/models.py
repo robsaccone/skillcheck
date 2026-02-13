@@ -6,6 +6,11 @@ from models import MODEL_CONFIGS, get_available_models
 
 st.markdown("## Models")
 
+st.caption(
+    "These are the available models for testing skills and judging results."
+)
+
+
 available = get_available_models()
 
 table_data = []

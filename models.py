@@ -12,34 +12,56 @@ load_dotenv(override=True)
 # ---------------------------------------------------------------------------
 
 MODEL_CONFIGS = {
+    # Anthropic
     "claude-opus-4-6": {
         "provider": "anthropic",
         "model_id": "claude-opus-4-6",
         "display_name": "Claude Opus 4.6",
         "env_key": "ANTHROPIC_API_KEY",
     },
-    "claude-sonnet-4-5": {
+    "claude-haiku-4-5": {
         "provider": "anthropic",
-        "model_id": "claude-sonnet-4-5-20250929",
-        "display_name": "Claude Sonnet 4.5",
+        "model_id": "claude-haiku-4-5",
+        "display_name": "Claude Haiku 4.5",
         "env_key": "ANTHROPIC_API_KEY",
     },
-    "gpt-4o": {
+    # OpenAI
+    "gpt-5.2": {
         "provider": "openai",
-        "model_id": "gpt-4o",
-        "display_name": "GPT-4o",
+        "model_id": "gpt-5.2",
+        "display_name": "GPT-5.2",
         "env_key": "OPENAI_API_KEY",
     },
-    "gemini-2.5-pro": {
+    "gpt-5-nano": {
+        "provider": "openai",
+        "model_id": "gpt-5-nano",
+        "display_name": "GPT-5 Nano",
+        "env_key": "OPENAI_API_KEY",
+    },
+    # Google
+    "gemini-3-pro": {
         "provider": "google",
-        "model_id": "gemini-2.5-pro-preview-06-05",
-        "display_name": "Gemini 2.5 Pro",
+        "model_id": "gemini-3-pro-preview",
+        "display_name": "Gemini 3 Pro",
         "env_key": "GOOGLE_API_KEY",
     },
-    "llama-3.3-70b": {
+    "gemini-3-flash": {
+        "provider": "google",
+        "model_id": "gemini-3-flash-preview",
+        "display_name": "Gemini 3 Flash",
+        "env_key": "GOOGLE_API_KEY",
+    },
+    # Together (dark horses)
+    "deepseek-r1": {
         "provider": "together",
-        "model_id": "meta-llama/Llama-3.3-70B-Instruct-Turbo",
-        "display_name": "Llama 3.3 70B",
+        "model_id": "deepseek-ai/DeepSeek-R1",
+        "display_name": "DeepSeek R1",
+        "env_key": "TOGETHER_API_KEY",
+    },
+    "qwen3-235b": {
+        "provider": "together",
+        "model_id": "Qwen/Qwen3-235B-A22B-Thinking-2507",
+        "display_name": "Qwen3 235B",
         "env_key": "TOGETHER_API_KEY",
     },
 }

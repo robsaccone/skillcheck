@@ -15,6 +15,12 @@ from components import severity_badge_html, severity_prefix
 
 st.markdown("## Skills Library")
 
+st.caption(
+    "Skills are like playbooks for LLMs. They are the instructions that the LLM will follow to perform a task. \n\n"
+    "Skills can be added to the `skills/` directory and are organized by task type."
+)
+
+
 skills = discover_skills()
 if not skills:
     st.info("No skills found. Add skill directories with skill.json to the skills/ folder.")
