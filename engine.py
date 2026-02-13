@@ -1,18 +1,18 @@
 """Core evaluation engine for Skillcheck.
 
-Handles skill discovery, prompt construction, API dispatch,
-auto-scoring, weighted score computation, parallel evaluation, and result I/O.
+Handles skill discovery, prompt construction, auto-scoring,
+weighted score computation, parallel evaluation, and result I/O.
 """
 
 import json
 import os
-import time
 import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
 
-from config import MODEL_CONFIGS, RESULTS_DIR, SKILLS_DIR
+from config import RESULTS_DIR, SKILLS_DIR
+from models import MODEL_CONFIGS, call_model
 
 
 # ---------------------------------------------------------------------------
@@ -103,121 +103,6 @@ def build_prompt(
     )
 
     return system_prompt, user_prompt
-
-
-# ---------------------------------------------------------------------------
-# API Dispatch
-# ---------------------------------------------------------------------------
-
-def call_model(
-    provider: str,
-    model_id: str,
-    system: str,
-    user: str,
-    max_tokens: int = 8192,
-) -> dict:
-    """Call an LLM and return response data.
-
-    Returns dict with keys: text, input_tokens, output_tokens, elapsed_seconds.
-    """
-    start = time.time()
-
-    if provider == "anthropic":
-        result = _call_anthropic(model_id, system, user, max_tokens)
-    elif provider == "openai":
-        result = _call_openai(model_id, system, user, max_tokens)
-    elif provider == "google":
-        result = _call_google(model_id, system, user, max_tokens)
-    elif provider == "together":
-        result = _call_together(model_id, system, user, max_tokens)
-    else:
-        raise ValueError(f"Unknown provider: {provider}")
-
-    result["elapsed_seconds"] = round(time.time() - start, 2)
-    return result
-
-
-def _call_anthropic(model_id: str, system: str, user: str, max_tokens: int) -> dict:
-    import anthropic
-
-    client = anthropic.Anthropic()
-    response = client.messages.create(
-        model=model_id,
-        max_tokens=max_tokens,
-        system=system,
-        messages=[{"role": "user", "content": user}],
-    )
-    return {
-        "text": response.content[0].text,
-        "input_tokens": response.usage.input_tokens,
-        "output_tokens": response.usage.output_tokens,
-    }
-
-
-def _call_openai(model_id: str, system: str, user: str, max_tokens: int) -> dict:
-    import openai
-
-    client = openai.OpenAI()
-    response = client.chat.completions.create(
-        model=model_id,
-        max_tokens=max_tokens,
-        messages=[
-            {"role": "system", "content": system},
-            {"role": "user", "content": user},
-        ],
-    )
-    choice = response.choices[0]
-    return {
-        "text": choice.message.content,
-        "input_tokens": response.usage.prompt_tokens,
-        "output_tokens": response.usage.completion_tokens,
-    }
-
-
-def _call_google(model_id: str, system: str, user: str, max_tokens: int) -> dict:
-    import google.generativeai as genai
-
-    genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
-    model = genai.GenerativeModel(
-        model_name=model_id,
-        system_instruction=system,
-    )
-    response = model.generate_content(
-        user,
-        generation_config=genai.types.GenerationConfig(
-            max_output_tokens=max_tokens,
-        ),
-    )
-    usage = response.usage_metadata
-    return {
-        "text": response.text,
-        "input_tokens": getattr(usage, "prompt_token_count", 0),
-        "output_tokens": getattr(usage, "candidates_token_count", 0),
-    }
-
-
-def _call_together(model_id: str, system: str, user: str, max_tokens: int) -> dict:
-    import openai
-
-    client = openai.OpenAI(
-        api_key=os.environ["TOGETHER_API_KEY"],
-        base_url="https://api.together.xyz/v1",
-    )
-    response = client.chat.completions.create(
-        model=model_id,
-        max_tokens=max_tokens,
-        messages=[
-            {"role": "system", "content": system},
-            {"role": "user", "content": user},
-        ],
-    )
-    choice = response.choices[0]
-    usage = response.usage
-    return {
-        "text": choice.message.content,
-        "input_tokens": getattr(usage, "prompt_tokens", 0),
-        "output_tokens": getattr(usage, "completion_tokens", 0),
-    }
 
 
 # ---------------------------------------------------------------------------

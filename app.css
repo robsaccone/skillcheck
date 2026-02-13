@@ -1,0 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+h1, h2, h3 { font-family: 'DM Serif Display', serif !important; }
+
+.chip-hit { background: #065f46; color: #6ee7b7; padding: 3px 12px; border-radius: 12px; font-size: 0.82em; font-weight: 500; display: inline-block; margin: 3px 2px; }
+.chip-miss { background: #7f1d1d; color: #fca5a5; padding: 3px 12px; border-radius: 12px; font-size: 0.82em; font-weight: 500; display: inline-block; margin: 3px 2px; }
+
+.badge-critical { background: #991b1b; color: #fecaca; padding: 3px 10px; border-radius: 6px; font-weight: 700; font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.03em; }
+.badge-high { background: #92400e; color: #fde68a; padding: 3px 10px; border-radius: 6px; font-weight: 700; font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.03em; }
+.badge-moderate { background: #1e3a5f; color: #93c5fd; padding: 3px 10px; border-radius: 6px; font-weight: 700; font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.03em; }
