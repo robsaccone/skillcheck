@@ -7,6 +7,8 @@ from streamlit_local_storage import LocalStorage
 from models import MODEL_CONFIGS, get_available_models
 from engine import (
     discover_skills,
+    get_scores,
+    judge_saved_results,
     list_skill_versions,
     list_test_docs,
     load_answer_key,
@@ -17,6 +19,7 @@ from components import (
     TIER_LABEL,
     detection_chip,
 )
+from pages.result_detail import render_result_page
 
 
 # ---------------------------------------------------------------------------
@@ -24,70 +27,37 @@ from components import (
 # ---------------------------------------------------------------------------
 
 def _score_bg(val):
-    """Return background-color CSS for a formatted score cell like '97%'."""
-    if not isinstance(val, str) or not val.endswith("%"):
+    """Return background-color CSS for a score cell. Extracts % from strings like '94% · 12s · $0.18'."""
+    if not isinstance(val, str) or "%" not in val:
         return ""
     try:
-        pct = float(val[:-1])
+        pct = float(val.split("%")[0])
     except ValueError:
         return ""
-    if pct >= 70:
+    if pct >= 90:
         return "background-color: #065f46; color: #6ee7b7"
-    elif pct >= 40:
+    elif pct >= 75:
         return "background-color: #92400e; color: #fde68a"
     return "background-color: #7f1d1d; color: #fca5a5"
 
 
-# ---------------------------------------------------------------------------
-# Local rendering helpers
-# ---------------------------------------------------------------------------
+def _get_cell_pct(result: dict) -> float | None:
+    """Extract display percentage — judge composite if available, else quick weighted."""
+    judge = result.get("judge_scores")
+    if judge and "composite_score" in judge:
+        return judge["composite_score"] * 100
+    qs = get_scores(result)
+    return qs.get("weighted_pct", 0) if qs else None
 
-def render_result_page(result: dict, version: str, model_key: str, skill_id: str, doc_name: str):
-    """Full-page detail view for a single result. Stats left, response right."""
-    model_name = MODEL_CONFIGS.get(model_key, {}).get("display_name", model_key)
 
-    if st.button("\u2190 Back to results", type="tertiary"):
-        del st.session_state.selected_result
-        st.rerun()
-
-    st.markdown(f"## {version} x {model_name}")
-
-    scores = result.get("auto_scores", {})
-    pct = scores.get("weighted_pct", 0)
-
-    left, right = st.columns([1, 2])
-
-    with left:
-        mc1, mc2 = st.columns(2)
-        mc1.metric("Weighted", f"{pct:.1f}%")
-        mc2.metric("Issues", f"{scores.get('total_found', 0)}/{scores.get('total_possible', 0)}")
-
-        mc3, mc4 = st.columns(2)
-        mc3.metric("Must-Catch", f"{scores.get('must_catch', {}).get('found', 0)}/{scores.get('must_catch', {}).get('total', 0)}")
-        mc4.metric("Time", f"{result.get('elapsed_seconds', 0):.1f}s")
-
-        st.caption(
-            f"Tokens: {result.get('input_tokens', 0):,} in / "
-            f"{result.get('output_tokens', 0):,} out"
-        )
-
-        answer_key = load_answer_key(skill_id, doc_name)
-        if answer_key and scores.get("issues_detected"):
-            st.markdown("**Detection**")
-            chips_html = ""
-            for issue in answer_key.get("issues", []):
-                iid = issue["id"]
-                detected = scores["issues_detected"].get(iid, False)
-                chips_html += detection_chip(f"{iid}: {issue['title']}", detected) + " "
-            for meta in answer_key.get("meta_issues", []):
-                mid = meta["id"]
-                detected = scores.get("meta_issues_detected", {}).get(mid, False)
-                chips_html += detection_chip(f"{mid}: {meta['title']}", detected) + " "
-            st.markdown(chips_html, unsafe_allow_html=True)
-
-    with right:
-        st.markdown("**Response**")
-        st.markdown(result.get("response_text", ""))
+def _est_cost(result: dict, model_key: str) -> float:
+    """Estimate API cost in dollars from token counts and model pricing."""
+    cfg = MODEL_CONFIGS.get(model_key, {})
+    cost_in = cfg.get("cost_in", 0)  # per 1M input tokens
+    cost_out = cfg.get("cost_out", 0)  # per 1M output tokens
+    in_tok = result.get("input_tokens", 0)
+    out_tok = result.get("output_tokens", 0)
+    return (in_tok * cost_in + out_tok * cost_out) / 1_000_000
 
 
 def render_results_matrix(results_map: dict, versions: list, model_keys: list, skill_id: str, doc_name: str):
@@ -102,29 +72,98 @@ def render_results_matrix(results_map: dict, versions: list, model_keys: list, s
         name_to_key[name] = mk
 
     # Build the dataframe: rows=versions, cols=model display names
-    # Pre-format values as strings so the renderer shows exactly what we want
     rows = []
+    # Track totals across all versions
+    all_pcts = []      # flat list of all percentages
+    all_secs = []      # flat list of all elapsed times
+    all_costs = []     # flat list of all costs
+
     for v in versions:
         row = {}
         pcts = []
+        row_secs = []
+        row_costs = []
         for mk, name in zip(model_keys, model_names):
             r = results_map.get((v, mk))
             if r and "error" not in r:
-                pct = r.get("auto_scores", {}).get("weighted_pct", 0)
-                row[name] = f"{pct:.0f}%"
-                pcts.append(pct)
+                pct = _get_cell_pct(r)
+                if pct is not None:
+                    secs = r.get("elapsed_seconds", 0)
+                    cost = _est_cost(r, mk)
+                    row[name] = f"{pct:.0f}%   [{secs:.0f}s · ${cost:.2f}]"
+                    pcts.append(pct)
+                    row_secs.append(secs)
+                    row_costs.append(cost)
+                else:
+                    row[name] = "\u2014"
             elif r and "error" in r:
                 row[name] = "ERR"
             else:
                 row[name] = "\u2014"
-        row["Score"] = f"{sum(pcts) / len(pcts):.0f}%" if pcts else "\u2014"
+
+        if pcts:
+            avg_pct = sum(pcts) / len(pcts)
+            total_secs = sum(row_secs)
+            total_cost = sum(row_costs)
+            row["Score"] = f"{avg_pct:.0f}%   [{total_secs:.0f}s · ${total_cost:.2f}]"
+        else:
+            row["Score"] = "\u2014"
+
+        all_pcts.extend(pcts)
+        all_secs.extend(row_secs)
+        all_costs.extend(row_costs)
         rows.append(row)
 
-    df = pd.DataFrame(rows, index=versions)
+    # Totals row
+    totals_row = {}
+    for name in model_names:
+        # Aggregate per-model across all versions
+        m_pcts, m_secs, m_costs = [], [], []
+        mk = name_to_key[name]
+        for v in versions:
+            r = results_map.get((v, mk))
+            if r and "error" not in r:
+                pct = _get_cell_pct(r)
+                if pct is not None:
+                    m_pcts.append(pct)
+                    m_secs.append(r.get("elapsed_seconds", 0))
+                    m_costs.append(_est_cost(r, mk))
+        if m_pcts:
+            totals_row[name] = f"{sum(m_pcts)/len(m_pcts):.0f}%   [{sum(m_secs):.0f}s · ${sum(m_costs):.2f}]"
+        else:
+            totals_row[name] = "\u2014"
+
+    if all_pcts:
+        totals_row["Score"] = f"{sum(all_pcts)/len(all_pcts):.0f}%   [{sum(all_secs):.0f}s · ${sum(all_costs):.2f}]"
+    else:
+        totals_row["Score"] = "\u2014"
+    rows.append(totals_row)
+    index_labels = versions + ["\u03a3 Total"]
+
+    df = pd.DataFrame(rows, index=index_labels)
     df.index.name = "Version"
 
     # Apply conditional coloring via Pandas Styler
-    styled = df.style.map(_score_bg)
+    summary_style = "font-weight: bold; background-color: rgba(255,255,255,0.05)"
+
+    def _highlight_summaries(val, row_name, col_name):
+        """Bold + subtle background for the totals row and Score column."""
+        if row_name == "\u03a3 Total":
+            return f"{summary_style}; border-top: 2px solid #4a5568"
+        if col_name == "Score":
+            return f"{summary_style}; border-left: 2px solid #4a5568"
+        return ""
+
+    def _summary_style_fn(df_input):
+        return pd.DataFrame(
+            [[_highlight_summaries(df_input.iloc[r, c], df_input.index[r], df_input.columns[c])
+              for c in range(len(df_input.columns))]
+             for r in range(len(df_input.index))],
+            index=df_input.index,
+            columns=df_input.columns,
+        )
+
+    styled = df.style.map(_score_bg).apply(_summary_style_fn, axis=None)
 
     # Render with cell selection enabled
     event = st.dataframe(
@@ -155,7 +194,7 @@ def render_results_matrix(results_map: dict, versions: list, model_keys: list, s
             else:
                 row_idx = col_val = None
 
-            if row_idx is not None and col_val is not None:
+            if row_idx is not None and col_val is not None and row_idx < len(versions):
                 # col_val may be a column name (str) or index (int)
                 col_name = col_val if isinstance(col_val, str) else (
                     model_names[col_val] if isinstance(col_val, int) and col_val < len(model_names) else None
@@ -183,7 +222,7 @@ def render_results_matrix(results_map: dict, versions: list, model_keys: list, s
     for v in versions:
         for mk in model_keys:
             r = results_map.get((v, mk))
-            if r and "error" not in r and r.get("auto_scores"):
+            if r and "error" not in r and get_scores(r):
                 scored.append((v, mk, r))
 
     if not scored:
@@ -203,7 +242,10 @@ def render_results_matrix(results_map: dict, versions: list, model_keys: list, s
     heatmap_models = list(dict.fromkeys(mk for _, mk, _ in scored))
     all_issues = issues + meta_issues
 
-    # Build tab labels with aggregate detection rate
+    # Issue rubric dimensions for score fractions
+    issue_dims = ["identified", "correctly_characterized", "severity_appropriate", "actionable"]
+    meta_dims = ["identified", "synthesized", "strategic"]
+
     tab_labels = []
     for mk in heatmap_models:
         display = MODEL_CONFIGS.get(mk, {}).get("display_name", mk)
@@ -222,21 +264,35 @@ def render_results_matrix(results_map: dict, versions: list, model_keys: list, s
             ncols = len(filtered)
             for issue in all_issues:
                 iid = issue["id"]
+                is_meta = iid.startswith("META")
+                dims = meta_dims if is_meta else issue_dims
                 tier = tier_map.get(iid, "")
                 tier_tag = TIER_LABEL.get(tier, "")
                 issue_labels.append(f"{iid} {issue['title']}  {tier_tag}")
 
                 row = {}
-                hits = 0
+                total_pts = 0
+                total_max = 0
                 for v, _, r in filtered:
-                    sc = r["auto_scores"]
-                    det = sc.get("issues_detected", {})
-                    meta_det = sc.get("meta_issues_detected", {})
-                    detected = det.get(iid, False) or meta_det.get(iid, False)
-                    row[v] = "\u2705" if detected else "\u274c"
-                    if detected:
-                        hits += 1
-                rate = f"{hits / ncols * 100:.0f}%" if ncols else "\u2014"
+                    judge = r.get("judge_scores")
+                    judge_bucket = "meta_issues" if is_meta else "issues"
+                    ji = judge.get(judge_bucket, {}).get(iid) if judge else None
+
+                    if ji:
+                        score = sum(ji.get(d, 0) for d in dims)
+                        row[v] = f"{score}/{len(dims)}"
+                        total_pts += score
+                        total_max += len(dims)
+                    else:
+                        sc = get_scores(r)
+                        det = sc.get("issues_detected", {})
+                        meta_det = sc.get("meta_issues_detected", {})
+                        detected = det.get(iid, False) or meta_det.get(iid, False)
+                        row[v] = "\u2705" if detected else "\u274c"
+                        total_pts += 1 if detected else 0
+                        total_max += 1
+
+                rate = f"{total_pts / total_max * 100:.0f}%" if total_max else "\u2014"
                 row["Score"] = rate
                 heatmap_rows.append(row)
 
@@ -510,6 +566,24 @@ if not running:
                     selected_skill,
                     existing[0].get("doc_name", ""),
                 )
+
+# --- Judge unjudged results button ---
+judge_configured = st.session_state.get("judge1") is not None
+if not running and judge_configured and selected_doc:
+    # Count unjudged results on disk
+    all_existing = load_results(selected_skill)
+    unjudged = [r for r in all_existing if r.get("judge_scores") is None]
+    if unjudged:
+        if st.button(f"Judge unjudged results ({len(unjudged)})", type="secondary"):
+            judge_model_key = st.session_state.get("judge1")
+            judge_sys = st.session_state.get("judge_system_prompt")
+            progress = st.progress(0, text="Judging saved results...")
+            updated = judge_saved_results(selected_skill, judge_model_key, judge_sys)
+            progress.progress(1.0, text=f"Done! Judged {len(updated)} results.")
+            # Clear cached eval_results so disk results reload
+            if "eval_results" in st.session_state:
+                del st.session_state["eval_results"]
+            st.rerun()
 
 # --- Sync current selections to localStorage (at bottom to avoid layout gaps) ---
 ls.setItem("eval_models", ",".join(selected_models) if selected_models else "", key="save_models")
