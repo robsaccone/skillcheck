@@ -26,3 +26,9 @@ build/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Windows artifacts
+nul
+
+# Logs
+_st_err.log

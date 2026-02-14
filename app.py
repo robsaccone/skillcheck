@@ -36,15 +36,16 @@ st.logo(
 # Navigation
 # ---------------------------------------------------------------------------
 
-pg = st.navigation([
-    st.Page("pages/skills.py", title="Skills", icon=":material/description:"),
-    st.Page("pages/models.py", title="Models", icon=":material/smart_toy:"),
-    st.Page("pages/judges.py", title="Judges", icon=":material/gavel:"),
-    st.Page("pages/evaluate.py", title="Evaluate", icon=":material/play_circle:", default=True),
-])
-
-# with st.sidebar:
-#     st.markdown("---")
-#     st.caption("Byu Rob Saccone \u00b7 NexLaw Partners")
+pg = st.navigation({
+    "": [
+        st.Page("pages/home.py", title="About", icon=":material/home:", default=True),
+    ],
+    " ": [
+        st.Page("pages/skills.py", title="Skills", icon=":material/description:"),
+        st.Page("pages/models.py", title="Models", icon=":material/smart_toy:"),
+        st.Page("pages/judges.py", title="Judges", icon=":material/gavel:"),
+        st.Page("pages/evaluate.py", title="Evaluate", icon=":material/play_circle:"),
+    ],
+})
 
 pg.run()

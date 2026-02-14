@@ -17,8 +17,7 @@ if not available:
 model_keys = list(available.keys())
 
 st.caption(
-    "Select one or two models to act as 'judges' that will evaluate results based on provided answer keys. \n\n"
-    "When two are selected, results are compared for agreement or divergence."
+    "Select one or two models to act as 'judges' that will evaluate results based on provided answer keys. When two are selected, results are compared for agreement or divergence."
 )
 
 col1, col2 = st.columns(2)

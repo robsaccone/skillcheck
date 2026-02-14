@@ -134,6 +134,10 @@ def render_results_matrix(results_map: dict, versions: list, model_keys: list, s
         on_select="rerun",
         selection_mode="single-cell",
         key="results_matrix",
+        column_config={
+            "Version": st.column_config.TextColumn(label="Skill Version"),
+            "Score": st.column_config.TextColumn(width="small"),
+        },
     )
 
     # Handle cell click → drill into detail view
@@ -279,6 +283,7 @@ if sel:
         del st.session_state.selected_result
 
 st.markdown("## Evaluate")
+st.caption("Skillcheck will run and evaluate all combinations of the selected models, skills, and documents.")
 
 skills = discover_skills()
 available = get_available_models()

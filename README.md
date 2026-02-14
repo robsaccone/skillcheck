@@ -15,8 +15,9 @@ Skillcheck runs AI models through legal document review tasks with different ski
 - **Issue detection** — Did the model find what a senior attorney would find?
 - **Skill comparison** — Which skill produces the best work product on which model?
 - **Model comparison** — How do frontier, mid-tier, and open-source models stack up on the same task with the same playbook?
+- **LLM-as-judge scoring** — Optionally, a judge model evaluates response quality across rubric dimensions (identification, characterization, severity, actionability)
 
-The first evaluation pack is **NDA Review**: a deliberately one-sided "mutual" NDA with 16 planted issues across three severity tiers. More packs can be added without code changes.
+The first skill is **NDA Review**: a deliberately one-sided "mutual" NDA with 16 planted issues across three severity tiers. More skills can be added without code changes.
 
 ## Quick Start
 
@@ -29,9 +30,6 @@ pip install -r requirements.txt
 cp .env.example .env
 # Edit .env with your keys (any subset works — models without keys are skipped)
 
-# Fetch the latest skills from their open-source repos
-python fetch_skills.py
-
 # Launch the dashboard
 streamlit run app.py
 ```
@@ -43,10 +41,13 @@ The dashboard opens at `http://localhost:8501`. You can run evaluations with whi
 | Model | Provider | API Key |
 |-------|----------|---------|
 | Claude Opus 4.6 | Anthropic | `ANTHROPIC_API_KEY` |
-| Claude Sonnet 4.5 | Anthropic | `ANTHROPIC_API_KEY` |
-| GPT-4o | OpenAI | `OPENAI_API_KEY` |
-| Gemini 2.5 Pro | Google | `GOOGLE_API_KEY` |
-| Llama 3.3 70B | Meta (via Together) | `TOGETHER_API_KEY` |
+| Claude Haiku 4.5 | Anthropic | `ANTHROPIC_API_KEY` |
+| GPT-5.2 | OpenAI | `OPENAI_API_KEY` |
+| GPT-5 Nano | OpenAI | `OPENAI_API_KEY` |
+| Gemini 3 Pro | Google | `GOOGLE_API_KEY` |
+| Gemini 3 Flash | Google | `GOOGLE_API_KEY` |
+| DeepSeek R1 | Together | `TOGETHER_API_KEY` |
+| Qwen3 235B | Together | `TOGETHER_API_KEY` |
 
 ## Included Skills
 
@@ -65,104 +66,98 @@ Skills are organized by task type, with one file per source:
 
 ## The Dashboard
 
-Skillcheck ships as a Streamlit app with five views:
+Skillcheck ships as a Streamlit app with four pages:
 
-**Run Evaluation** — Pick a model, skill, and test document. Run a review and see auto-scored results with issue-by-issue detection chips.
+**Skills** — Browse all available skills with version counts, test documents, and answer keys. View issue details with severity badges.
 
-**Side-by-Side Compare** — Select any two results and compare scores, issue detection, and full response text in parallel.
+**Models** — Overview of all configured models with provider, context window, pricing, and API key status.
 
-**Scorecard** — Leaderboard of all runs sorted by weighted score. Includes skill comparison across models and manual expert scoring.
+**Judges** — Select one or two LLM judges for rubric-based evaluation. Customize the judge system prompt or use the default.
 
-**Skill Viewer** — Read the full text of any skill with provenance info. Compare two skills side-by-side.
-
-**Test Documents & Answer Keys** — Browse the test NDA and expert answer key with severity badges and "what good looks like" for each issue.
+**Evaluate** — The main workspace. Select models, a skill, and a test document. Run evaluations with optional LLM-as-judge scoring. View results in a scored matrix with drill-down to individual responses and per-issue detection heatmaps.
 
 ## How Scoring Works
+
+### Quick Scoring (Keyword-Based)
 
 Each test document has an expert answer key with issues classified into three tiers:
 
 | Tier | Weight | Standard |
 |------|--------|----------|
-| **Must-catch** | 3× | Miss these and you've committed malpractice |
-| **Should-catch** | 2× | A competent reviewer finds these |
-| **Nice-to-catch** | 1× | Senior associates and partners catch these |
+| **Must-catch** | 3x | Miss these and you've committed malpractice |
+| **Should-catch** | 2x | A competent reviewer finds these |
+| **Nice-to-catch** | 1x | Senior associates and partners catch these |
 
-Auto-scoring uses keyword detection from the answer key. It's conservative — it can miss a valid detection but rarely produces false positives. Manual expert scoring covers five qualitative dimensions: completeness, precision, accuracy, actionability, and professional judgment.
+Quick scoring uses keyword detection from the answer key. It's conservative — it can miss a valid detection but rarely produces false positives.
+
+### LLM-as-Judge Scoring
+
+When enabled, a judge model evaluates each response against the answer key rubric across four dimensions per issue:
+
+- **Identified** — Did the response find this issue?
+- **Correctly characterized** — Did it accurately describe the nature and impact?
+- **Severity appropriate** — Did it assign the right risk level?
+- **Actionable** — Did it provide a concrete recommendation?
+
+Plus document-level scores for overall classification, completeness, precision, and professional quality. These are combined into a weighted composite score.
 
 ## Project Structure
 
 ```
 skillcheck/
-├── app.py                          # Streamlit dashboard
-├── engine.py                       # API dispatch, scoring, results
-├── config.py                       # Model configs
-├── fetch_skills.py                 # Pull skills from source repos
+├── app.py                          # Streamlit entry point
+├── config.py                       # Path constants, scoring weights
+├── models.py                       # Model configs and API dispatch
+├── engine.py                       # Evaluation engine, scoring, result I/O
+├── judge.py                        # LLM-as-judge scoring
+├── components.py                   # Shared UI helpers
+├── app.css                         # Custom styling
 ├── requirements.txt
 ├── .env.example
 │
-├── eval_packs/                     # Self-contained evaluation packs
-│   └── nda_review/
-│       ├── pack.json
-│       ├── test_docs/
-│       │   └── one_sided_mutual.md
+├── pages/                          # Streamlit pages
+│   ├── skills.py
+│   ├── models.py
+│   ├── judges.py
+│   └── evaluate.py
+│
+├── skills/                         # Skill definitions (filesystem-based)
+│   └── {skill_id}/
+│       ├── skill.json              # Metadata, system prompt, user template
+│       ├── *.skill.md              # One file per skill version
+│       ├── docs/
+│       │   └── *.md                # Test documents
 │       └── answer_keys/
-│           └── one_sided_mutual.json
+│           └── *.json              # Expert answer keys with rubrics
 │
-├── skills/                         # Organized by skill type, named by source
-│   ├── _catalog.json
-│   ├── nda_review/
-│   │   ├── baseline.skill.md       # Minimal prompt — the control
-│   │   ├── lawvable.skill.md
-│   │   ├── evolsb.skill.md
-│   │   ├── skala.skill.md
-│   │   └── custom.skill.md
-│   ├── nda_triage/
-│   │   └── anthropic.skill.md
-│   └── contract_review/
-│       ├── anthropic.skill.md
-│       └── evolsb.skill.md
-│
-└── results/                        # Mirrors skills structure
-    └── nda_review/
-        ├── nda_review/
-        │   ├── baseline/
-        │   ├── lawvable/
-        │   ├── evolsb/
-        │   └── ...
+└── results/                        # Generated evaluation results (gitignored)
+    └── {skill_id}/{version}/{model}__{doc}.json
 ```
-
-## Adding Your Own Eval Pack
-
-Skillcheck is designed to be extended. To add a new evaluation:
-
-1. Create a directory under `eval_packs/` with a `pack.json`, test documents, and answer keys
-2. Add relevant skills to the `skills/` directory
-3. Update `skills/_catalog.json` with the new skill metadata
-4. Restart the app — your pack appears in the sidebar
-
-See the [technical spec](docs/technical_spec.md) for data model details.
 
 ## Adding Your Own Skills
 
-Drop a `{source}.skill.md` file into the appropriate `skills/{type}/` directory and add an entry to `_catalog.json`. The skill text is injected as system prompt context during evaluation.
+1. Create a directory under `skills/` with a `skill.json` containing `skill_id`, `display_name`, `system_prompt_prefix`, and `user_prompt_template`
+2. Add `.skill.md` files for each version/variant
+3. Add test documents to `docs/` and answer keys to `answer_keys/`
+4. Restart the app — your skill appears automatically
+
+See the existing `skills/nda_review/` for a complete example.
 
 ## Background
 
 This project grew out of an analysis of the emerging legal AI skills ecosystem — comparing catalogs from [Lawvable](https://github.com/lawvable/awesome-legal-skills), [Anthropic](https://github.com/anthropics/knowledge-work-plugins), [AgentSkills.legal](https://agentskills.legal), and others. The evaluation harness was built to answer a simple question: when multiple skills claim to improve AI performance on the same legal task, which one actually produces the best work product?
 
-For the full show script and production notes, see [docs/show_overview.md](docs/show_overview.md).
-
 ## Contributing
 
-Contributions welcome — especially new eval packs, test documents, and answer keys. The more tasks we can evaluate, the better we can hold legal AI tools accountable.
+Contributions welcome — especially new skills, test documents, and answer keys. The more tasks we can evaluate, the better we can hold legal AI tools accountable.
 
-If you build an eval pack, please open a PR. If you find issues with the scoring methodology or answer keys, file an issue.
+If you build a skill, please open a PR. If you find issues with the scoring methodology or answer keys, file an issue.
 
 ## License
 
 MIT — see [LICENSE](LICENSE).
 
-Skills included in this repo retain their original licenses as noted in `skills/_catalog.json`. The evaluation harness, test documents, answer keys, and custom skills are MIT licensed.
+Skills included in this repo retain their original licenses as noted in the skill files. The evaluation harness, test documents, answer keys, and custom skills are MIT licensed.
 
 ## Author
 
