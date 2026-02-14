@@ -1,7 +1,7 @@
 """Core evaluation engine for Skillcheck.
 
-Handles skill discovery, prompt construction, auto-scoring,
-weighted score computation, parallel evaluation, and result I/O.
+Handles skill discovery, prompt construction, quick-scoring (keyword-based),
+weighted score computation, parallel evaluation, judge integration, and result I/O.
 """
 
 import json
@@ -109,9 +109,10 @@ def build_prompt(
 # Scoring
 # ---------------------------------------------------------------------------
 
-def auto_score(response_text: str, answer_key: dict) -> dict:
-    """Keyword-based auto-scoring against an answer key.
+def quick_score(response_text: str, answer_key: dict) -> dict:
+    """Keyword-based quick-scoring against an answer key.
 
+    Reads `quick_screen_keywords` first, falls back to `detection_keywords`.
     Returns dict mapping issue IDs to booleans (detected or not).
     Also checks meta_issues.
     """
@@ -119,13 +120,13 @@ def auto_score(response_text: str, answer_key: dict) -> dict:
 
     issues_detected = {}
     for issue in answer_key.get("issues", []):
-        keywords = issue.get("detection_keywords", [])
+        keywords = issue.get("quick_screen_keywords") or issue.get("detection_keywords", [])
         detected = any(kw.lower() in text_lower for kw in keywords)
         issues_detected[issue["id"]] = detected
 
     meta_detected = {}
     for meta in answer_key.get("meta_issues", []):
-        keywords = meta.get("detection_keywords", [])
+        keywords = meta.get("quick_screen_keywords") or meta.get("detection_keywords", [])
         detected = any(kw.lower() in text_lower for kw in keywords)
         meta_detected[meta["id"]] = detected
 
@@ -135,8 +136,12 @@ def auto_score(response_text: str, answer_key: dict) -> dict:
     }
 
 
-def compute_weighted_scores(score_data: dict, answer_key: dict) -> dict:
-    """Compute tier-weighted scores from auto_score output."""
+# Backward compat alias
+auto_score = quick_score
+
+
+def compute_quick_scores(score_data: dict, answer_key: dict) -> dict:
+    """Compute tier-weighted scores from quick_score output."""
     issues_detected = score_data["issues_detected"]
     meta_detected = score_data["meta_issues_detected"]
     guidance = answer_key["scoring_guidance"]
@@ -173,17 +178,37 @@ def compute_weighted_scores(score_data: dict, answer_key: dict) -> dict:
     }
 
 
+# Backward compat alias
+compute_weighted_scores = compute_quick_scores
+
+
+def get_scores(result: dict) -> dict:
+    """Read scores from a result dict with fallback chain.
+
+    Reads `quick_scores` first, falls back to `auto_scores`, returns {} if neither.
+    """
+    return result.get("quick_scores") or result.get("auto_scores") or {}
+
+
 # ---------------------------------------------------------------------------
 # Parallel Evaluation
 # ---------------------------------------------------------------------------
 
-def run_evaluation(skill_id: str, model_ids: list[str], doc_name: str):
+def run_evaluation(
+    skill_id: str,
+    model_ids: list[str],
+    doc_name: str,
+    judge_model_key: str | None = None,
+    judge_system_prompt: str | None = None,
+):
     """Run ALL versions of a skill across selected models in parallel.
 
     Yields (version, model_id, result_dict) tuples as they complete.
     Uses ThreadPoolExecutor + as_completed().
+
+    When judge_model_key is set, each result is also evaluated by the judge model.
     """
-    skill_meta = _load_skill_meta(skill_id)
+    skill_meta = load_skill_meta(skill_id)
     if not skill_meta:
         return
 
@@ -211,10 +236,19 @@ def run_evaluation(skill_id: str, model_ids: list[str], doc_name: str):
                 system_prompt, user_prompt,
             )
 
-            auto_scores = None
+            qs = None
             if answer_key:
-                score_data = auto_score(response["text"], answer_key)
-                auto_scores = compute_weighted_scores(score_data, answer_key)
+                score_data = quick_score(response["text"], answer_key)
+                qs = compute_quick_scores(score_data, answer_key)
+
+            # Judge scoring (lazy import to avoid circular deps)
+            judge_scores = None
+            if judge_model_key and answer_key:
+                from judge import judge_response
+                judge_scores = judge_response(
+                    doc_text, answer_key, response["text"],
+                    judge_model_key, judge_system_prompt, skill_meta,
+                )
 
             result = {
                 "eval_id": str(uuid.uuid4()),
@@ -228,7 +262,9 @@ def run_evaluation(skill_id: str, model_ids: list[str], doc_name: str):
                 "input_tokens": response.get("input_tokens", 0),
                 "output_tokens": response.get("output_tokens", 0),
                 "elapsed_seconds": response.get("elapsed_seconds", 0),
-                "auto_scores": auto_scores,
+                "quick_scores": qs,
+                "auto_scores": qs,  # backward compat
+                "judge_scores": judge_scores,
             }
 
             save_result(skill_id, version, model_key, doc_name, result)
@@ -252,12 +288,65 @@ def run_evaluation(skill_id: str, model_ids: list[str], doc_name: str):
             yield future.result()
 
 
-def _load_skill_meta(skill_id: str) -> dict | None:
+def load_skill_meta(skill_id: str) -> dict | None:
     """Load skill.json for a skill_id."""
     path = SKILLS_DIR / skill_id / "skill.json"
     if path.exists():
         return json.loads(path.read_text(encoding="utf-8"))
     return None
+
+
+# Backward compat alias
+_load_skill_meta = load_skill_meta
+
+
+# ---------------------------------------------------------------------------
+# Judge Saved Results
+# ---------------------------------------------------------------------------
+
+def judge_saved_results(
+    skill_id: str,
+    judge_model_key: str,
+    judge_system_prompt: str | None = None,
+) -> list[dict]:
+    """Run judge scoring on saved results that don't have judge_scores yet.
+
+    Returns list of updated result dicts.
+    """
+    from judge import judge_response
+
+    skill_meta = load_skill_meta(skill_id)
+    all_results = load_results(skill_id)
+    updated = []
+
+    for result in all_results:
+        if result.get("judge_scores") is not None:
+            continue
+
+        doc_name = result.get("doc_name", "")
+        doc_text = load_test_doc(skill_id, doc_name)
+        answer_key = load_answer_key(skill_id, doc_name)
+        response_text = result.get("response_text", "")
+
+        if not (doc_text and answer_key and response_text):
+            continue
+
+        judge_scores = judge_response(
+            doc_text, answer_key, response_text,
+            judge_model_key, judge_system_prompt, skill_meta,
+        )
+
+        result["judge_scores"] = judge_scores
+        save_result(
+            skill_id,
+            result.get("version", ""),
+            result.get("model_key", ""),
+            doc_name,
+            result,
+        )
+        updated.append(result)
+
+    return updated
 
 
 # ---------------------------------------------------------------------------

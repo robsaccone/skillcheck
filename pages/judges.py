@@ -1,7 +1,9 @@
 """Judges page — select up to two LLM judges for evaluation grading."""
 
 import streamlit as st
+from streamlit_local_storage import LocalStorage
 
+from judge import DEFAULT_JUDGE_SYSTEM_PROMPT
 from models import MODEL_CONFIGS, get_available_models
 
 st.markdown("## Judges")
@@ -49,10 +51,28 @@ st.session_state.judge2 = judge2
 st.divider()
 
 st.markdown("**Judge Instructions**")
+st.caption(
+    "The system prompt sent to the judge model when evaluating responses. "
+    "It instructs the judge to return structured JSON with per-issue rubric scores "
+    "and document-level quality scores."
+)
+
+# Initialize default prompt on first load (before widget renders)
+if "judge_system_prompt" not in st.session_state:
+    st.session_state.judge_system_prompt = DEFAULT_JUDGE_SYSTEM_PROMPT
+
 judge_prompt = st.text_area(
     "Judge System Prompt",
-    placeholder="Enter the system prompt that will be sent to the judge model(s)...",
     height=300,
     label_visibility="collapsed",
     key="judge_system_prompt",
 )
+
+if st.button("Reset to default", type="tertiary"):
+    st.session_state.judge_system_prompt = DEFAULT_JUDGE_SYSTEM_PROMPT
+    st.rerun()
+
+# --- Sync judge selections to localStorage ---
+ls = LocalStorage(key="judges_storage")
+ls.setItem("judge1", judge1 or "", key="save_judge1")
+ls.setItem("judge2", judge2 or "", key="save_judge2")

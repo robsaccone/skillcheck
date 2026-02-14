@@ -155,7 +155,7 @@ def _call_openai(model_id: str, system: str, user: str, max_tokens: int) -> dict
     client = openai.OpenAI()
     response = client.chat.completions.create(
         model=model_id,
-        max_tokens=max_tokens,
+        max_completion_tokens=max_tokens,
         messages=[
             {"role": "system", "content": system},
             {"role": "user", "content": user},

@@ -43,8 +43,8 @@ pg = st.navigation([
     st.Page("pages/evaluate.py", title="Evaluate", icon=":material/play_circle:", default=True),
 ])
 
-with st.sidebar:
-    st.markdown("---")
-    st.caption("Skillcheck \u00b7 Built by Rob Saccone \u00b7 NexLaw Partners")
+# with st.sidebar:
+#     st.markdown("---")
+#     st.caption("Byu Rob Saccone \u00b7 NexLaw Partners")
 
 pg.run()

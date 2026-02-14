@@ -2,6 +2,7 @@
 
 import pandas as pd
 import streamlit as st
+from streamlit_local_storage import LocalStorage
 
 from models import MODEL_CONFIGS, get_available_models
 from engine import (
@@ -294,7 +295,40 @@ running = st.session_state.get("eval_running", False)
 
 # Controls — disabled while running
 skill_map = {s["skill_id"]: s["display_name"] for s in skills}
+skill_options = list(skill_map.keys())
 model_options = list(available.keys())
+
+# --- Persistent storage for sticky selections ---
+ls = LocalStorage(key="eval_storage")
+
+# Restore from localStorage on fresh load (browser refresh)
+if "eval_models" not in st.session_state:
+    saved = ls.getItem("eval_models")
+    if saved:
+        valid = [m for m in saved.split(",") if m in model_options]
+        if valid:
+            st.session_state.eval_models = valid
+    if "eval_models" not in st.session_state:
+        st.session_state.eval_models = model_options[:2] if len(model_options) >= 2 else model_options
+
+if "eval_skill" not in st.session_state:
+    saved = ls.getItem("eval_skill")
+    if saved and saved in skill_options:
+        st.session_state.eval_skill = saved
+
+# Restore judge selections from localStorage
+if "judge1" not in st.session_state:
+    saved = ls.getItem("judge1")
+    if saved and saved in model_options:
+        st.session_state.judge1 = saved
+    else:
+        st.session_state.judge1 = model_options[0] if model_options else None
+    st.session_state.judge2 = None
+    saved2 = ls.getItem("judge2")
+    if saved2 and saved2 in model_options:
+        st.session_state.judge2 = saved2
+
+# Doc restoration happens after skill is resolved (options depend on skill)
 
 col1, col2, col3 = st.columns(3)
 
@@ -302,7 +336,6 @@ with col1:
     selected_models = st.multiselect(
         "Select Models",
         options=model_options,
-        default=model_options[:2] if len(model_options) >= 2 else model_options,
         format_func=lambda k: MODEL_CONFIGS[k]["display_name"],
         disabled=running,
         key="eval_models",
@@ -311,7 +344,7 @@ with col1:
 with col2:
     selected_skill = st.selectbox(
         "Select Skill",
-        options=list(skill_map.keys()),
+        options=skill_options,
         format_func=lambda k: skill_map[k],
         disabled=running,
         key="eval_skill",
@@ -320,6 +353,12 @@ with col2:
 with col3:
     docs = list_test_docs(selected_skill)
     if docs:
+        # Restore doc from localStorage if not in session_state
+        if "eval_doc" not in st.session_state:
+            saved = ls.getItem("eval_doc")
+            if saved and saved in docs:
+                st.session_state.eval_doc = saved
+
         selected_doc = st.selectbox(
             "Select Document",
             options=docs,
@@ -327,12 +366,17 @@ with col3:
             key="eval_doc",
         )
     else:
-        st.selectbox("Select Document", options=[], disabled=True, key="eval_doc_empty")
-        st.caption("No test documents for this skill.")
+        st.selectbox("Select Document", options=[], disabled=True, key="eval_doc_empty", placeholder="No documents found")
         selected_doc = None
 
-# Prompt input — inline text field; Enter submits
+# Prompt input and judge checkbox — inline row
 can_run = selected_doc and len(selected_models) >= 2
+
+judge_configured = st.session_state.get("judge1") is not None
+judge_model_name = (
+    MODEL_CONFIGS.get(st.session_state.get("judge1", ""), {}).get("display_name", "")
+    if judge_configured else ""
+)
 
 
 def _on_prompt_submit():
@@ -344,9 +388,10 @@ def _on_prompt_submit():
         st.session_state.eval_run_doc = selected_doc
         st.session_state.eval_prompt = val
         st.session_state.eval_prompt_input = ""
+        st.session_state.eval_run_judge_active = run_judge
 
 
-prompt_col, btn_col = st.columns([6, 1], vertical_alignment="bottom")
+prompt_col, btn_col, judge_col = st.columns([6, 1, 2], vertical_alignment="bottom")
 prompt_col.text_input(
     "Prompt",
     placeholder="Type a prompt and press Enter...",
@@ -361,6 +406,13 @@ run_clicked = btn_col.button(
     type="primary",
     width="stretch",
 )
+run_judge = judge_col.checkbox(
+    "Judge",
+    value=judge_configured,
+    disabled=not judge_configured or running,
+    key="eval_run_judge",
+    help=f"Judge: {judge_model_name}" if judge_configured else "Configure on Judges page",
+)
 
 # Button click also triggers run
 if run_clicked and can_run and not running:
@@ -370,7 +422,7 @@ if run_clicked and can_run and not running:
     st.session_state.eval_run_models = selected_models
     st.session_state.eval_run_doc = selected_doc
     st.session_state.eval_prompt = prompt_val
-    st.session_state.eval_prompt_input = ""
+    st.session_state.eval_run_judge_active = run_judge
     st.rerun()
 
 versions = list_skill_versions(selected_skill)
@@ -383,16 +435,26 @@ if running:
     run_versions = list_skill_versions(run_skill)
     total = len(run_versions) * len(run_models)
 
-    progress = st.progress(0, text="Starting evaluation...")
+    # Resolve judge params
+    use_judge = st.session_state.get("eval_run_judge_active", False)
+    judge_model_key = st.session_state.get("judge1") if use_judge else None
+    judge_system_prompt = st.session_state.get("judge_system_prompt") if use_judge else None
+    judge_suffix = " (judging)" if judge_model_key else ""
+
+    progress = st.progress(0, text=f"Starting evaluation...{judge_suffix}")
     completed = 0
     results_map = {}
 
-    for version, model_key, result in run_evaluation(run_skill, run_models, run_doc):
+    for version, model_key, result in run_evaluation(
+        run_skill, run_models, run_doc,
+        judge_model_key=judge_model_key,
+        judge_system_prompt=judge_system_prompt,
+    ):
         completed += 1
         results_map[(version, model_key)] = result
         progress.progress(
             completed / total,
-            text=f"{completed}/{total} — {version} x {MODEL_CONFIGS[model_key]['display_name']}",
+            text=f"{completed}/{total} — {version} x {MODEL_CONFIGS[model_key]['display_name']}{judge_suffix}",
         )
 
     progress.progress(1.0, text=f"Complete! {completed} evaluations run.")
@@ -421,16 +483,17 @@ if not running:
             eval_data["doc"],
         )
     else:
-        # Fall back to saved results on disk
+        # Fall back to saved results on disk, filtered to selected models
         existing = load_results(selected_skill)
-        if existing and versions:
+        if existing and versions and selected_models:
             st.markdown("### Results")
+            selected_set = set(selected_models)
             matrix = {}
             model_keys_seen = set()
             for r in existing:
                 v = r.get("version", "")
                 mk = r.get("model_key", "")
-                if v and mk:
+                if v and mk and mk in selected_set:
                     matrix[(v, mk)] = r
                     model_keys_seen.add(mk)
 
@@ -442,3 +505,9 @@ if not running:
                     selected_skill,
                     existing[0].get("doc_name", ""),
                 )
+
+# --- Sync current selections to localStorage (at bottom to avoid layout gaps) ---
+ls.setItem("eval_models", ",".join(selected_models) if selected_models else "", key="save_models")
+ls.setItem("eval_skill", selected_skill or "", key="save_skill")
+if selected_doc:
+    ls.setItem("eval_doc", selected_doc, key="save_doc")
