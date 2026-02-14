@@ -1,8 +1,11 @@
 """Home page — project overview and getting started guide."""
 
 import streamlit as st
+from pathlib import Path
 
-st.markdown("## ⚡ Skillcheck")
+ASSETS = Path(__file__).parent.parent / "assets"
+
+st.image(str(ASSETS / "logo.svg"), width=300)
 st.caption("Skills = playbooks = prompts. \n\nThey are written instructions that capture expertise and procedural knowledge on a given task. Skillcheck helps evaluate skills against different models, inputs, and scenarios.")
 
 # ---------------------------------------------------------------------------
