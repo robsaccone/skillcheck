@@ -3,7 +3,7 @@
 import streamlit as st
 
 st.markdown("## ⚡ Skillcheck")
-st.caption("Skills are like playbooks — written instructions that capture expertise and procedural knowledge on a given task. Skillcheck helps evaluate skills against different models, inputs, and scenarios.")
+st.caption("Skills = playbooks = prompts. \n\nThey are written instructions that capture expertise and procedural knowledge on a given task. Skillcheck helps evaluate skills against different models, inputs, and scenarios.")
 
 # ---------------------------------------------------------------------------
 # What it does

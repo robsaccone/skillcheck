@@ -7,6 +7,8 @@ Pages live in pages/ and are loaded via st.Page file paths.
 import streamlit as st
 from pathlib import Path
 
+from config import RESULTS_DIR
+
 # ---------------------------------------------------------------------------
 # Page Config (must be first Streamlit call)
 # ---------------------------------------------------------------------------
@@ -47,5 +49,41 @@ pg = st.navigation({
         st.Page("pages/evaluate.py", title="Evaluate", icon=":material/play_circle:"),
     ],
 })
+
+# ---------------------------------------------------------------------------
+# Sidebar — recent eval runs
+# ---------------------------------------------------------------------------
+
+if RESULTS_DIR.exists():
+    # Group result files into runs by (skill_id, doc_name), track most recent mtime
+    run_map: dict[tuple[str, str], float] = {}
+    for rf in RESULTS_DIR.rglob("*.json"):
+        parts = rf.stem.split("__", 1)
+        if len(parts) != 2 or rf.parent.parent.parent != RESULTS_DIR:
+            continue
+        doc_name = parts[1]
+        skill_id = rf.parent.parent.name
+        key = (skill_id, doc_name)
+        mtime = rf.stat().st_mtime
+        if key not in run_map or mtime > run_map[key]:
+            run_map[key] = mtime
+
+    if run_map:
+        recent_runs = sorted(run_map.items(), key=lambda x: x[1], reverse=True)[:8]
+        st.sidebar.caption("Recent Runs")
+        for (skill_id, doc_name), _ in recent_runs:
+            label = f"{skill_id} / {doc_name}"
+            if st.sidebar.button(
+                label,
+                key=f"run_{skill_id}_{doc_name}",
+                use_container_width=False,
+                type="tertiary",
+            ):
+                st.session_state.eval_skill = skill_id
+                st.session_state.eval_doc = doc_name
+                # Clear any open detail view
+                st.session_state.pop("selected_result", None)
+                st.session_state.pop("selected_result_ctx", None)
+                st.switch_page("pages/evaluate.py")
 
 pg.run()
