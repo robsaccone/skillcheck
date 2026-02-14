@@ -1,0 +1,269 @@
+{
+  "doc_id": "trojan_horse",
+  "doc_title": "Trojan Horse NDA — Meridian Capital / Horizon Therapeutics",
+  "perspective": "Horizon Therapeutics (the operating company, disclosing sensitive pharma/biotech data to a PE firm)",
+  "overall_risk": "YELLOW",
+  "overall_risk_rationale": "This NDA appears balanced and professionally drafted on first read. However, several provisions contain subtle language choices that, individually, might be dismissed as standard but collectively create significant risk for the Disclosing Party — particularly a therapeutics company sharing proprietary scientific data with a capital partner. The agreement is not RED because the asymmetries are not structural (both parties are treated symmetrically in most provisions). It is YELLOW because the specific language choices create exploitable gaps that a sophisticated counterparty could leverage.",
+
+  "scoring_guidance": {
+    "must_catch": ["ISSUE-02"],
+    "should_catch": ["ISSUE-01", "ISSUE-03", "ISSUE-04", "ISSUE-06"],
+    "nice_to_catch": ["ISSUE-05"],
+    "weights": { "must_catch": 3, "should_catch": 2, "nice_to_catch": 1 }
+  },
+
+  "scoring_notes": "This document tests SOPHISTICATION — the ability to identify how individually reasonable provisions interact dangerously. The correctly_characterized dimension is the most important here. Most models will either miss the issues entirely or identify them but fail to explain why they are dangerous. The interaction_with field is critical: issues in this document derive their danger from their combination with other provisions, not from being individually egregious.",
+
+  "document_level_rubric": {
+    "overall_classification": {
+      "question": "What overall risk classification did the response assign (RED/YELLOW/GREEN or equivalent)?",
+      "correct_answer": "YELLOW — well-drafted on the surface but contains subtle provisions that create exploitable risk",
+      "scoring": "YELLOW=3, RED=1 (overcautious but shows awareness), GREEN=0 (missed the sleeper provisions)"
+    },
+    "completeness": {
+      "question": "How many of the 6 planted issues did the response identify?"
+    },
+    "precision": {
+      "question": "Did the response flag any provisions as problematic that are actually standard and well-drafted? This NDA has many genuinely balanced provisions that should NOT be flagged: the mutual standard of care (§3.1), the symmetric permitted disclosures (§3.2), the compelled disclosure provision (§4) which includes proper minimization language, the mutual return/destruction obligations (§5), the mutual warranty disclaimer (§6.1), the two-year term with mutual termination (§7.1), the three-year survival with trade secret carve-out (§7.2), and the mutual injunctive relief provision (§8.1). These are all well-drafted and balanced."
+    },
+    "professional_quality": {
+      "question": "Does the response demonstrate sophisticated legal judgment? A high-quality review of this NDA will: (1) acknowledge the agreement is well-drafted overall, (2) identify the specific language choices that create risk, (3) explain how provisions interact rather than analyzing each in isolation, and (4) frame recommendations in terms of the specific business context (PE firm + therapeutics company). Consider whether a supervising partner would view this analysis as demonstrating the reviewer's legal sophistication.",
+      "scale": "0-10"
+    }
+  },
+
+  "context_notes": "The business context matters for scoring. Meridian is a PE/investment firm. Horizon is a therapeutics company with proprietary scientific data (compounds, clinical data, regulatory submissions). When a PE firm enters an NDA with a potential acquisition or investment target, the information flow is inherently asymmetric — the target discloses far more sensitive information. Several of the sleeper provisions exploit this practical asymmetry within a facially symmetric agreement.",
+
+  "issues": [
+    {
+      "id": "ISSUE-01",
+      "section": "1 (Recitals and §1)",
+      "title": "Undefined Broad Purpose Creates Unbounded Scope",
+      "severity": "HIGH",
+      "weight": 2,
+      "category": "purpose_scope",
+      "description": "The Purpose is defined as exploring a 'potential business relationship' which 'may include, without limitation, evaluating potential strategic, investment, licensing, co-development, or other collaborative opportunities.' This is extremely broad — it encompasses virtually any commercial interaction. The 'without limitation' language means this list is illustrative, not exhaustive. Combined with the non-solicitation clause (§9), this creates a restrictive covenant with no bounded scope. Combined with the residual knowledge clause (§3.4), it means any information shared for any reason falls under the NDA but can be freely used if retained in memory. The breadth of the Purpose means almost any information either party shares could be argued to be 'in connection with the Purpose.'",
+      "what_good_looks_like": "Identifies the Purpose as excessively broad, notes the 'without limitation' language, and critically connects the broad Purpose to at least one other provision (§9 non-solicitation or §3.4 residuals) to explain why the breadth matters. Recommends narrowing the Purpose to a specific transaction or category.",
+
+      "rubric": {
+        "identified": "Did the response identify the Purpose definition as overbroad or note that 'potential business relationship' combined with 'without limitation' creates an unbounded scope?",
+        "correctly_characterized": "Did the response explain WHY the breadth is dangerous — specifically by connecting it to at least one other provision (the non-solicitation in §9, the residuals clause in §3.4, or the supersession clause in §10.4)? Identifying the Purpose as broad without explaining the downstream consequences is insufficient.",
+        "severity_appropriate": "Did the response treat this as at least a moderate-to-high concern?",
+        "actionable": "Did the response recommend narrowing the Purpose to a specific transaction type — e.g., 'evaluating a potential investment by Meridian in Horizon' or 'evaluating a potential technology licensing arrangement'?"
+      },
+
+      "interaction_with": ["ISSUE-02", "ISSUE-05"],
+      "cuad_categories": ["Purpose"],
+      "false_positive_risk": "MODERATE — broad purpose definitions are common in exploratory NDAs and many reviewers will accept this as standard",
+      "common_mistakes": [
+        "Accepting 'potential business relationship' as standard without considering how it interacts with other clauses",
+        "Noting the breadth but treating it as a standalone observation rather than connecting it to §9 or §3.4",
+        "Missing the 'without limitation' language that makes the illustrative list non-exhaustive"
+      ],
+
+      "quick_screen_keywords": [
+        "broad purpose", "potential business relationship", "without limitation",
+        "unbounded", "overly broad", "any purpose", "undefined scope",
+        "narrow the purpose", "section 1", "purpose"
+      ]
+    },
+    {
+      "id": "ISSUE-02",
+      "section": "3.4",
+      "title": "Residual Knowledge Clause Permits Competitive Use",
+      "severity": "CRITICAL",
+      "weight": 3,
+      "category": "residual_knowledge",
+      "description": "Section 3.4 permits either party to 'use for any purpose the residuals resulting from access to or work with the Confidential Information of the other Party.' Residuals are defined as 'information in intangible form that is retained in the unaided memories of persons who have had access to the Confidential Information, including ideas, concepts, know-how, or techniques contained therein.' Critically, the clause states 'Neither Party shall have any obligation to limit or restrict the assignment of such persons or to pay royalties for any work resulting from the use of residuals.' This clause appears protective (it prevents inadvertent breach claims) but actually creates an enormous loophole: a PE firm like Meridian could send its deal team to review Horizon's proprietary data — compound libraries, clinical results, regulatory strategies — and then freely deploy those individuals and everything they remember to advise competitors, pursue competing investments, or develop competing strategies. The 'for any purpose' language is the key: it permits competitive use. The 'no obligation to limit or restrict the assignment of such persons' language means Meridian can reassign the deal team to a competing portfolio company the next day. The copyright/patent carve-out in the final sentence is narrow — it only excludes formal IP, not the far more valuable know-how, strategies, and insights that reside in memory.",
+      "what_good_looks_like": "Identifies the residuals clause as creating a significant loophole despite its protective framing. Explains the 'for any purpose' problem — particularly in the context of a PE firm that may have competing portfolio companies. Notes that 'no obligation to restrict assignment of persons' compounds the risk. Recommends either removing the clause, adding a non-compete carve-out, limiting residuals use to non-competitive purposes, or adding a standstill period before residuals can be used competitively.",
+
+      "rubric": {
+        "identified": "Did the response identify the residuals clause in §3.4 as problematic rather than treating it as a standard protective provision?",
+        "correctly_characterized": "Did the response explain the SPECIFIC DANGER — that 'for any purpose' permits competitive use of retained knowledge, and/or that 'no obligation to restrict assignment' means personnel with knowledge of Horizon's data can be immediately redeployed? (Simply noting the clause exists or describing what residuals clauses do in general is insufficient.)",
+        "severity_appropriate": "Did the response treat this as a high or critical issue — recognizing that for a therapeutics company sharing scientific data with a PE firm, this is potentially the most dangerous provision in the agreement?",
+        "actionable": "Did the response recommend a specific mitigation — e.g., limiting residuals use to non-competitive purposes, adding a standstill period, requiring segregation of personnel, or removing the clause entirely?"
+      },
+
+      "interaction_with": ["ISSUE-01", "ISSUE-06"],
+      "cuad_categories": ["Residual Knowledge"],
+      "false_positive_risk": "LOW — this clause is genuinely dangerous, but many reviewers will fail to identify it because residuals clauses are generally viewed as protective",
+      "common_mistakes": [
+        "Treating the residuals clause as standard and protective without reading the 'for any purpose' language",
+        "Noting the clause exists without analyzing the competitive-use implications",
+        "Focusing on the copyright/patent carve-out as the limitation without recognizing that know-how and trade secrets (which are not copyrights or patents) are the real concern",
+        "Missing the 'no obligation to limit or restrict assignment of persons' language entirely",
+        "Failing to consider the business context: a PE firm reviewing a pharma company's proprietary data"
+      ],
+
+      "quick_screen_keywords": [
+        "residual", "residuals", "residual knowledge", "unaided memory",
+        "any purpose", "for any purpose", "ideas concepts know-how",
+        "no obligation to limit", "restrict assignment", "3.4",
+        "retained in memory", "competitive", "loophole"
+      ]
+    },
+    {
+      "id": "ISSUE-03",
+      "section": "2.2(b)",
+      "title": "'Wrongful Act' Standard in Public Domain Exclusion",
+      "severity": "HIGH",
+      "weight": 2,
+      "category": "exclusions",
+      "description": "Section 2.2(b) excludes information that 'becomes publicly known and generally available after disclosure through no wrongful act of the Receiving Party.' The standard formulation uses 'through no act or omission' or 'through no fault.' The word 'wrongful' is legally significant: it implies that only intentional or willful misconduct would negate the exclusion. Negligent disclosure — accidentally emailing a document to the wrong person, failing to secure a database, carelessly discussing confidential information in a public setting — would NOT be a 'wrongful act' and therefore the information disclosed through negligence could arguably be excluded from confidentiality protection. This is a subtle but meaningful difference: if Meridian's analyst negligently leaks Horizon's clinical data and it becomes public, Meridian could argue that the information is no longer Confidential Information because it became public through no 'wrongful' (i.e., intentional) act.",
+      "what_good_looks_like": "Identifies the 'wrongful act' language as deviating from the standard 'fault' or 'act or omission' formulation. Explains the specific risk: negligent disclosure would not negate the exclusion. Recommends replacing 'wrongful act' with 'act or omission' or 'fault.'",
+
+      "rubric": {
+        "identified": "Did the response identify the 'wrongful act' language in §2.2(b) as problematic or deviating from standard language?",
+        "correctly_characterized": "Did the response explain the SPECIFIC LEGAL DISTINCTION — that 'wrongful' implies intentional misconduct only, meaning negligent disclosure could trigger the exclusion and strip confidentiality protection? (Noting the language is 'non-standard' without explaining the specific consequence is insufficient.)",
+        "severity_appropriate": "Did the response treat this as at least a moderate-to-high concern?",
+        "actionable": "Did the response recommend replacing 'wrongful act' with 'act or omission' or 'fault' of the Receiving Party?"
+      },
+
+      "interaction_with": [],
+      "cuad_categories": ["Exclusions from Confidential Information"],
+      "false_positive_risk": "LOW — but very few reviewers will catch this; the word 'wrongful' reads naturally and doesn't immediately signal a problem",
+      "common_mistakes": [
+        "Reading 'through no wrongful act' as equivalent to 'through no fault'",
+        "Reviewing the exclusions for completeness (all five present) without examining the specific language of each",
+        "Treating this as a standard exclusion section because it contains the expected five carve-outs"
+      ],
+
+      "quick_screen_keywords": [
+        "wrongful act", "wrongful", "no wrongful act",
+        "fault", "act or omission", "negligent", "negligence",
+        "2.2(b)", "public domain", "becomes publicly known",
+        "standard language"
+      ]
+    },
+    {
+      "id": "ISSUE-04",
+      "section": "8.2",
+      "title": "Asymmetric Consequential Damages in Mutual Indemnification",
+      "severity": "HIGH",
+      "weight": 2,
+      "category": "indemnification",
+      "description": "Section 8.2 provides mutual indemnification — each party indemnifies the other for breaches. This looks balanced on first read. However, the final sentence creates a critical asymmetry: 'The Indemnifying Party shall also be liable for any indirect, consequential, or special damages suffered by the Indemnified Parties arising from a breach by the Indemnifying Party, provided that the Indemnified Parties shall not be entitled to recover indirect, consequential, or special damages for a breach by the Indemnified Parties of their obligations under this Agreement.' This sentence says: (1) If you breach, you owe me consequential damages; but (2) if I breach, I don't owe you consequential damages. Each party is simultaneously the Indemnifying Party (when they breach) and the Indemnified Party (when the other breaches). The proviso strips the Indemnified Party of consequential damages for their own breach. The net effect is that NEITHER party can recover consequential damages from the other — the two halves of the sentence cancel each other out. But the sentence is drafted to create the APPEARANCE of consequential damages coverage while actually negating it. For Horizon, whose primary risk is disclosure of proprietary therapeutic data (where consequential damages — loss of competitive advantage, impact on clinical trials, regulatory implications — would far exceed direct damages), this is devastating.",
+      "what_good_looks_like": "Identifies the circular structure of the consequential damages provision, explains how the two halves negate each other, and notes that the practical effect is to eliminate consequential damages recovery for both parties while appearing to provide it. Explains why this particularly disadvantages a party with high-value proprietary data. Recommends either straightforward mutual consequential damages coverage or an honest mutual exclusion.",
+
+      "rubric": {
+        "identified": "Did the response identify any problem with the consequential damages language in §8.2?",
+        "correctly_characterized": "Did the response explain the SPECIFIC MECHANISM — that the sentence structure creates a circular negation where each party appears to have consequential damages coverage but actually has none? (Simply noting that the indemnification 'could be stronger' or that consequential damages are 'limited' is insufficient — the response must identify the self-canceling structure.)",
+        "severity_appropriate": "Did the response treat this as a high-to-critical issue, particularly given the business context of a therapeutics company?",
+        "actionable": "Did the response recommend redrafting for clarity — either providing straightforward mutual consequential damages coverage or honestly excluding them for both parties?"
+      },
+
+      "interaction_with": [],
+      "cuad_categories": ["Indemnification", "Limitation of Liability"],
+      "false_positive_risk": "LOW — but this is extremely difficult to catch because the sentence reads as if it provides mutual consequential damages coverage",
+      "common_mistakes": [
+        "Reading §8.2 as providing balanced mutual indemnification without parsing the consequential damages sentence carefully",
+        "Noting that the indemnification is 'mutual' and moving on",
+        "Identifying that consequential damages are mentioned without understanding the circular negation",
+        "Confusing §8.2 (indemnification) with §8.3 (limitation of liability) and analyzing the wrong section"
+      ],
+
+      "quick_screen_keywords": [
+        "consequential damages", "indirect damages", "special damages",
+        "indemnifying party", "indemnified parties", "8.2",
+        "provided that", "shall not be entitled",
+        "asymmetric", "circular", "negate"
+      ]
+    },
+    {
+      "id": "ISSUE-05",
+      "section": "10.4",
+      "title": "Supersession of Prior Confidentiality Agreements",
+      "severity": "MODERATE",
+      "weight": 1,
+      "category": "integration",
+      "description": "Section 10.4 is an integration/entire agreement clause, but it goes further than standard: it 'supersedes all prior and contemporaneous agreements, understandings, negotiations, and discussions, whether oral or written, between the Parties relating to confidentiality or non-disclosure, including without limitation any prior non-disclosure or confidentiality agreements between the Parties or their respective affiliates.' The key phrase is 'including without limitation any prior non-disclosure or confidentiality agreements.' If Horizon and Meridian (or their affiliates) had a prior NDA with stricter terms — perhaps from earlier due diligence or a different transaction — this clause voids it and replaces it with the current agreement's terms. This is particularly significant given that the current agreement contains the permissive residuals clause (§3.4) and the 'wrongful act' exclusion (§2.2(b)). A prior, stricter NDA would have provided better protection.",
+      "what_good_looks_like": "Identifies the supersession language as going beyond standard integration by explicitly voiding prior confidentiality agreements. Explains the practical risk: if a prior NDA with stricter terms existed, those protections are now lost. Connects this to the current agreement's permissive provisions. Recommends either carving out prior agreements or adding a 'more restrictive terms survive' savings clause.",
+
+      "rubric": {
+        "identified": "Did the response identify that §10.4 explicitly supersedes prior confidentiality agreements, not just prior discussions about the current subject matter?",
+        "correctly_characterized": "Did the response explain WHY this matters — that a prior NDA with stricter protections would be voided and replaced by this agreement's more permissive terms?",
+        "severity_appropriate": "Did the response treat this as a moderate concern? (It's only material if a prior agreement exists, but worth flagging.)",
+        "actionable": "Did the response recommend preserving prior agreements or adding a savings clause?"
+      },
+
+      "interaction_with": ["ISSUE-02", "ISSUE-03"],
+      "cuad_categories": ["Entire Agreement"],
+      "false_positive_risk": "MODERATE — many reviewers will treat entire agreement clauses as standard boilerplate",
+      "common_mistakes": [
+        "Treating the entire agreement clause as standard boilerplate without reading the specific supersession language",
+        "Missing the 'including without limitation any prior non-disclosure or confidentiality agreements' language",
+        "Not connecting the supersession to the permissive provisions in the current agreement"
+      ],
+
+      "quick_screen_keywords": [
+        "supersede", "supersedes", "supersession", "prior agreements",
+        "entire agreement", "integration clause", "prior non-disclosure",
+        "prior confidentiality", "10.4", "void", "replace",
+        "stricter terms"
+      ]
+    },
+    {
+      "id": "ISSUE-06",
+      "section": "10.3",
+      "title": "Low Threshold for 'Control' in Assignment Clause",
+      "severity": "HIGH",
+      "weight": 2,
+      "category": "assignment",
+      "description": "Section 10.3 permits either party to assign the agreement without consent to 'any entity that directly or indirectly controls, is controlled by, or is under common control with such Party.' This is standard affiliate-assignment language. However, 'control' is defined as 'the beneficial ownership of twenty percent (20%) or more of the voting securities or equivalent ownership interest.' The standard threshold is 50% or majority ownership. At 20%, a minority investor — including a portfolio company of a PE firm like Meridian that holds a 20% stake — could be deemed to 'control' or be 'under common control' and thus receive an assignment of this NDA, including access to Horizon's Confidential Information. For a PE firm with multiple portfolio companies, some of which may be Horizon's competitors, this low threshold means Horizon's confidential data could flow to competitors through an assignment chain that technically complies with the agreement. Combined with the residuals clause (§3.4), the assignee's personnel could then use whatever they remember for 'any purpose.'",
+      "what_good_looks_like": "Identifies the 20% control threshold as significantly below market standard (50%+). Explains the risk: minority-held affiliates, including potentially competitive portfolio companies, could receive an assignment. Connects this to the PE firm context and the residuals clause. Recommends increasing the threshold to 50% or majority ownership, or requiring consent for assignments to entities in the same industry.",
+
+      "rubric": {
+        "identified": "Did the response identify the 20% control threshold in §10.3 as below market standard?",
+        "correctly_characterized": "Did the response explain WHY this matters — that a minority investor or portfolio company with only 20% ownership could receive an assignment, and in the context of a PE firm, this could mean Horizon's data flows to competing portfolio companies? (Simply noting '20% is low' without explaining the downstream risk is insufficient.)",
+        "severity_appropriate": "Did the response treat this as at least a moderate-to-high concern?",
+        "actionable": "Did the response recommend increasing the threshold to 50% or majority, or adding industry/competitive restrictions on assignment?"
+      },
+
+      "interaction_with": ["ISSUE-02"],
+      "cuad_categories": ["Assignment"],
+      "false_positive_risk": "MODERATE — the clause reads as standard affiliate-assignment language and many reviewers will not check the control definition",
+      "common_mistakes": [
+        "Reading the assignment clause as standard without checking the control definition",
+        "Noting the 20% threshold without connecting it to the PE firm business context",
+        "Missing the 'indirectly controls' language that extends the chain further",
+        "Not connecting the low assignment threshold to the residuals clause (§3.4)"
+      ],
+
+      "quick_screen_keywords": [
+        "control", "20%", "twenty percent", "assignment",
+        "controlled by", "common control", "minority",
+        "voting securities", "ownership interest", "10.3",
+        "affiliate", "portfolio company", "threshold"
+      ]
+    }
+  ],
+
+  "meta_issues": [
+    {
+      "id": "META-01",
+      "title": "Facially Balanced Agreement with Exploitable Gaps",
+      "severity": "META",
+      "weight": 2,
+      "description": "Unlike the one_sided_mutual NDA where asymmetries are structural and visible, this agreement is genuinely mutual in form. The danger lies in specific language choices within balanced provisions — 'for any purpose' in the residuals clause, 'wrongful act' in the exclusions, the circular consequential damages structure, the low control threshold. A sophisticated reviewer will identify the pattern: these aren't drafting errors, they are deliberate choices that create exploitable gaps within a facially balanced framework. The business context (PE firm + therapeutics target) amplifies every gap.",
+
+      "rubric": {
+        "identified": "Did the response note that the agreement, while mutual in form, contains specific language choices that create exploitable gaps?",
+        "synthesized": "Did the response connect at least two issues into a pattern — e.g., linking the broad Purpose (§1) + residuals clause (§3.4) + low assignment threshold (§10.3) as creating a pathway for competitive use of Horizon's data?",
+        "strategic": "Did the response consider the business context (PE firm + pharma target) in its analysis and frame its recommendations accordingly?"
+      },
+
+      "common_mistakes": [
+        "Treating each issue in isolation rather than connecting them",
+        "Giving the agreement a GREEN classification because the structure is mutual",
+        "Missing the business context entirely and analyzing as if both parties were equivalent"
+      ],
+
+      "quick_screen_keywords": [
+        "facially balanced", "appears mutual", "exploitable",
+        "deliberate", "language choices", "pattern",
+        "business context", "PE firm", "therapeutics",
+        "interact", "combination"
+      ]
+    }
+  ]
+}

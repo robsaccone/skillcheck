@@ -1,0 +1,210 @@
+{
+  "doc_id": "vanilla_mutual",
+  "doc_title": "Balanced Mutual NDA — NovaTech / DataBridge",
+  "perspective": "Either party (agreement is genuinely mutual)",
+  "overall_risk": "GREEN",
+  "overall_risk_rationale": "A well-drafted, genuinely mutual NDA with standard market terms. Four minor issues worth noting but none that should prevent execution. No structural asymmetries.",
+
+  "scoring_guidance": {
+    "must_catch": [],
+    "should_catch": ["ISSUE-01", "ISSUE-02"],
+    "nice_to_catch": ["ISSUE-03", "ISSUE-04"],
+    "weights": { "must_catch": 3, "should_catch": 2, "nice_to_catch": 1 }
+  },
+
+  "scoring_notes": "This document tests PRECISION more than recall. The primary scoring metric is false positives — how many standard, reasonable provisions does the model incorrectly flag as issues? A response that correctly classifies this as GREEN with 2-4 minor notes and zero false positives should score higher than a response that finds all 4 issues but also flags 10 non-issues.",
+
+  "document_level_rubric": {
+    "overall_classification": {
+      "question": "What overall risk classification did the response assign (RED/YELLOW/GREEN or equivalent)?",
+      "correct_answer": "GREEN — this is a well-balanced mutual NDA suitable for execution with minor notes",
+      "scoring": "GREEN=3, YELLOW=1, RED=0"
+    },
+    "completeness": {
+      "question": "How many of the 4 planted issues did the response identify?"
+    },
+    "precision": {
+      "question": "Did the response flag any provisions as problematic that are actually standard and reasonable? Count each distinct false positive. Standard provisions that should NOT be flagged as issues include: the mutual definition of CI (§2.1), the standard five exclusions (§2.2), the standard of care clause (§3.1), the permitted disclosures to employees/agents/contractors/advisors (§3.2), the no-reverse-engineering clause (§3.3), the mutual return/destruction obligations (§5), the archival copy carve-out (§5.2), the mutual warranty disclaimer (§6.1), the two-year term (§7.1), the mutual injunctive relief provision (§8.1), the mutual consequential damages exclusion (§8.2), the mutual assignment restrictions with M&A carve-out (§9.3), the severability clause (§9.6), the entire agreement clause (§9.5), and the counterparts provision (§9.7). Flagging any of these as problematic is a false positive."
+    },
+    "professional_quality": {
+      "question": "Does the response demonstrate appropriate restraint and judgment? A high-quality review of a clean NDA acknowledges that the agreement is well-drafted, notes minor improvements, and avoids manufacturing issues. Consider: Does the tone match the risk level? Does the response waste the client's time on non-issues? Would a supervising partner be satisfied with this as a 'clean bill of health with notes' memo?",
+      "scale": "0-10"
+    }
+  },
+
+  "false_positive_traps": [
+    {
+      "provision": "§2.1 — Broad definition of Confidential Information",
+      "why_its_standard": "The 'any and all non-public information... whether or not marked' language is market-standard for mutual NDAs. Broad definitions protect both parties equally. Flagging this as 'overbroad' is a false positive."
+    },
+    {
+      "provision": "§2.2(a)-(e) — Five standard exclusions",
+      "why_its_standard": "All five standard exclusions are present and properly drafted. The proof standard ('as evidenced by the Receiving Party's records') is reasonable and standard. Flagging these as insufficient is a false positive."
+    },
+    {
+      "provision": "§3.1 — 'Same degree of care' standard",
+      "why_its_standard": "The 'same degree of care as own confidential information, but no less than reasonable care' is the market-standard formulation. Flagging this is a false positive."
+    },
+    {
+      "provision": "§3.2 — Permitted disclosures to employees, agents, contractors, and advisors",
+      "why_its_standard": "This is a standard, symmetric set of permitted recipients. The Receiving Party's responsibility for breaches by recipients is also standard. Flagging the recipient list as 'too broad' is a false positive."
+    },
+    {
+      "provision": "§5.2 — Archival copy retention",
+      "why_its_standard": "Allowing retention in archival/backup systems subject to continuing confidentiality is market-standard and practical (organizations cannot selectively delete from backup tapes). Flagging this as a 'loophole' is a false positive."
+    },
+    {
+      "provision": "§6.1 — Mutual warranty disclaimer",
+      "why_its_standard": "Both parties disclaim warranties equally. This is standard in mutual NDAs. Flagging the AS IS language is a false positive."
+    },
+    {
+      "provision": "§7.1 — Two-year term with mutual termination",
+      "why_its_standard": "A two-year initial term with either-party termination on 30 days' notice is standard. Flagging the term length is a false positive (the survival period in §7.2 is the more relevant consideration)."
+    },
+    {
+      "provision": "§8.1 — Mutual injunctive relief without bond",
+      "why_its_standard": "Both parties have equal access to injunctive relief. The bond waiver is mutual. This is standard. Flagging it is a false positive."
+    },
+    {
+      "provision": "§8.2 — Mutual consequential damages exclusion",
+      "why_its_standard": "A mutual exclusion of consequential, incidental, special, and punitive damages is standard in NDAs. Flagging it as limiting remedies is technically true but is a false positive in context — this is a standard allocation of risk."
+    },
+    {
+      "provision": "§9.3 — Mutual assignment restriction with M&A carve-out",
+      "why_its_standard": "Neither party can assign without consent, but both can assign in M&A transactions if the assignee agrees to be bound. This is balanced and standard. Flagging it is a false positive."
+    }
+  ],
+
+  "issues": [
+    {
+      "id": "ISSUE-01",
+      "section": "7.2",
+      "title": "Five-Year Survival Period",
+      "severity": "MODERATE",
+      "weight": 2,
+      "category": "survival",
+      "description": "Section 7.2 provides that confidentiality obligations survive for five (5) years from the date of disclosure. While not unreasonable, this is on the longer end of market practice for technology NDAs, where 2-3 years is more typical. The trade secret carve-out (survival 'for so long as such information remains a trade secret') is appropriate and standard, but the 5-year baseline for non-trade-secret CI is worth noting to a client. This is a MODERATE observation, not a critical issue — 5 years is within the range of reasonable.",
+      "what_good_looks_like": "Notes the 5-year period as slightly long for a technology NDA, acknowledges it's within the range of reasonable, mentions that 2-3 years is more typical, and does NOT treat this as a dealbreaker. The trade secret carve-out should be noted positively.",
+
+      "rubric": {
+        "identified": "Did the response identify the 5-year survival period as worth noting?",
+        "correctly_characterized": "Did the response correctly frame this as 'slightly long but not unreasonable' rather than treating it as a major issue? (Calling 5 years 'excessive' or 'critical' is a miscalibration.)",
+        "severity_appropriate": "Did the response treat this as a minor/moderate observation rather than a significant concern? (Over-flagging this penalizes the score.)",
+        "actionable": "Did the response suggest a reasonable alternative (e.g., 'consider negotiating to 2-3 years') without making it sound urgent?"
+      },
+
+      "interaction_with": [],
+      "cuad_categories": ["Survival Period"],
+      "false_positive_risk": "HIGH — many reviewers will treat 5 years as standard and not flag it at all, which is also acceptable",
+      "common_mistakes": [
+        "Treating 5 years as a critical issue when it's within the range of reasonable",
+        "Missing the trade secret carve-out, which is a positive feature",
+        "Not flagging it at all (acceptable but misses a subtle observation)"
+      ],
+
+      "quick_screen_keywords": [
+        "five years", "5 years", "survival", "survive",
+        "slightly long", "longer than typical", "market practice",
+        "7.2", "period of", "from the date of disclosure"
+      ]
+    },
+    {
+      "id": "ISSUE-02",
+      "section": "N/A (absent)",
+      "title": "Missing Residuals Clause",
+      "severity": "MODERATE",
+      "weight": 2,
+      "category": "residuals",
+      "description": "The agreement does not include a residuals clause protecting information retained in the unaided memory of personnel who had access to Confidential Information. For a technology-focused NDA between a solutions company and an analytics company, a residuals clause would be appropriate to protect both parties' employees from inadvertent breach claims when they carry general knowledge from the engagement into future work. This is a standard improvement suggestion, not a critical gap.",
+      "what_good_looks_like": "Notes the absence of a residuals clause, explains why it would be appropriate given the technology context, and suggests adding one. Frames it as an improvement rather than a deficiency.",
+
+      "rubric": {
+        "identified": "Did the response identify the absence of a residuals clause?",
+        "correctly_characterized": "Did the response explain why a residuals clause would be appropriate here — both parties' employees working in technology and analytics will inevitably retain knowledge?",
+        "severity_appropriate": "Did the response treat this as a moderate improvement suggestion rather than a critical gap?",
+        "actionable": "Did the response suggest adding a residuals clause with at least a general description of what it should cover?"
+      },
+
+      "interaction_with": [],
+      "cuad_categories": ["Residual Knowledge"],
+      "false_positive_risk": "MODERATE — not all reviewers consider residuals clauses standard, and their absence in a short-term NDA is not necessarily problematic",
+      "common_mistakes": [
+        "Not knowing what a residuals clause is",
+        "Treating the absence as a critical issue when it's a nice-to-have improvement",
+        "Confusing residuals with the independent development exclusion in §2.2(d)"
+      ],
+
+      "quick_screen_keywords": [
+        "residuals", "residual knowledge", "residuals clause",
+        "unaided memory", "general knowledge", "skills and experience",
+        "retained in memory", "missing", "absent", "no residuals"
+      ]
+    },
+    {
+      "id": "ISSUE-03",
+      "section": "9.2",
+      "title": "Delaware Forum Selection",
+      "severity": "LOW",
+      "weight": 1,
+      "category": "dispute_resolution",
+      "description": "Section 9.2 requires all disputes to be brought in Delaware courts. Both parties are Delaware entities (NovaTech is a Delaware corporation, DataBridge is a Delaware LLC), so this is reasonable and expected. However, if either party's operations are primarily outside Delaware, the exclusive forum could create a practical inconvenience. This is a LOW observation — for two Delaware entities, this is entirely standard.",
+      "what_good_looks_like": "Notes the Delaware forum clause, acknowledges it's reasonable for two Delaware entities, and optionally mentions it could be an issue if operations are elsewhere. Does NOT flag this as a significant concern.",
+
+      "rubric": {
+        "identified": "Did the response note the Delaware forum selection clause?",
+        "correctly_characterized": "Did the response correctly contextualize this as reasonable for two Delaware entities? (Flagging this as 'one-sided' when both parties are Delaware entities is a miscalibration.)",
+        "severity_appropriate": "Did the response treat this as LOW or merely a note? (Treating this as moderate or higher is an over-flag.)",
+        "actionable": "Did the response offer a practical suggestion if warranted, or correctly identify that no change is needed?"
+      },
+
+      "interaction_with": [],
+      "cuad_categories": ["Forum Selection"],
+      "false_positive_risk": "HIGH — flagging Delaware forum for two Delaware entities as a significant issue is itself a false positive. Noting it as an observation is fine.",
+      "common_mistakes": [
+        "Treating a Delaware forum clause for two Delaware entities as a significant issue",
+        "Reflexively flagging every forum selection clause without considering context",
+        "Not noting it at all (acceptable — this is a LOW observation)"
+      ],
+
+      "quick_screen_keywords": [
+        "delaware", "forum", "venue", "exclusive jurisdiction",
+        "courts located in", "9.2", "forum selection",
+        "both delaware", "reasonable"
+      ]
+    },
+    {
+      "id": "ISSUE-04",
+      "section": "4",
+      "title": "Compelled Disclosure Lacks Minimization Language",
+      "severity": "MODERATE",
+      "weight": 1,
+      "category": "compelled_disclosure",
+      "description": "Section 4 requires the Receiving Party to 'disclose only such Confidential Information as is legally required' and to 'exercise commercially reasonable efforts to obtain assurances that confidential treatment will be accorded.' However, it lacks the common additional protection of requiring the Receiving Party to 'furnish only that portion of the Confidential Information which is legally required to be disclosed.' The 'only such... as is legally required' language is similar but slightly less protective than the 'furnish only that portion' formulation, which more clearly limits disclosure to the specific excerpts demanded rather than the broader document or dataset containing the required information.",
+      "what_good_looks_like": "Notes the subtle gap between 'disclose only such information as is legally required' and the stronger 'furnish only that portion' language. Acknowledges this is a minor drafting improvement, not a significant gap. May suggest tightening the language.",
+
+      "rubric": {
+        "identified": "Did the response identify any concern with the compelled disclosure provision's minimization language?",
+        "correctly_characterized": "Did the response correctly explain the subtle difference — that 'only such as is legally required' could be read more broadly than 'only that portion'? (This is a fine distinction and full credit should be given for identifying the general area even if the specific framing differs.)",
+        "severity_appropriate": "Did the response appropriately treat this as a minor drafting point rather than a significant issue?",
+        "actionable": "Did the response suggest improved language?"
+      },
+
+      "interaction_with": [],
+      "cuad_categories": ["Compelled Disclosure"],
+      "false_positive_risk": "HIGH — many reviewers will read the existing language as sufficient, which is a reasonable interpretation",
+      "common_mistakes": [
+        "Missing this entirely (very common — the existing language is close to standard)",
+        "Over-flagging the compelled disclosure provision as having a major gap",
+        "Flagging the compelled disclosure provision for other reasons that aren't actually issues (e.g., claiming the notice requirement is unusual when it's standard)"
+      ],
+
+      "quick_screen_keywords": [
+        "compelled disclosure", "legally required", "furnish only",
+        "that portion", "minimize", "minimization",
+        "section 4", "protective order", "only such"
+      ]
+    }
+  ],
+
+  "meta_issues": []
+}
