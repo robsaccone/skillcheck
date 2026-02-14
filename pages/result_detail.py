@@ -4,7 +4,7 @@ import streamlit as st
 
 from engine import get_scores, load_answer_key
 from models import MODEL_CONFIGS
-from components import TIER_LABEL, detection_chip
+from components import TIER_LABEL, detection_chip, est_cost
 
 
 # ---------------------------------------------------------------------------
@@ -18,16 +18,6 @@ META_DIMS = ["identified", "synthesized", "strategic"]
 def _dim_label(dim: str) -> str:
     """Human-readable label for a rubric dimension key."""
     return dim.replace("_", " ").capitalize()
-
-
-def _est_cost(result: dict, model_key: str) -> float:
-    """Estimate API cost in dollars from token counts and model pricing."""
-    cfg = MODEL_CONFIGS.get(model_key, {})
-    cost_in = cfg.get("cost_in", 0)
-    cost_out = cfg.get("cost_out", 0)
-    in_tok = result.get("input_tokens", 0)
-    out_tok = result.get("output_tokens", 0)
-    return (in_tok * cost_in + out_tok * cost_out) / 1_000_000
 
 
 # ---------------------------------------------------------------------------
@@ -80,7 +70,7 @@ def render_result_page(result: dict, version: str, model_key: str, skill_id: str
         found = quick.get("total_found", 0)
         possible = quick.get("total_possible", 0)
         secs = result.get("elapsed_seconds", 0)
-        cost = _est_cost(result, model_key)
+        cost = est_cost(result, model_key)
 
         in_tok = result.get("input_tokens", 0)
         out_tok = result.get("output_tokens", 0)

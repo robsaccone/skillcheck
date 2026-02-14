@@ -1,5 +1,7 @@
 """Shared UI helpers and constants for Skillcheck."""
 
+from models import MODEL_CONFIGS
+
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
@@ -26,3 +28,17 @@ def detection_chip(label: str, detected: bool) -> str:
     cls = "chip-hit" if detected else "chip-miss"
     icon = "\u2705" if detected else "\u274c"
     return f'<span class="{cls}">{icon} {label}</span>'
+
+
+# ---------------------------------------------------------------------------
+# Cost estimation
+# ---------------------------------------------------------------------------
+
+def est_cost(result: dict, model_key: str) -> float:
+    """Estimate API cost in dollars from token counts and model pricing."""
+    cfg = MODEL_CONFIGS.get(model_key, {})
+    cost_in = cfg.get("cost_in", 0)
+    cost_out = cfg.get("cost_out", 0)
+    in_tok = result.get("input_tokens", 0)
+    out_tok = result.get("output_tokens", 0)
+    return (in_tok * cost_in + out_tok * cost_out) / 1_000_000

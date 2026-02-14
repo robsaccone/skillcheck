@@ -4,6 +4,9 @@
 venv/
 env/
 
+# Claude Code
+.claude/
+
 # Results (regenerated per run, may contain API responses)
 results/
 

@@ -18,6 +18,7 @@ from engine import (
 from components import (
     TIER_LABEL,
     detection_chip,
+    est_cost,
 )
 from pages.result_detail import render_result_page
 
@@ -50,14 +51,6 @@ def _get_cell_pct(result: dict) -> float | None:
     return qs.get("weighted_pct", 0) if qs else None
 
 
-def _est_cost(result: dict, model_key: str) -> float:
-    """Estimate API cost in dollars from token counts and model pricing."""
-    cfg = MODEL_CONFIGS.get(model_key, {})
-    cost_in = cfg.get("cost_in", 0)  # per 1M input tokens
-    cost_out = cfg.get("cost_out", 0)  # per 1M output tokens
-    in_tok = result.get("input_tokens", 0)
-    out_tok = result.get("output_tokens", 0)
-    return (in_tok * cost_in + out_tok * cost_out) / 1_000_000
 
 
 def render_results_matrix(results_map: dict, versions: list, model_keys: list, skill_id: str, doc_name: str):
@@ -89,7 +82,7 @@ def render_results_matrix(results_map: dict, versions: list, model_keys: list, s
                 pct = _get_cell_pct(r)
                 if pct is not None:
                     secs = r.get("elapsed_seconds", 0)
-                    cost = _est_cost(r, mk)
+                    cost = est_cost(r, mk)
                     row[name] = f"{pct:.0f}%   [{secs:.0f}s · ${cost:.2f}]"
                     pcts.append(pct)
                     row_secs.append(secs)
@@ -127,7 +120,7 @@ def render_results_matrix(results_map: dict, versions: list, model_keys: list, s
                 if pct is not None:
                     m_pcts.append(pct)
                     m_secs.append(r.get("elapsed_seconds", 0))
-                    m_costs.append(_est_cost(r, mk))
+                    m_costs.append(est_cost(r, mk))
         if m_pcts:
             totals_row[name] = f"{sum(m_pcts)/len(m_pcts):.0f}%   [{sum(m_secs):.0f}s · ${sum(m_costs):.2f}]"
         else:

@@ -28,7 +28,6 @@ def discover_skills() -> list[dict]:
         meta_file = d / "skill.json"
         if d.is_dir() and meta_file.exists():
             meta = json.loads(meta_file.read_text(encoding="utf-8"))
-            meta["_dir"] = d
             # Count versions and docs
             meta["version_count"] = len(list(d.glob("*.skill.md")))
             meta["doc_count"] = len(list((d / "docs").glob("*.md"))) if (d / "docs").exists() else 0
@@ -136,10 +135,6 @@ def quick_score(response_text: str, answer_key: dict) -> dict:
     }
 
 
-# Backward compat alias
-auto_score = quick_score
-
-
 def compute_quick_scores(score_data: dict, answer_key: dict) -> dict:
     """Compute tier-weighted scores from quick_score output."""
     issues_detected = score_data["issues_detected"]
@@ -178,16 +173,9 @@ def compute_quick_scores(score_data: dict, answer_key: dict) -> dict:
     }
 
 
-# Backward compat alias
-compute_weighted_scores = compute_quick_scores
-
-
 def get_scores(result: dict) -> dict:
-    """Read scores from a result dict with fallback chain.
-
-    Reads `quick_scores` first, falls back to `auto_scores`, returns {} if neither.
-    """
-    return result.get("quick_scores") or result.get("auto_scores") or {}
+    """Read scores from a result dict, returning {} if absent."""
+    return result.get("quick_scores") or {}
 
 
 # ---------------------------------------------------------------------------
@@ -263,7 +251,6 @@ def run_evaluation(
                 "output_tokens": response.get("output_tokens", 0),
                 "elapsed_seconds": response.get("elapsed_seconds", 0),
                 "quick_scores": qs,
-                "auto_scores": qs,  # backward compat
                 "judge_scores": judge_scores,
             }
 
@@ -294,10 +281,6 @@ def load_skill_meta(skill_id: str) -> dict | None:
     if path.exists():
         return json.loads(path.read_text(encoding="utf-8"))
     return None
-
-
-# Backward compat alias
-_load_skill_meta = load_skill_meta
 
 
 # ---------------------------------------------------------------------------

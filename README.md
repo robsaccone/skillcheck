@@ -21,20 +21,33 @@ The first skill is **NDA Review**: a deliberately one-sided "mutual" NDA with 16
 
 ## Quick Start
 
+**Prerequisites:** Python 3.12+ and at least one LLM API key.
+
 ```bash
 git clone https://github.com/rsaccone/skillcheck.git
 cd skillcheck
+
+# Create a virtual environment
+python -m venv .venv
+
+# Activate it
+# macOS/Linux:
+source .venv/bin/activate
+# Windows:
+.venv\Scripts\activate
+
+# Install dependencies
 pip install -r requirements.txt
 
-# Add your API keys
+# Add your API keys (any subset works — models without keys are skipped)
 cp .env.example .env
-# Edit .env with your keys (any subset works — models without keys are skipped)
+# Edit .env with your keys
 
 # Launch the dashboard
 streamlit run app.py
 ```
 
-The dashboard opens at `http://localhost:8501`. You can run evaluations with whichever API keys you have configured — models without keys are grayed out but the app still works.
+The dashboard opens at `http://localhost:8501`. Models without API keys are grayed out but the app still works with whichever providers you have configured.
 
 ## Supported Models
 
@@ -48,6 +61,8 @@ The dashboard opens at `http://localhost:8501`. You can run evaluations with whi
 | Gemini 3 Flash | Google | `GOOGLE_API_KEY` |
 | DeepSeek R1 | Together | `TOGETHER_API_KEY` |
 | Qwen3 235B | Together | `TOGETHER_API_KEY` |
+
+New models can be added by editing the `MODEL_CONFIGS` dict in `models.py`. Any provider with an OpenAI-compatible API can be added using the Together pattern.
 
 ## Included Skills
 
@@ -116,10 +131,12 @@ skillcheck/
 ├── .env.example
 │
 ├── pages/                          # Streamlit pages
+│   ├── home.py
 │   ├── skills.py
 │   ├── models.py
 │   ├── judges.py
-│   └── evaluate.py
+│   ├── evaluate.py
+│   └── result_detail.py
 │
 ├── skills/                         # Skill definitions (filesystem-based)
 │   └── {skill_id}/

@@ -23,6 +23,6 @@ SOFTWARE.
 ---
 
 Note: Third-party skills included in the skills/ directory retain their
-original licenses as specified in skills/_catalog.json. This MIT license
-applies to the evaluation harness, test documents, answer keys, and any
-custom skills authored by the project maintainers.
+original licenses as noted in each skill file. This MIT license applies
+to the evaluation harness, test documents, answer keys, and any custom
+skills authored by the project maintainers.
