@@ -6,6 +6,8 @@ Skills — structured prompts that tell AI models how to do a specific job — a
 
 Skillcheck answers these questions with data. Pick a task, pick your models, pick your skills, and run a controlled bake-off against an expert answer key.
 
+![Skillcheck Results](assets/screen-judging-results.png)
+
 ---
 
 ## What It Does
@@ -51,17 +53,19 @@ The dashboard opens at `http://localhost:8501`. Models without API keys are gray
 
 ## Supported Models
 
-| Model | Provider | API Key |
-|-------|----------|---------|
-| Claude Opus 4.6 | Anthropic | `ANTHROPIC_API_KEY` |
+
+| Model            | Provider  | API Key             |
+| ---------------- | --------- | ------------------- |
+| Claude Opus 4.6  | Anthropic | `ANTHROPIC_API_KEY` |
 | Claude Haiku 4.5 | Anthropic | `ANTHROPIC_API_KEY` |
-| GPT-5.2 | OpenAI | `OPENAI_API_KEY` |
-| GPT-5 Nano | OpenAI | `OPENAI_API_KEY` |
-| Gemini 3 Pro | Google | `GOOGLE_API_KEY` |
-| Gemini 3.1 Pro | Google | `GOOGLE_API_KEY` |
-| Gemini 3 Flash | Google | `GOOGLE_API_KEY` |
-| DeepSeek R1 | Together | `TOGETHER_API_KEY` |
-| Qwen3 235B | Together | `TOGETHER_API_KEY` |
+| GPT-5.2          | OpenAI    | `OPENAI_API_KEY`    |
+| GPT-5 Nano       | OpenAI    | `OPENAI_API_KEY`    |
+| Gemini 3 Pro     | Google    | `GOOGLE_API_KEY`    |
+| Gemini 3.1 Pro   | Google    | `GOOGLE_API_KEY`    |
+| Gemini 3 Flash   | Google    | `GOOGLE_API_KEY`    |
+| DeepSeek R1      | Together  | `TOGETHER_API_KEY`  |
+| Qwen3 235B       | Together  | `TOGETHER_API_KEY`  |
+
 
 New models can be added by editing the `MODEL_CONFIGS` dict in `models.py`. Any provider with an OpenAI-compatible API can be added using the Together pattern.
 
@@ -69,16 +73,18 @@ New models can be added by editing the `MODEL_CONFIGS` dict in `models.py`. Any 
 
 Skills are organized by task type, with one file per source:
 
-| Skill | Source | Tokens | License |
-|-------|--------|--------|---------|
-| `nda_review/baseline` | Skillcheck | ~20 | MIT |
-| `nda_review/lawvable` | [Lawvable](https://github.com/lawvable/awesome-legal-skills) | ~170 | AGPL-3.0 |
-| `nda_review/evolsb` | [evolsb](https://github.com/evolsb/claude-legal-skill) | ~2,500 | MIT |
-| `nda_review/skala` | [Skala](https://www.skala.io/legal-skills) | ~800 | See source |
-| `nda_review/custom` | Skillcheck | ~1,200 | MIT |
-| `nda_triage/anthropic` | [Anthropic](https://github.com/anthropics/knowledge-work-plugins) | ~480 | Apache-2.0 |
-| `contract_review/anthropic` | [Anthropic](https://github.com/anthropics/knowledge-work-plugins) | ~600 | Apache-2.0 |
-| `contract_review/evolsb` | [evolsb](https://github.com/evolsb/claude-legal-skill) | ~2,500 | MIT |
+
+| Skill                       | Source                                                            | Tokens | License    |
+| --------------------------- | ----------------------------------------------------------------- | ------ | ---------- |
+| `nda_review/baseline`       | Skillcheck                                                        | ~20    | MIT        |
+| `nda_review/lawvable`       | [Lawvable](https://github.com/lawvable/awesome-legal-skills)      | ~170   | AGPL-3.0   |
+| `nda_review/evolsb`         | [evolsb](https://github.com/evolsb/claude-legal-skill)            | ~2,500 | MIT        |
+| `nda_review/skala`          | [Skala](https://www.skala.io/legal-skills)                        | ~800   | See source |
+| `nda_review/custom`         | Skillcheck                                                        | ~1,200 | MIT        |
+| `nda_triage/anthropic`      | [Anthropic](https://github.com/anthropics/knowledge-work-plugins) | ~480   | Apache-2.0 |
+| `contract_review/anthropic` | [Anthropic](https://github.com/anthropics/knowledge-work-plugins) | ~600   | Apache-2.0 |
+| `contract_review/evolsb`    | [evolsb](https://github.com/evolsb/claude-legal-skill)            | ~2,500 | MIT        |
+
 
 ## The Dashboard
 
@@ -102,11 +108,13 @@ Skillcheck ships as a Streamlit app with six pages:
 
 Each test document has an expert answer key with issues classified into three tiers:
 
-| Tier | Weight | Standard |
-|------|--------|----------|
-| **Must-catch** | 3x | Miss these and you've committed malpractice |
-| **Should-catch** | 2x | A competent reviewer finds these |
-| **Nice-to-catch** | 1x | Senior associates and partners catch these |
+
+| Tier              | Weight | Standard                                    |
+| ----------------- | ------ | ------------------------------------------- |
+| **Must-catch**    | 3x     | Miss these and you've committed malpractice |
+| **Should-catch**  | 2x     | A competent reviewer finds these            |
+| **Nice-to-catch** | 1x     | Senior associates and partners catch these  |
+
 
 Quick scoring uses keyword detection from the answer key. It's conservative — it can miss a valid detection but rarely produces false positives.
 
