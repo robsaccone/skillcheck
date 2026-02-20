@@ -1,0 +1,51 @@
+# Environment
+.env
+.venv/
+venv/
+env/
+
+# Claude Code
+.claude/
+*.tmp.*
+
+# Results (regenerated per run, may contain API responses)
+results/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Windows artifacts
+nul
+*.stackdump
+run.bat
+*.docx
+
+# Logs
+st_out.log
+st_err.log
+
+# Node artifacts (not a Node project)
+package-lock.json
+
+# Backups
+results_backup*/
+
+# Archived skills (removed from active evaluation)
+skills_archive/

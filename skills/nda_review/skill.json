@@ -1,0 +1,54 @@
+{
+  "skill_id": "nda_review",
+  "display_name": "NDA Review",
+  "description": "Evaluates AI performance on Non-Disclosure Agreement review tasks.",
+  "default_perspective": "Recipient",
+  "system_prompt_prefix": "You are an experienced corporate attorney reviewing a Non-Disclosure Agreement. Provide a thorough, structured review identifying all risks, issues, and recommended changes.",
+  "user_prompt_template": "## Business Context\n\n{business_context}\n\n---\n\nPlease review this document and identify all issues, risks, and recommended changes. At the end of your review, provide a clear overall recommendation: **SIGN** (acceptable as-is), **NEGOTIATE** (sign after specific changes), or **DON'T SIGN** (reject and counter or walk away).\n\n---\n\n{document}",
+  "versions": {
+    "promptonly": {
+      "display_name": "Prompt Only",
+      "source": "One-line prompt",
+      "description": "Minimal instruction: 'Review this NDA and identify any issues, risks, and recommended changes.'"
+    },
+    "amlaw1": {
+      "display_name": "Am Law",
+      "source": "Am Law firm — 'Approaching an NDA From the Client's Perspective'",
+      "url": "https://www.mintz.com/insights-center/viewpoints/2017-03-06-approaching-nda-clients-perspective-checklist-general",
+      "description": "Client-perspective checklist for evaluating NDAs"
+    },
+    "boutique1": {
+      "display_name": "Boutique",
+      "source": "Boutique firm — '12 Practical Tips for Reviewing NDAs'",
+      "url": "https://www.trustpointlegal.com/blog/12-practical-tips-for-reviewing-non-disclosureconfidentiality-agreements",
+      "description": "12-point systematic checklist for NDA review"
+    },
+    "lawvable": {
+      "display_name": "Lawvable",
+      "source": "Lawvable — NDA Review Playbook by Jamie Tso",
+      "authors": "Jamie Tso",
+      "license": "AGPL-3.0",
+      "url": "https://github.com/lawvable/awesome-legal-skills",
+      "description": "Jurisdiction-agnostic, clause-by-clause review with redlines and fallbacks"
+    },
+    "claude": {
+      "display_name": "Anthropic",
+      "source": "Anthropic — Knowledge Work Plugins (Legal)",
+      "url": "https://github.com/anthropics/knowledge-work-plugins",
+      "description": "NDA triage skill with GREEN/YELLOW/RED risk classification"
+    },
+    "agentskills": {
+      "display_name": "AgentSkills",
+      "source": "CaseMark AI — AgentSkills.legal",
+      "license": "Apache-2.0",
+      "url": "https://agentskills.legal/skills/non-disclosure-agreement-summaries",
+      "description": "NDA summary generation skill"
+    },
+    "cowork": {
+      "display_name": "Cowork",
+      "source": "Claude Cowork",
+      "description": "Response generated via Claude Cowork",
+      "external": true
+    }
+  }
+}

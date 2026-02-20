@@ -1,0 +1,70 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+h1, h2, h3 { font-family: 'DM Serif Display', serif !important; }
+
+.chip-hit { background: #065f46; color: #6ee7b7; padding: 3px 12px; border-radius: 12px; font-size: 0.82em; font-weight: 500; display: inline-block; margin: 3px 2px; }
+.chip-miss { background: #7f1d1d; color: #fca5a5; padding: 3px 12px; border-radius: 12px; font-size: 0.82em; font-weight: 500; display: inline-block; margin: 3px 2px; }
+
+.badge-critical { background: #991b1b; color: #fecaca; padding: 3px 10px; border-radius: 6px; font-weight: 700; font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.03em; }
+.badge-high { background: #92400e; color: #fde68a; padding: 3px 10px; border-radius: 6px; font-weight: 700; font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.03em; }
+.badge-moderate { background: #1e3a5f; color: #93c5fd; padding: 3px 10px; border-radius: 6px; font-weight: 700; font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.03em; }
+
+/* Document preview — white paper style */
+.doc-preview {
+    background: #ffffff;
+    color: #1a1a1a;
+    padding: 2.5rem 3rem;
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+    line-height: 1.7;
+    font-family: 'DM Sans', sans-serif;
+}
+.doc-preview h1, .doc-preview h2, .doc-preview h3,
+.doc-preview h4, .doc-preview h5, .doc-preview h6 {
+    color: #111 !important;
+    font-family: 'DM Serif Display', serif !important;
+}
+.doc-preview p, .doc-preview li, .doc-preview td, .doc-preview th {
+    color: #1a1a1a !important;
+}
+.doc-preview strong { color: #000 !important; }
+.doc-preview hr { border-color: #ddd !important; }
+.doc-preview a { color: #1a56db !important; }
+.doc-preview code {
+    background: #f3f4f6 !important;
+    color: #1a1a1a !important;
+    padding: 0.15em 0.4em;
+    border-radius: 3px;
+}
+.doc-preview { overflow-x: auto; }
+.doc-preview table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1em 0;
+}
+.doc-preview th, .doc-preview td {
+    border: 1px solid #d1d5db !important;
+    padding: 0.5em 0.75em;
+    vertical-align: top;
+}
+.doc-preview th {
+    background: #f9fafb !important;
+    font-weight: 600;
+}
+
+/* Left-align sidebar recent run buttons */
+section[data-testid="stSidebar"] button,
+section[data-testid="stSidebar"] button *,
+section[data-testid="stSidebar"] .stButton button,
+section[data-testid="stSidebar"] .stButton button * {
+    text-align: left !important;
+    justify-content: flex-start !important;
+}
+section[data-testid="stSidebar"] .stButton {
+    text-align: left !important;
+}
+section[data-testid="stSidebar"] .stButton > div {
+    text-align: left !important;
+    display: flex !important;
+    justify-content: flex-start !important;
+}

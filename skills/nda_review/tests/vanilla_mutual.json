@@ -1,0 +1,95 @@
+{
+  "doc_id": "vanilla_mutual",
+  "doc_title": "Balanced Mutual NDA — NovaTech / DataBridge",
+  "perspective": "Either party (agreement is genuinely mutual)",
+  "overall_risk": "GREEN",
+  "overall_risk_rationale": "A well-drafted, genuinely mutual NDA with standard market terms. Six minor issues worth noting but none that should prevent execution. No structural asymmetries.",
+  "expected_recommendation": "sign",
+  "business_context": "I'm the CTO at NovaTech Solutions. My team wants to explore a data analytics integration with DataBridge Analytics. We're both Delaware companies of similar size. Please review this draft we've iterated on and advise whether to sign or reject.",
+  "scoring_notes": "This document tests PRECISION more than recall. The primary scoring metric is false positives — how many standard, reasonable provisions does the model incorrectly flag as issues? A response that correctly classifies this as GREEN with a handful of minor notes and zero false positives should score higher than a response that finds all issues but also flags many non-issues.",
+  "false_positive_traps": [
+    {
+      "provision": "Broad definition of Confidential Information (section 2.1)",
+      "why_its_standard": "The 'any and all non-public information... whether or not marked' language is market-standard for mutual NDAs."
+    },
+    {
+      "provision": "Five standard exclusions (section 2.2)",
+      "why_its_standard": "All five standard exclusions are present and properly drafted."
+    },
+    {
+      "provision": "'Same degree of care' standard (section 3.1)",
+      "why_its_standard": "The 'same degree of care as own confidential information, but no less than reasonable care' is market-standard."
+    },
+    {
+      "provision": "Permitted disclosures to employees, agents, contractors, and advisors (section 3.2)",
+      "why_its_standard": "Standard, symmetric set of permitted recipients."
+    },
+    {
+      "provision": "Archival copy retention (section 5.2)",
+      "why_its_standard": "Allowing retention in archival/backup systems subject to continuing confidentiality is market-standard."
+    },
+    {
+      "provision": "Mutual warranty disclaimer (section 6.1)",
+      "why_its_standard": "Both parties disclaim warranties equally. Standard in mutual NDAs."
+    },
+    {
+      "provision": "Two-year term with mutual termination (section 7.1)",
+      "why_its_standard": "A two-year initial term with either-party termination on 30 days' notice is standard."
+    },
+    {
+      "provision": "Mutual assignment restriction with M&A carve-out (section 9.3)",
+      "why_its_standard": "Neither party can assign without consent, but both can assign in M&A transactions if the assignee agrees to be bound."
+    }
+  ],
+  "issues": [
+    {
+      "id": "ISSUE-01",
+      "section": "7.2",
+      "title": "Five-Year Survival Period",
+      "severity": "M",
+      "description": "Section 7.2 provides that confidentiality obligations survive for five years from the date of disclosure. While not unreasonable, this is on the longer end of market practice for technology NDAs where 2-3 years is more typical. The trade secret carve-out is appropriate.",
+      "rubric": "Did the response identify the 5-year survival period as worth noting, while correctly framing it as 'slightly long but not unreasonable' rather than a major issue?"
+    },
+    {
+      "id": "ISSUE-02",
+      "section": "N/A (absent)",
+      "title": "Missing Residuals Clause",
+      "severity": "M",
+      "description": "The agreement does not include a residuals clause protecting information retained in unaided memory of personnel. For a technology-focused NDA this would be appropriate to protect both parties' employees from inadvertent breach claims.",
+      "rubric": "Did the response identify the absence of a residuals clause and explain why it would be appropriate given the technology context?"
+    },
+    {
+      "id": "ISSUE-03",
+      "section": "9.2",
+      "title": "Delaware Forum Selection",
+      "severity": "L",
+      "description": "Section 9.2 requires all disputes to be brought in Delaware courts. Both parties are Delaware entities so this is reasonable and expected. Only worth noting if either party's operations are primarily outside Delaware.",
+      "rubric": "Did the response note the Delaware forum selection clause and correctly contextualize it as reasonable for two Delaware entities?"
+    },
+    {
+      "id": "ISSUE-04",
+      "section": "4",
+      "title": "Compelled Disclosure Lacks Minimization Language",
+      "severity": "L",
+      "description": "Section 4 requires disclosing 'only such Confidential Information as is legally required' but lacks the stronger 'furnish only that portion' formulation which more clearly limits disclosure to specific excerpts rather than broader documents.",
+      "rubric": "Did the response identify any concern with the compelled disclosure provision's minimization language?"
+    },
+    {
+      "id": "ISSUE-05",
+      "section": "8.2",
+      "title": "Consequential Damages Exclusion May Limit NDA Remedies",
+      "severity": "L",
+      "description": "Section 8.2 mutually excludes consequential damages. In an NDA context the primary harm from breach — lost business opportunities, competitive harm, reputational damage — is consequential in nature. This exclusion could effectively limit remedies for breach to minimal direct damages, weakening the agreement's enforceability.",
+      "rubric": "Did the response identify that excluding consequential damages in an NDA is problematic because the primary harms from confidentiality breach are consequential?"
+    },
+    {
+      "id": "ISSUE-06",
+      "section": "8.1",
+      "title": "Bond Waiver for Injunctive Relief",
+      "severity": "L",
+      "description": "Section 8.1 waives the bond requirement for injunctive relief. While mutual, this removes a procedural safeguard that protects the enjoined party from wrongful injunctions. Bond waiver provisions are also not uniformly enforceable across jurisdictions.",
+      "rubric": "Did the response note the bond waiver and identify it as a meaningful concession, even though it is mutual?"
+    }
+  ],
+  "meta_issues": []
+}

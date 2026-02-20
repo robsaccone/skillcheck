@@ -1,0 +1,157 @@
+{
+  "doc_id": "one_sided_mutual",
+  "doc_title": "One-Sided 'Mutual' NDA — Acme Technologies",
+  "perspective": "Recipient / Counter-party to Acme",
+  "overall_risk": "RED",
+  "overall_risk_rationale": "Labeled 'Mutual' but systematically one-sided in Acme's favor across every material provision: definitions, disclosure permissions, survival, remedies, liability, and non-solicitation.",
+  "expected_recommendation": "dont_sign",
+  "business_context": "I am the CEO of a Series B SaaS startup. I received this NDA from Acme Technologies, a Fortune 500 company, that we are considering for a partnership discussion. I'll be sharing product roadmap and customer data. Should I sign or not?",
+  "scoring_notes": "This document tests the ability to identify systematic one-sidedness disguised as a mutual agreement. The meta-issues (structural asymmetry pattern, scope creep) are as important as individual clause issues.",
+  "issues": [
+    {
+      "id": "ISSUE-01",
+      "section": "2.1 / 2.2",
+      "title": "Asymmetric Definition of Confidential Information",
+      "severity": "H",
+      "description": "Acme's CI is defined as 'any and all information disclosed by or on behalf of Acme Technologies' with no marking requirement. Recipient's CI requires written disclosures to be conspicuously marked 'CONFIDENTIAL' at the time of disclosure, and oral/visual disclosures to be identified as confidential at the time AND confirmed in a written summary within 5 business days. Information not marked or confirmed is explicitly excluded.",
+      "rubric": "Did the response identify that the CI definitions are asymmetric between the parties — specifically that Acme has no marking requirement while Recipient must mark written disclosures and confirm oral disclosures in writing within 5 business days?"
+    },
+    {
+      "id": "ISSUE-02",
+      "section": "3.4 / 3.5",
+      "title": "Asymmetric Disclosure Permissions",
+      "severity": "H",
+      "description": "Recipient may only disclose Acme's CI to employees, agents, and contractors. Acme may disclose Recipient's CI to a much broader set including affiliates, subsidiaries, investors, lenders, potential acquirers, and professional advisors, and for purposes beyond the stated Purpose including management, financing, or strategic planning of Acme's business.",
+      "rubric": "Did the response identify that sections 3.4 and 3.5 grant different disclosure permissions to the two parties, particularly flagging the 'potential acquirers' language or the expanded purpose?"
+    },
+    {
+      "id": "ISSUE-03",
+      "section": "4",
+      "title": "Missing Third-Party Receipt Exclusion Standard",
+      "severity": "M",
+      "description": "Section 4 lists only three of the four standard exclusions from the definition of Confidential Information. Missing is the standard exclusion for information 'rightfully received from a third party without restriction on disclosure.'",
+      "rubric": "Did the response identify that a standard exclusion is missing — specifically the third-party receipt exclusion?"
+    },
+    {
+      "id": "ISSUE-04",
+      "section": "4(b) / 4(c)",
+      "title": "Onerous Proof Standards for Exclusions",
+      "severity": "L",
+      "description": "The 'already known' and 'independently developed' exclusions both require proof 'as evidenced by written records predating the date of disclosure under this Agreement.' This is a higher standard than typical NDA language.",
+      "rubric": "Did the response identify that the proof standard for the exclusions in 4(b) and/or 4(c) is more onerous than typical?"
+    },
+    {
+      "id": "ISSUE-05",
+      "section": "5",
+      "title": "One-Way Compelled Disclosure Obligations",
+      "severity": "M",
+      "description": "Section 5 only addresses the scenario where Recipient is required by law to disclose Acme's CI. There is no corresponding provision for when Acme is compelled to disclose Recipient's CI.",
+      "rubric": "Did the response identify that the compelled disclosure provision in section 5 only runs in one direction — protecting Acme's CI when Recipient is compelled to disclose?"
+    },
+    {
+      "id": "ISSUE-06",
+      "section": "6.1 / 6.2",
+      "title": "One-Way Return and Destruction Obligations",
+      "severity": "M",
+      "description": "Section 6.1 requires Recipient to return or destroy all of Acme's CI upon request and certify in writing. Section 6.2 explicitly states that Acme has no obligation to return or destroy Recipient's CI and may retain copies indefinitely.",
+      "rubric": "Did the response identify that sections 6.1 and 6.2 create asymmetric return/destruction obligations?"
+    },
+    {
+      "id": "ISSUE-07",
+      "section": "7.2",
+      "title": "One-Way Warranty Disclaimer",
+      "severity": "L",
+      "description": "Section 7.2 disclaims all warranties for Acme's CI only. There is no corresponding disclaimer for Recipient's CI, implying Recipient may be warranting the accuracy of its CI.",
+      "rubric": "Did the response identify that the warranty disclaimer in section 7.2 only applies to Acme's Confidential Information?"
+    },
+    {
+      "id": "ISSUE-08",
+      "section": "8.1",
+      "title": "Unilateral Termination Rights",
+      "severity": "M",
+      "description": "Section 8.1 states 'Either Party may terminate' with 30 days notice but adds a proviso that only Acme may terminate for convenience at any time with 15 days notice, leaving Recipient's termination rights ambiguous.",
+      "rubric": "Did the response identify that the termination provision creates unequal rights between the parties?"
+    },
+    {
+      "id": "ISSUE-09",
+      "section": "8.2 / 8.3",
+      "title": "Perpetual vs. One-Year Survival of Obligations",
+      "severity": "H",
+      "description": "Section 8.2 states Recipient's obligations survive in perpetuity. Section 8.3 states Acme's obligations survive for only one year. After one year, Acme could freely use or disclose Recipient's previously confidential information.",
+      "rubric": "Did the response identify that section 8.2 imposes perpetual obligations on Recipient while section 8.3 limits Acme's obligations to one year?"
+    },
+    {
+      "id": "ISSUE-10",
+      "section": "9.1",
+      "title": "One-Way Injunctive Relief Without Bond",
+      "severity": "M",
+      "description": "Section 9.1 grants only Acme the right to seek injunctive relief without proving actual damages and without posting a bond. Recipient has no corresponding rights.",
+      "rubric": "Did the response identify that section 9.1 only grants Acme (not Recipient) the right to seek injunctive relief without bond?"
+    },
+    {
+      "id": "ISSUE-11",
+      "section": "9.2",
+      "title": "One-Way Indemnification",
+      "severity": "H",
+      "description": "Section 9.2 requires Recipient to defend, indemnify, and hold harmless Acme from all claims arising from Recipient's breach. There is no reciprocal obligation. Combined with the $1,000 liability cap, Recipient bears all downside risk.",
+      "rubric": "Did the response identify that section 9.2 creates a one-way indemnification obligation running only from Recipient to Acme?"
+    },
+    {
+      "id": "ISSUE-12",
+      "section": "9.3",
+      "title": "Absurdly Low Liability Cap for Acme",
+      "severity": "H",
+      "description": "Section 9.3 caps Acme's aggregate liability at $1,000 — a nominal, meaningless amount. There is no corresponding cap on Recipient's liability. Combined with one-way indemnification, Acme's maximum exposure is $1,000 while Recipient's is unlimited.",
+      "rubric": "Did the response identify the $1,000 liability cap in section 9.3 and note that it only applies to Acme?"
+    },
+    {
+      "id": "ISSUE-13",
+      "section": "10",
+      "title": "Non-Solicitation Clause in an NDA",
+      "severity": "H",
+      "description": "Section 10 imposes a two-year non-solicitation restriction on Recipient only. This restrictive covenant has no place in a confidentiality agreement and represents scope creep.",
+      "rubric": "Did the response identify the non-solicitation provision in section 10 as problematic or out of scope for an NDA?"
+    },
+    {
+      "id": "ISSUE-14",
+      "section": "11.2",
+      "title": "One-Sided Forum Selection",
+      "severity": "L",
+      "description": "Section 11.2 requires all disputes to be brought exclusively in Wilmington, Delaware — Acme's home jurisdiction — forcing Recipient to litigate on Acme's home turf.",
+      "rubric": "Did the response identify that the forum selection clause in section 11.2 favors Acme?"
+    },
+    {
+      "id": "ISSUE-15",
+      "section": "11.3",
+      "title": "Asymmetric Assignment Rights",
+      "severity": "L",
+      "description": "Section 11.3 prohibits Recipient from assigning without consent while Acme may freely assign in M&A transactions, meaning Recipient's CI protections could transfer to an unknown third party.",
+      "rubric": "Did the response identify the asymmetric assignment rights in section 11.3?"
+    },
+    {
+      "id": "ISSUE-16",
+      "section": "N/A (absent)",
+      "title": "Missing Residuals Clause",
+      "severity": "L",
+      "description": "The agreement contains no residuals clause protecting information retained in unaided memory of personnel. This creates a chilling effect on Recipient's ability to operate in adjacent fields.",
+      "rubric": "Did the response identify the absence of a residuals clause?"
+    },
+    {
+      "id": "META-01",
+      "section": "Throughout",
+      "title": "Structural Asymmetry Pattern",
+      "severity": "H",
+      "description": "The entire agreement is systematically one-sided in Acme's favor despite being labeled 'Mutual Non-Disclosure Agreement.' Every material provision tilts toward Acme. The 'Mutual' label is itself misleading.",
+      "rubric": "Did the response identify the overall pattern of asymmetry — that this 'mutual' NDA is actually systematically one-sided in Acme's favor, connecting multiple individual issues into a structural theme?"
+    },
+    {
+      "id": "META-02",
+      "section": "10",
+      "title": "Non-Compete Scope Creep",
+      "severity": "H",
+      "description": "The non-solicitation clause is a restrictive covenant that belongs in an employment or acquisition agreement, not an NDA. Its inclusion signals aggressive drafting or an attempt to extract concessions beyond confidentiality.",
+      "rubric": "Did the response identify the non-solicitation clause as scope creep — a provision that does not belong in an NDA — and flag it as a red flag about the drafter's intent?"
+    }
+  ],
+  "meta_issues": []
+}
