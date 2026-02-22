@@ -26,7 +26,7 @@ The first skill is **NDA Review**: a deliberately one-sided "mutual" NDA with 16
 **Prerequisites:** Python 3.12+ and at least one LLM API key.
 
 ```bash
-git clone https://github.com/rsaccone/skillcheck.git
+git clone https://github.com/robsaccone/skillcheck.git
 cd skillcheck
 
 # Create a virtual environment
@@ -63,11 +63,12 @@ The dashboard opens at `http://localhost:8501`. Models without API keys are gray
 | Gemini 3 Pro     | Google    | `GOOGLE_API_KEY`    |
 | Gemini 3.1 Pro   | Google    | `GOOGLE_API_KEY`    |
 | Gemini 3 Flash   | Google    | `GOOGLE_API_KEY`    |
+| DeepSeek V3.1    | Together  | `TOGETHER_API_KEY`  |
 | DeepSeek R1      | Together  | `TOGETHER_API_KEY`  |
 | Qwen3 235B       | Together  | `TOGETHER_API_KEY`  |
 
 
-New models can be added by editing the `MODEL_CONFIGS` dict in `models.py`. Any provider with an OpenAI-compatible API can be added using the Together pattern.
+Model configurations are stored in [`models.json`](models.json). New models can be added by adding an entry there — any provider with an OpenAI-compatible API can use the Together pattern. Each entry needs: `provider`, `model_id`, `display_name`, `env_key`, `cost_in`, `cost_out`, `context_k`, and `temperature`.
 
 ## Included Skills
 
@@ -96,9 +97,9 @@ Skillcheck ships as a Streamlit app with six pages:
 
 **Models** — Overview of all configured models with provider, context window, pricing, and API key status.
 
-**Judges** — Select one or two LLM judges for rubric-based evaluation. Customize the judge system prompt or use the default.
+**Judges** — Select one or two LLM judges for rubric-based evaluation. Configure multi-judge panels for more reliable scoring via majority vote. Customize the judge system prompt or use the default. Warns when judge and eval model share a provider (self-enhancement bias risk).
 
-**Evaluate** — The main workspace. Select models, a skill, and a test document. Run evaluations with optional LLM-as-judge scoring. View results in a scored matrix with drill-down to individual responses and per-issue detection heatmaps.
+**Evaluate** — The main workspace. Select models, a skill, and a test document. Run evaluations with optional LLM-as-judge scoring. View results in a scored matrix with drill-down to individual responses, per-issue detection heatmaps, and per-issue reasoning from the judge.
 
 **Chat** — Chat with evaluation data. Ask questions about results, consensus patterns, and model performance using an LLM with full context of your evaluation runs.
 
@@ -120,14 +121,15 @@ Quick scoring uses keyword detection from the answer key. It's conservative — 
 
 ### LLM-as-Judge Scoring
 
-When enabled, a judge model evaluates each response against the answer key rubric across four dimensions per issue:
+When enabled, a judge model evaluates each response against the answer key using research-backed techniques:
 
-- **Identified** — Did the response find this issue?
-- **Correctly characterized** — Did it accurately describe the nature and impact?
-- **Severity appropriate** — Did it assign the right risk level?
-- **Actionable** — Did it provide a concrete recommendation?
+- **Chain-of-thought reasoning** ([G-Eval](https://arxiv.org/abs/2303.16634)) — the judge reasons step-by-step before scoring each issue, improving alignment with human judgments
+- **Binary per-issue detection** — strict 0/1 scoring with calibration examples, following best practices for reproducible evaluation ([Husain 2024](https://hamel.dev/blog/posts/llm-judge/))
+- **Anti-verbosity instruction** — prevents inflated scores for longer responses ([Zheng et al. 2024](https://arxiv.org/abs/2306.05685))
+- **Multi-judge panels** ([PoLL](https://arxiv.org/abs/2404.18796)) — run two judges from different model families in parallel, aggregate via majority vote for more reliable scoring
+- **Self-enhancement bias detection** — warns when the judge and evaluated model share a provider, which can inflate scores ([Wataoka et al. 2024](https://arxiv.org/abs/2410.21819))
 
-Plus document-level scores for overall classification, completeness, precision, and professional quality. These are combined into a weighted composite score.
+For details on the research behind these techniques and future directions, see [`docs/judging-research.md`](docs/judging-research.md).
 
 ## Project Structure
 
@@ -135,7 +137,8 @@ Plus document-level scores for overall classification, completeness, precision, 
 skillcheck/
 ├── app.py                          # Streamlit entry point
 ├── config.py                       # Path constants, scoring weights
-├── models.py                       # Model configs and API dispatch
+├── models.json                     # Model configurations (provider, pricing, context)
+├── models.py                       # Model loading and API dispatch
 ├── engine.py                       # Evaluation engine, scoring, result I/O
 ├── judge.py                        # LLM-as-judge scoring
 ├── consensus.py                    # Cross-model consensus analysis
@@ -144,6 +147,9 @@ skillcheck/
 ├── app.css                         # Custom styling
 ├── requirements.txt
 ├── .env.example
+│
+├── docs/                           # Research and reference documentation
+│   └── judging-research.md         # LLM-as-Judge research notes and citations
 │
 ├── pages/                          # Streamlit pages
 │   ├── home.py
@@ -183,7 +189,7 @@ This project grew out of an analysis of the emerging legal AI skills ecosystem �
 
 ## Contributing
 
-Contributions welcome — especially new skills, test documents, and answer keys. The more tasks we can evaluate, the better we can hold legal AI tools accountable.
+Contributions welcome — especially new skills, test documents, and answer keys. See [`CONTRIBUTING.md`](CONTRIBUTING.md) for setup instructions, code style, and guidelines.
 
 If you build a skill, please open a PR. If you find issues with the scoring methodology or answer keys, file an issue.
 
@@ -199,6 +205,6 @@ Skills included in this repo retain their original licenses as noted in the skil
 
 ## Author
 
-**Rob Saccone** · [NexLaw Partners](https://nexlawpartners.com) · [@rsaccone](https://github.com/rsaccone)
+**Rob Saccone** · [NexLaw Partners](https://nexlawpartners.com) · [@robsaccone](https://github.com/robsaccone)
 
 25+ years in legal technology. Previously CTO/co-founder at Lega, founder of XMLAW (acquired by Thomson Reuters), CEO of SeyfarthLean Consulting.

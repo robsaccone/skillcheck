@@ -46,7 +46,7 @@ If you find cases where the scoring produces unintuitive results, file an issue 
 ## Development Setup
 
 ```bash
-git clone https://github.com/rsaccone/skillcheck.git
+git clone https://github.com/robsaccone/skillcheck.git
 cd skillcheck
 python -m venv .venv
 
@@ -76,4 +76,4 @@ streamlit run app.py
 
 ## Questions?
 
-Open an issue or reach out to [@rsaccone](https://github.com/rsaccone).
+Open an issue or reach out to [@robsaccone](https://github.com/robsaccone).
