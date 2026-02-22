@@ -17,12 +17,20 @@ table_data = []
 for key, cfg in MODEL_CONFIGS.items():
     has_key = key in available
     icon = "\u2705" if has_key else "\u26aa"
+    # Build defaults summary (temperature, max_tokens, reasoning_effort)
+    defaults = []
+    if cfg.get("temperature") is not None:
+        defaults.append(f"temp {cfg['temperature']}")
+    if cfg.get("max_tokens"):
+        defaults.append(f"max {cfg['max_tokens']}")
+    if cfg.get("reasoning_effort"):
+        defaults.append(f"reasoning: {cfg['reasoning_effort']}")
     table_data.append({
-        "Model": cfg["display_name"],
         "Provider": cfg["provider"].capitalize(),
-        "Model ID": f"{icon} {cfg['model_id']}",
+        "Model": f"{icon} {cfg['display_name']}",
         "Context": f"{cfg['context_k']}K",
         "Cost ($/1M tok)": f"${cfg['cost_in']:.2f} in / ${cfg['cost_out']:.2f} out",
+        "Defaults": " · ".join(defaults) if defaults else "—",
     })
 
 st.dataframe(table_data, width="stretch", hide_index=True)

@@ -145,6 +145,7 @@ def run_evaluation(
     judge_system_prompt: str | None = None,
     version_filter: list[str] | None = None,
     business_context: str = "",
+    judge_model_keys: list[str] | None = None,
 ):
     """Run versions of a skill across selected models in parallel.
 
@@ -152,6 +153,8 @@ def run_evaluation(
     Uses ThreadPoolExecutor + as_completed().
 
     When judge_model_key is set, each result is also evaluated by the judge model.
+    When judge_model_keys has multiple entries, uses a multi-judge panel
+    following the PoLL methodology (Verga et al., 2024).
     When version_filter is set, only those versions are run.
     """
     skill_meta = load_skill_meta(skill_id)
@@ -182,10 +185,14 @@ def run_evaluation(
         system_prompt, user_prompt = build_prompt(skill_meta, version_text, doc_text, business_context)
 
         try:
-            # Pass model-specific kwargs (e.g. reasoning_effort)
+            # Pass model-specific kwargs (e.g. reasoning_effort, temperature)
             model_kwargs = {}
             if cfg.get("reasoning_effort"):
                 model_kwargs["reasoning_effort"] = cfg["reasoning_effort"]
+            if cfg.get("temperature") is not None:
+                model_kwargs["temperature"] = cfg["temperature"]
+            if cfg.get("max_tokens"):
+                model_kwargs["max_tokens"] = cfg["max_tokens"]
             response = call_model(
                 cfg["provider"], cfg["model_id"],
                 system_prompt, user_prompt,
@@ -243,12 +250,27 @@ def run_evaluation(
         return version, "external", result
 
     def _judge_one(version: str, model_key: str, result: dict) -> tuple[str, str, dict]:
-        from judge import judge_response
+        from judge import judge_response, judge_panel
+
+        # Build list of judge models: prefer explicit panel list, else single
+        panel_keys = judge_model_keys or ([judge_model_key] if judge_model_key else [])
+        panel_keys = [k for k in panel_keys if k]
+
         try:
-            judge_scores = judge_response(
-                doc_text, answer_key, result["response_text"],
-                judge_model_key, judge_system_prompt, skill_meta,
-            )
+            if len(panel_keys) > 1:
+                # Multi-judge panel (PoLL methodology)
+                judge_scores = judge_panel(
+                    doc_text, answer_key, result["response_text"],
+                    panel_keys, judge_system_prompt, skill_meta,
+                )
+            elif panel_keys:
+                judge_scores = judge_response(
+                    doc_text, answer_key, result["response_text"],
+                    panel_keys[0], judge_system_prompt, skill_meta,
+                )
+            else:
+                judge_scores = None
+
             result["judge_scores"] = judge_scores
             save_result(skill_id, version, model_key, doc_name, result)
         except Exception as e:
@@ -355,13 +377,21 @@ def judge_saved_results(
     skill_id: str,
     judge_model_key: str,
     judge_system_prompt: str | None = None,
+    judge_model_keys: list[str] | None = None,
 ):
     """Run judge scoring on saved results that don't have judge_scores yet.
+
+    When judge_model_keys has multiple entries, uses a multi-judge panel
+    following the PoLL methodology (Verga et al., 2024).
 
     Yields (completed_count, total_count, result) tuples as each finishes.
     Uses ThreadPoolExecutor for parallel judging.
     """
-    from judge import judge_response
+    from judge import judge_response, judge_panel
+
+    # Build panel list: prefer explicit list, else single key
+    panel_keys = judge_model_keys or ([judge_model_key] if judge_model_key else [])
+    panel_keys = [k for k in panel_keys if k]
 
     skill_meta = load_skill_meta(skill_id)
     all_results = load_results(skill_id)
@@ -385,10 +415,16 @@ def judge_saved_results(
 
     def _judge_one(item):
         result, doc_text, answer_key, response_text = item
-        judge_scores = judge_response(
-            doc_text, answer_key, response_text,
-            judge_model_key, judge_system_prompt, skill_meta,
-        )
+        if len(panel_keys) > 1:
+            judge_scores = judge_panel(
+                doc_text, answer_key, response_text,
+                panel_keys, judge_system_prompt, skill_meta,
+            )
+        else:
+            judge_scores = judge_response(
+                doc_text, answer_key, response_text,
+                panel_keys[0], judge_system_prompt, skill_meta,
+            )
         result["judge_scores"] = judge_scores
         save_result(
             skill_id,

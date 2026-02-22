@@ -1,100 +1,17 @@
 """Model configurations and API dispatch for Skillcheck."""
 
+import json
 import os
 import time
+from pathlib import Path
 
 # ---------------------------------------------------------------------------
-# Model Configs
+# Model Configs — loaded from models.json
 # ---------------------------------------------------------------------------
 
-MODEL_CONFIGS = {
-    # Anthropic
-    "claude-opus-4-6": {
-        "provider": "anthropic",
-        "model_id": "claude-opus-4-6",
-        "display_name": "Claude Opus 4.6",
-        "env_key": "ANTHROPIC_API_KEY",
-        "cost_in": 5.00,
-        "cost_out": 25.00,
-        "context_k": 200,
-    },
-    "claude-haiku-4-5": {
-        "provider": "anthropic",
-        "model_id": "claude-haiku-4-5",
-        "display_name": "Claude Haiku 4.5",
-        "env_key": "ANTHROPIC_API_KEY",
-        "cost_in": 1.00,
-        "cost_out": 5.00,
-        "context_k": 200,
-    },
-    # OpenAI
-    "gpt-5.2": {
-        "provider": "openai",
-        "model_id": "gpt-5.2",
-        "display_name": "GPT-5.2",
-        "env_key": "OPENAI_API_KEY",
-        "cost_in": 1.75,
-        "cost_out": 14.00,
-        "context_k": 400,
-    },
-    "gpt-5-nano": {
-        "provider": "openai",
-        "model_id": "gpt-5-nano",
-        "display_name": "GPT-5 Nano",
-        "env_key": "OPENAI_API_KEY",
-        "cost_in": 0.05,
-        "cost_out": 0.40,
-        "context_k": 400,
-        "reasoning_effort": "low",
-    },
-    # Google
-    "gemini-3-pro": {
-        "provider": "google",
-        "model_id": "gemini-3-pro-preview",
-        "display_name": "Gemini 3 Pro",
-        "env_key": "GOOGLE_API_KEY",
-        "cost_in": 2.00,
-        "cost_out": 12.00,
-        "context_k": 1000,
-    },
-    "gemini-3.1-pro": {
-        "provider": "google",
-        "model_id": "gemini-3.1-pro-preview",
-        "display_name": "Gemini 3.1 Pro",
-        "env_key": "GOOGLE_API_KEY",
-        "cost_in": 2.00,
-        "cost_out": 12.00,
-        "context_k": 1000,
-    },
-    "gemini-3-flash": {
-        "provider": "google",
-        "model_id": "gemini-3-flash-preview",
-        "display_name": "Gemini 3 Flash",
-        "env_key": "GOOGLE_API_KEY",
-        "cost_in": 0.50,
-        "cost_out": 3.00,
-        "context_k": 1000,
-    },
-    # Together (dark horses)
-    "deepseek-r1": {
-        "provider": "together",
-        "model_id": "deepseek-ai/DeepSeek-R1",
-        "display_name": "DeepSeek R1",
-        "env_key": "TOGETHER_API_KEY",
-        "cost_in": 3.00,
-        "cost_out": 7.00,
-        "context_k": 164,
-    },
-    "qwen3-235b": {
-        "provider": "together",
-        "model_id": "Qwen/Qwen3-235B-A22B-Thinking-2507",
-        "display_name": "Qwen3 235B",
-        "env_key": "TOGETHER_API_KEY",
-        "cost_in": 0.65,
-        "cost_out": 3.00,
-        "context_k": 262,
-    },
-}
+MODEL_CONFIGS: dict[str, dict] = json.loads(
+    (Path(__file__).parent / "models.json").read_text(encoding="utf-8")
+)
 
 
 def get_available_models():
@@ -121,6 +38,7 @@ def call_model(
     system: str,
     user: str,
     max_tokens: int = 16384,
+    temperature: float | None = None,
     **kwargs,
 ) -> dict:
     """Call an LLM and return response data.
@@ -131,10 +49,10 @@ def call_model(
     import sys
 
     dispatch = {
-        "anthropic": lambda: _call_anthropic(model_id, system, user, max_tokens),
-        "openai": lambda: _call_openai(model_id, system, user, max_tokens, **kwargs),
-        "google": lambda: _call_google(model_id, system, user, max_tokens),
-        "together": lambda: _call_together(model_id, system, user, max_tokens),
+        "anthropic": lambda: _call_anthropic(model_id, system, user, max_tokens, temperature),
+        "openai": lambda: _call_openai(model_id, system, user, max_tokens, temperature, **kwargs),
+        "google": lambda: _call_google(model_id, system, user, max_tokens, temperature),
+        "together": lambda: _call_together(model_id, system, user, max_tokens, temperature),
     }
     if provider not in dispatch:
         raise ValueError(f"Unknown provider: {provider}")
@@ -165,16 +83,19 @@ def call_model(
     raise last_err  # unreachable, but keeps type checkers happy
 
 
-def _call_anthropic(model_id: str, system: str, user: str, max_tokens: int) -> dict:
+def _call_anthropic(model_id: str, system: str, user: str, max_tokens: int, temperature: float | None = None) -> dict:
     import anthropic
 
     client = anthropic.Anthropic()
-    response = client.messages.create(
-        model=model_id,
-        max_tokens=max_tokens,
-        system=system,
-        messages=[{"role": "user", "content": user}],
-    )
+    params: dict = {
+        "model": model_id,
+        "max_tokens": max_tokens,
+        "system": system,
+        "messages": [{"role": "user", "content": user}],
+    }
+    if temperature is not None:
+        params["temperature"] = temperature
+    response = client.messages.create(**params)
     return {
         "text": response.content[0].text,
         "input_tokens": response.usage.input_tokens,
@@ -182,11 +103,11 @@ def _call_anthropic(model_id: str, system: str, user: str, max_tokens: int) -> d
     }
 
 
-def _call_openai(model_id: str, system: str, user: str, max_tokens: int, **kwargs) -> dict:
+def _call_openai(model_id: str, system: str, user: str, max_tokens: int, temperature: float | None = None, **kwargs) -> dict:
     import openai
 
     client = openai.OpenAI()
-    params = {
+    params: dict = {
         "model": model_id,
         "max_completion_tokens": max_tokens,
         "messages": [
@@ -194,6 +115,8 @@ def _call_openai(model_id: str, system: str, user: str, max_tokens: int, **kwarg
             {"role": "user", "content": user},
         ],
     }
+    if temperature is not None:
+        params["temperature"] = temperature
     if kwargs.get("reasoning_effort"):
         params["reasoning_effort"] = kwargs["reasoning_effort"]
     response = client.chat.completions.create(**params)
@@ -206,18 +129,21 @@ def _call_openai(model_id: str, system: str, user: str, max_tokens: int, **kwarg
     }
 
 
-def _call_google(model_id: str, system: str, user: str, max_tokens: int) -> dict:
+def _call_google(model_id: str, system: str, user: str, max_tokens: int, temperature: float | None = None) -> dict:
     from google import genai
     from google.genai import types
 
     client = genai.Client(api_key=os.environ["GOOGLE_API_KEY"])
+    config_kwargs: dict = {
+        "system_instruction": system,
+        "max_output_tokens": max_tokens,
+    }
+    if temperature is not None:
+        config_kwargs["temperature"] = temperature
     response = client.models.generate_content(
         model=model_id,
         contents=user,
-        config=types.GenerateContentConfig(
-            system_instruction=system,
-            max_output_tokens=max_tokens,
-        ),
+        config=types.GenerateContentConfig(**config_kwargs),
     )
     usage = response.usage_metadata
     return {
@@ -227,21 +153,24 @@ def _call_google(model_id: str, system: str, user: str, max_tokens: int) -> dict
     }
 
 
-def _call_together(model_id: str, system: str, user: str, max_tokens: int) -> dict:
+def _call_together(model_id: str, system: str, user: str, max_tokens: int, temperature: float | None = None) -> dict:
     import openai
 
     client = openai.OpenAI(
         api_key=os.environ["TOGETHER_API_KEY"],
         base_url="https://api.together.xyz/v1",
     )
-    response = client.chat.completions.create(
-        model=model_id,
-        max_tokens=max_tokens,
-        messages=[
+    params: dict = {
+        "model": model_id,
+        "max_tokens": max_tokens,
+        "messages": [
             {"role": "system", "content": system},
             {"role": "user", "content": user},
         ],
-    )
+    }
+    if temperature is not None:
+        params["temperature"] = temperature
+    response = client.chat.completions.create(**params)
     choice = response.choices[0]
     text = choice.message.content or getattr(choice.message, "reasoning_content", None) or ""
     usage = response.usage
