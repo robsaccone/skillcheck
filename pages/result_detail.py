@@ -3,6 +3,7 @@
 import streamlit as st
 
 from engine import load_answer_key
+from judge import detect_self_enhancement_risk
 from models import MODEL_CONFIGS
 from components import SEVERITY_LABEL, downshift_headings, est_cost, fmt_time
 
@@ -33,6 +34,16 @@ def render_result_page(result: dict, version: str, model_key: str, skill_id: str
 
     judge = result.get("judge_scores")
     answer_key = load_answer_key(skill_id, doc_name)
+
+    # Self-enhancement bias warning
+    if judge:
+        judge_model = judge.get("judge_model", "")
+        # Handle panel format (joined with +)
+        judge_models = judge_model.split("+") if "+" in judge_model else [judge_model]
+        for jm in judge_models:
+            warning = detect_self_enhancement_risk(jm, model_key)
+            if warning:
+                st.warning(warning)
 
     tab_summary, tab_issues, tab_response = st.tabs(["Summary", "Issues", "Response"])
 
@@ -65,6 +76,27 @@ def render_result_page(result: dict, version: str, model_key: str, skill_id: str
             mc7.metric("Est. Cost", f"${cost:.2f}")
             hit_rate = judge.get("weighted_hit_rate", 0)
             mc8.metric("Weighted Hit Rate", f"{hit_rate:.0f}%")
+
+            # Panel details
+            panel_size = judge.get("panel_size", 1)
+            if panel_size > 1:
+                panel_judges = judge.get("panel_judges", [])
+                panel_scores = judge.get("panel_scores", [])
+                panel_names = [
+                    MODEL_CONFIGS.get(k, {}).get("display_name", k)
+                    for k in panel_judges
+                ]
+                st.caption(
+                    f"Panel of {panel_size} judges: {', '.join(panel_names)} "
+                    "(scores aggregated via majority vote)"
+                )
+                if panel_scores:
+                    score_parts = []
+                    for ps in panel_scores:
+                        jn = MODEL_CONFIGS.get(ps["judge_model"], {}).get("display_name", ps["judge_model"])
+                        sc = ps["composite_score"] * 100
+                        score_parts.append(f"{jn}: {sc:.0f}%")
+                    st.caption("Individual scores: " + " | ".join(score_parts))
         else:
             mc1, mc2, mc3, mc4 = st.columns(4)
             mc1.metric("Score", "Not judged")
@@ -73,7 +105,7 @@ def render_result_page(result: dict, version: str, model_key: str, skill_id: str
             mc4.metric("Est. Cost", f"${cost:.2f}")
 
     # ------------------------------------------------------------------
-    # Issues tab — simple checklist
+    # Issues tab — checklist with reasoning
     # ------------------------------------------------------------------
     with tab_issues:
         if not answer_key:
@@ -81,6 +113,7 @@ def render_result_page(result: dict, version: str, model_key: str, skill_id: str
             return
 
         judge_issues = judge.get("issues", {}) if judge else {}
+        reasoning = judge.get("reasoning", {}) if judge else {}
 
         # Recommendation match at top
         if judge:
@@ -93,9 +126,13 @@ def render_result_page(result: dict, version: str, model_key: str, skill_id: str
                 f"**{icon} Recommendation:** Model said **{model_said}**, "
                 f"correct was **{correct}** (+{10 if match else 0} pts)"
             )
+            # Show recommendation reasoning if available
+            rec_reasoning = reasoning.get("recommendation")
+            if rec_reasoning:
+                st.caption(f"*{rec_reasoning}*")
             st.divider()
 
-        # Issue checklist
+        # Issue checklist with reasoning
         for issue in answer_key.get("issues", []):
             iid = issue["id"]
             severity = issue.get("severity", "M")
@@ -103,6 +140,10 @@ def render_result_page(result: dict, version: str, model_key: str, skill_id: str
             hit = judge_issues.get(iid, 0)
             icon = "\u2713" if hit else "\u2717"
             st.markdown(f"{icon} **{iid}**: {issue['title']}  `{weight_tag}`")
+            # Show per-issue reasoning if available
+            issue_reasoning = reasoning.get(iid)
+            if issue_reasoning:
+                st.caption(f"*{issue_reasoning}*")
 
         # False positives
         if judge:
