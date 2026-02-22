@@ -247,9 +247,11 @@ if running:
     run_biz_ctx = st.session_state.get("eval_run_biz_ctx", "")
     total = len(run_versions) * len(run_models)
 
-    # Always judge if configured
+    # Always judge if configured — supports multi-judge panel (PoLL)
     judge_model_key = st.session_state.get("judge1")
+    judge2 = st.session_state.get("judge2")
     judge_system_prompt = st.session_state.get("judge_system_prompt") if judge_model_key else None
+    judge_model_keys = [k for k in [judge_model_key, judge2] if k]
 
     st.markdown("### Results")
     table_placeholder = st.empty()
@@ -262,7 +264,12 @@ if running:
     run_version_labels = [get_version_display_name(run_skill, v) for v in run_versions]
 
     judge_configured = judge_model_key is not None
-    phase_label = "Evaluating + judging" if judge_configured else "Evaluating"
+    panel_mode = len(judge_model_keys) > 1
+    phase_label = (
+        "Evaluating + panel judging" if panel_mode
+        else "Evaluating + judging" if judge_configured
+        else "Evaluating"
+    )
 
     # Skeleton table — show immediately before any results arrive
     skeleton_rows = []
@@ -281,6 +288,7 @@ if running:
                 judge_system_prompt=judge_system_prompt,
                 version_filter=version_filter,
                 business_context=run_biz_ctx,
+                judge_model_keys=judge_model_keys if panel_mode else None,
             ):
                 results_map[(version, model_key)] = result
 
@@ -372,12 +380,18 @@ if not running and judge_configured and selected_doc:
     all_existing = load_results(selected_skill)
     unjudged = [r for r in all_existing if r.get("judge_scores") is None]
     if unjudged:
-        if st.button(f"Judge unjudged results ({len(unjudged)})", type="secondary"):
+        j2 = st.session_state.get("judge2")
+        panel_keys = [k for k in [st.session_state.get("judge1"), j2] if k]
+        panel_label = f" (panel: {len(panel_keys)} judges)" if len(panel_keys) > 1 else ""
+        if st.button(f"Judge unjudged results ({len(unjudged)}){panel_label}", type="secondary"):
             judge_model_key = st.session_state.get("judge1")
             judge_sys = st.session_state.get("judge_system_prompt")
             progress = st.progress(0, text="Judging saved results...")
             judged_count = 0
-            for completed, total, result in judge_saved_results(selected_skill, judge_model_key, judge_sys):
+            for completed, total, result in judge_saved_results(
+                selected_skill, judge_model_key, judge_sys,
+                judge_model_keys=panel_keys if len(panel_keys) > 1 else None,
+            ):
                 judged_count += 1 if result else 0
                 progress.progress(completed / total, text=f"Judging saved results... ({completed}/{total})")
             progress.progress(1.0, text=f"Done! Judged {judged_count} results.")
