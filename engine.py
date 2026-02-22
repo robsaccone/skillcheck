@@ -185,10 +185,14 @@ def run_evaluation(
         system_prompt, user_prompt = build_prompt(skill_meta, version_text, doc_text, business_context)
 
         try:
-            # Pass model-specific kwargs (e.g. reasoning_effort)
+            # Pass model-specific kwargs (e.g. reasoning_effort, temperature)
             model_kwargs = {}
             if cfg.get("reasoning_effort"):
                 model_kwargs["reasoning_effort"] = cfg["reasoning_effort"]
+            if cfg.get("temperature") is not None:
+                model_kwargs["temperature"] = cfg["temperature"]
+            if cfg.get("max_tokens"):
+                model_kwargs["max_tokens"] = cfg["max_tokens"]
             response = call_model(
                 cfg["provider"], cfg["model_id"],
                 system_prompt, user_prompt,

@@ -331,11 +331,16 @@ def judge_response(
         doc_text, answer_key, response_text, judge_system_prompt,
     )
 
+    # Use low temperature for judge consistency (default 0.2, overridable per model)
+    judge_temperature = cfg.get("temperature", 0.3)
+    judge_temperature = min(judge_temperature, 0.2)
+
     start = time.time()
     try:
         response = call_model(
             cfg["provider"], cfg["model_id"],
             system, user,
+            temperature=judge_temperature,
         )
     except Exception:
         return None
