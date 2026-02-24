@@ -37,7 +37,7 @@
     "cost_in": 0.05,
     "cost_out": 0.40,
     "context_k": 400,
-    "temperature": 0.3,
+    "temperature": null,
     "reasoning_effort": "low"
   },
   "gemini-3-pro": {

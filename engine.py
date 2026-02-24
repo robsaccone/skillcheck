@@ -378,8 +378,12 @@ def judge_saved_results(
     judge_model_key: str,
     judge_system_prompt: str | None = None,
     judge_model_keys: list[str] | None = None,
+    rejudge_all: bool = False,
 ):
-    """Run judge scoring on saved results that don't have judge_scores yet.
+    """Run judge scoring on saved results.
+
+    By default, only judges results that don't have judge_scores yet.
+    Set rejudge_all=True to re-judge all results regardless of existing scores.
 
     When judge_model_keys has multiple entries, uses a multi-judge panel
     following the PoLL methodology (Verga et al., 2024).
@@ -399,7 +403,7 @@ def judge_saved_results(
     # Filter to judgeable results
     to_judge = []
     for result in all_results:
-        if result.get("judge_scores") is not None:
+        if not rejudge_all and result.get("judge_scores") is not None:
             continue
         doc_name = result.get("doc_name", "")
         doc_text = load_test_doc(skill_id, doc_name)
@@ -443,8 +447,13 @@ def judge_saved_results(
             try:
                 result = future.result()
                 yield completed, total, result
-            except Exception:
-                yield completed, total, None
+            except Exception as e:
+                # Surface error with context about which result failed
+                item = futures[future]
+                r = item[0]
+                label = f"{r.get('version', '?')} x {r.get('model_key', '?')}"
+                print(f"[judge] {label}: {e}", file=sys.stderr)
+                yield completed, total, {"_judge_error": f"{label}: {e}"}
 
 
 def rescore_saved_results(skill_id: str) -> int:
