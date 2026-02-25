@@ -10,9 +10,8 @@ import sys
 import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
+from functools import lru_cache
 from pathlib import Path
-
-import streamlit as st
 
 import db
 from config import SKILLS_DIR
@@ -342,9 +341,9 @@ def run_evaluation(
                 yield version, model_key, result
 
 
-@st.cache_data(ttl=60)
+@lru_cache(maxsize=32)
 def load_skill_meta(skill_id: str) -> dict | None:
-    """Load skill.json for a skill_id (cached for 60s)."""
+    """Load skill.json for a skill_id (LRU-cached; Streamlit cache layered on top in UI)."""
     path = SKILLS_DIR / skill_id / "skill.json"
     if path.exists():
         return json.loads(path.read_text(encoding="utf-8"))
