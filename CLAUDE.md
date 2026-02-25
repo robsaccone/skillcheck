@@ -56,6 +56,25 @@ Skills are filesystem-driven — no code changes needed to add new ones:
 - `st.session_state` for cross-page state; `streamlit-local-storage` for browser-persistent selections.
 - The `pages/evaluate.py` page is the main workspace (~660 lines) — handles run control, live results table, issue heatmap, and drill-down routing.
 
+## CLI Tools
+
+`cli.py` provides reusable eval workflows as CLI subcommands. Always run via the venv: `.venv/Scripts/python cli.py <command>`.
+
+- **`run-eval`** — run evaluations across models and test docs with judge scoring. Wraps `engine.run_evaluation()`.
+  ```bash
+  python cli.py run-eval --skill nda_review --version combined [--docs d1,d2] [--models m1,m2] [--judge claude-opus-4-6]
+  ```
+- **`compare`** — compare results across time-batched revisions. Groups by 20-min windows, shows per-doc averages + delta.
+  ```bash
+  python cli.py compare --skill nda_review --version combined [--last 5]
+  ```
+- **`diagnose`** — per-model issue hit/miss matrix, FP frequency, recommendation accuracy for a single batch.
+  ```bash
+  python cli.py diagnose --skill nda_review --version combined [--doc vanilla_mutual] [--run latest]
+  ```
+
+These are also exposed as Claude Code skills in `.claude/skills/` so Claude can invoke them proactively during iteration.
+
 ## Adding Models
 
 Add an entry to `MODEL_CONFIGS` in `models.py`. Any OpenAI-compatible API can use the Together pattern (OpenAI client + custom `base_url`). Each entry needs: `provider`, `model_id`, `display_name`, `env_key`, `cost_in`, `cost_out`, `context_k`.
