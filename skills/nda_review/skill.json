@@ -44,6 +44,11 @@
       "url": "https://agentskills.legal/skills/non-disclosure-agreement-summaries",
       "description": "NDA summary generation skill"
     },
+    "combined": {
+      "display_name": "Combined",
+      "source": "Research-backed synthesis of all skill versions",
+      "description": "Combined best elements from all versions, informed by prompting research"
+    },
     "cowork": {
       "display_name": "Cowork",
       "source": "Claude Cowork",

@@ -9,6 +9,7 @@ load_dotenv(override=True)
 BASE_DIR = Path(__file__).parent
 SKILLS_DIR = BASE_DIR / "skills"
 RESULTS_DIR = BASE_DIR / "results"
+DB_PATH = BASE_DIR / "skillcheck.duckdb"
 
 # Scoring: composite = severity-weighted hit rate (0-100) + rec bonus - FP penalty
 RECOMMENDATION_BONUS = 10

@@ -11,6 +11,10 @@ env/
 # Results (regenerated per run, may contain API responses)
 results/
 
+# DuckDB
+*.duckdb
+*.duckdb.wal
+
 # Python
 __pycache__/
 *.py[cod]

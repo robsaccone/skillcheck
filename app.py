@@ -8,7 +8,8 @@ import streamlit as st
 from datetime import datetime
 from pathlib import Path
 
-from config import RESULTS_DIR
+import db
+from config import DB_PATH, RESULTS_DIR
 
 # ---------------------------------------------------------------------------
 # Page Config (must be first Streamlit call)
@@ -53,30 +54,35 @@ pg = st.navigation({
 })
 
 # ---------------------------------------------------------------------------
+# Migration — import legacy JSON results into DuckDB on first run
+# ---------------------------------------------------------------------------
+
+if not DB_PATH.exists() and RESULTS_DIR.exists():
+    count = db.migrate_json_results(RESULTS_DIR)
+    if count:
+        st.toast(f"Migrated {count} results from JSON to DuckDB.")
+
+# ---------------------------------------------------------------------------
 # Sidebar — recent eval runs
 # ---------------------------------------------------------------------------
 
-if pg.title != "Chat" and RESULTS_DIR.exists():
-    # Group result files into runs by (skill_id, doc_name), track most recent mtime
-    run_map: dict[tuple[str, str], float] = {}
-    for rf in RESULTS_DIR.rglob("*.json"):
-        parts = rf.stem.split("__", 1)
-        if len(parts) != 2 or rf.parent.parent.parent != RESULTS_DIR:
-            continue
-        doc_name = parts[1]
-        skill_id = rf.parent.parent.name
-        key = (skill_id, doc_name)
-        mtime = rf.stat().st_mtime
-        if key not in run_map or mtime > run_map[key]:
-            run_map[key] = mtime
-
-    if run_map:
-        recent_runs = sorted(run_map.items(), key=lambda x: x[1], reverse=True)[:8]
+if pg.title != "Chat":
+    recent_runs = db.get_recent_runs(limit=8)
+    if recent_runs:
         st.sidebar.divider()
         st.sidebar.caption("Recent Runs")
-        for (skill_id, doc_name), mtime in recent_runs:
-            dt = datetime.fromtimestamp(mtime)
-            time_str = f"{dt.month}/{dt.day} {dt.strftime('%I:%M %p').lower()}"
+        for run in recent_runs:
+            skill_id = run["skill_id"]
+            doc_name = run["doc_name"]
+            ts = run["timestamp"]
+            if hasattr(ts, "strftime"):
+                dt = ts
+            else:
+                try:
+                    dt = datetime.fromisoformat(str(ts))
+                except (ValueError, TypeError):
+                    dt = None
+            time_str = f"{dt.month}/{dt.day} {dt.strftime('%I:%M %p').lower()}" if dt else ""
             label = f":material/history: {skill_id} / {doc_name}  \n{time_str}"
             if st.sidebar.button(
                 label,

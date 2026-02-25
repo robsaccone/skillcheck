@@ -331,9 +331,10 @@ def judge_response(
         doc_text, answer_key, response_text, judge_system_prompt,
     )
 
-    # Use low temperature for judge consistency (default 0.2, overridable per model)
-    judge_temperature = cfg.get("temperature", 0.3)
-    judge_temperature = min(judge_temperature, 0.2)
+    # Use low temperature for judge consistency (cap at 0.2).
+    # Models with temperature=null don't support custom values — pass None through.
+    model_temperature = cfg.get("temperature")
+    judge_temperature = min(model_temperature, 0.2) if model_temperature is not None else None
 
     start = time.time()
     try:

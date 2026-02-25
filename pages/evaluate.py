@@ -5,6 +5,7 @@ import streamlit as st
 from streamlit_local_storage import LocalStorage
 
 from models import MODEL_CONFIGS, get_available_models
+import db
 from engine import (
     build_results_map,
     discover_skills,
@@ -379,26 +380,62 @@ if not running and judge_configured and selected_doc:
     # Count unjudged results on disk
     all_existing = load_results(selected_skill)
     unjudged = [r for r in all_existing if r.get("judge_scores") is None]
+    j2 = st.session_state.get("judge2")
+    panel_keys = [k for k in [st.session_state.get("judge1"), j2] if k]
+    panel_label = f" (panel: {len(panel_keys)} judges)" if len(panel_keys) > 1 else ""
     if unjudged:
-        j2 = st.session_state.get("judge2")
-        panel_keys = [k for k in [st.session_state.get("judge1"), j2] if k]
-        panel_label = f" (panel: {len(panel_keys)} judges)" if len(panel_keys) > 1 else ""
         if st.button(f"Judge unjudged results ({len(unjudged)}){panel_label}", type="secondary"):
             judge_model_key = st.session_state.get("judge1")
             judge_sys = st.session_state.get("judge_system_prompt")
             progress = st.progress(0, text="Judging saved results...")
             judged_count = 0
+            judge_errors = []
             for completed, total, result in judge_saved_results(
                 selected_skill, judge_model_key, judge_sys,
                 judge_model_keys=panel_keys if len(panel_keys) > 1 else None,
             ):
-                judged_count += 1 if result else 0
+                if result and "_judge_error" in result:
+                    judge_errors.append(result["_judge_error"])
+                elif result:
+                    judged_count += 1
                 progress.progress(completed / total, text=f"Judging saved results... ({completed}/{total})")
             progress.progress(1.0, text=f"Done! Judged {judged_count} results.")
-            # Clear cached eval_results so disk results reload
+            if judge_errors:
+                with st.expander(f":material/error: {len(judge_errors)} judge failures", expanded=True):
+                    for err in judge_errors:
+                        st.caption(err)
             if "eval_results" in st.session_state:
                 del st.session_state["eval_results"]
-            st.rerun()
+            if not judge_errors:
+                st.rerun()
+    judged = [r for r in all_existing if r.get("judge_scores") is not None]
+    if judged:
+        if st.button(f"Re-judge all results ({len(judged)}){panel_label}", type="secondary",
+                      help="Re-run judge scoring on all results, replacing existing scores. Uses current judge model(s)."):
+            judge_model_key = st.session_state.get("judge1")
+            judge_sys = st.session_state.get("judge_system_prompt")
+            progress = st.progress(0, text="Re-judging all results...")
+            judged_count = 0
+            judge_errors = []
+            for completed, total, result in judge_saved_results(
+                selected_skill, judge_model_key, judge_sys,
+                judge_model_keys=panel_keys if len(panel_keys) > 1 else None,
+                rejudge_all=True,
+            ):
+                if result and "_judge_error" in result:
+                    judge_errors.append(result["_judge_error"])
+                elif result:
+                    judged_count += 1
+                progress.progress(completed / total, text=f"Re-judging all results... ({completed}/{total})")
+            progress.progress(1.0, text=f"Done! Re-judged {judged_count} results.")
+            if judge_errors:
+                with st.expander(f":material/error: {len(judge_errors)} judge failures", expanded=True):
+                    for err in judge_errors:
+                        st.caption(err)
+            if "eval_results" in st.session_state:
+                del st.session_state["eval_results"]
+            if not judge_errors:
+                st.rerun()
 
 # --- Rescore button (recompute composites from existing judge output) ---
 if not running and selected_doc:
