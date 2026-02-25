@@ -9,6 +9,9 @@ anthropic>=0.79
 openai>=2.20
 google-genai>=1.63
 
+# Database
+duckdb>=1.2
+
 # Document parsing (only needed for external response import)
 python-docx>=1.1
 pymupdf>=1.25

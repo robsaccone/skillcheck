@@ -5,6 +5,7 @@ import streamlit as st
 from streamlit_local_storage import LocalStorage
 
 from models import MODEL_CONFIGS, get_available_models
+import db
 from engine import (
     build_results_map,
     discover_skills,

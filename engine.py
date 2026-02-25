@@ -14,7 +14,8 @@ from pathlib import Path
 
 import streamlit as st
 
-from config import RESULTS_DIR, SKILLS_DIR
+import db
+from config import SKILLS_DIR
 from models import MODEL_CONFIGS, call_model
 
 
@@ -176,6 +177,8 @@ def run_evaluation(
 
     answer_key = load_answer_key(skill_id, doc_name)
 
+    answer_key_str = json.dumps(answer_key, ensure_ascii=False) if answer_key else ""
+
     def _eval_one(version: str, model_key: str) -> tuple[str, str, dict]:
         cfg = MODEL_CONFIGS[model_key]
         version_text = load_skill_version(skill_id, version)
@@ -207,6 +210,12 @@ def run_evaluation(
                 "model_key": model_key,
                 "model_name": cfg["display_name"],
                 "timestamp": datetime.now(timezone.utc).isoformat(),
+                "system_prompt": system_prompt,
+                "user_prompt": user_prompt,
+                "prompt_text": version_text,
+                "doc_text": doc_text,
+                "answer_key": answer_key_str,
+                "business_context": business_context,
                 "response_text": response["text"],
                 "input_tokens": response.get("input_tokens", 0),
                 "output_tokens": response.get("output_tokens", 0),
@@ -214,7 +223,7 @@ def run_evaluation(
                 "judge_scores": None,
             }
 
-            save_result(skill_id, version, model_key, doc_name, result)
+            db.save_result(skill_id, version, model_key, doc_name, result)
             return version, model_key, result
 
         except Exception as e:
@@ -238,15 +247,20 @@ def run_evaluation(
             "model_key": "external",
             "model_name": source_name,
             "timestamp": datetime.now(timezone.utc).isoformat(),
+            "system_prompt": "",
+            "user_prompt": "",
+            "prompt_text": "",
+            "doc_text": doc_text,
+            "answer_key": answer_key_str,
+            "business_context": business_context,
             "response_text": response_text,
             "input_tokens": 0,
             "output_tokens": 0,
             "elapsed_seconds": 0,
-            "quick_scores": None,
             "judge_scores": None,
         }
 
-        save_result(skill_id, version, "external", doc_name, result)
+        db.save_result(skill_id, version, "external", doc_name, result)
         return version, "external", result
 
     def _judge_one(version: str, model_key: str, result: dict) -> tuple[str, str, dict]:
@@ -272,7 +286,8 @@ def run_evaluation(
                 judge_scores = None
 
             result["judge_scores"] = judge_scores
-            save_result(skill_id, version, model_key, doc_name, result)
+            if judge_scores:
+                db.save_judge_scores(result["eval_id"], judge_scores)
         except Exception as e:
             print(f"[judge] {version} x {model_key}: {e}", file=sys.stderr)
         return version, model_key, result
@@ -398,13 +413,15 @@ def judge_saved_results(
     panel_keys = [k for k in panel_keys if k]
 
     skill_meta = load_skill_meta(skill_id)
-    all_results = load_results(skill_id)
+
+    if rejudge_all:
+        all_results = db.load_results(skill_id)
+    else:
+        all_results = db.get_unjudged_results(skill_id)
 
     # Filter to judgeable results
     to_judge = []
     for result in all_results:
-        if not rejudge_all and result.get("judge_scores") is not None:
-            continue
         doc_name = result.get("doc_name", "")
         doc_text = load_test_doc(skill_id, doc_name)
         answer_key = load_answer_key(skill_id, doc_name)
@@ -430,13 +447,7 @@ def judge_saved_results(
                 panel_keys[0], judge_system_prompt, skill_meta,
             )
         result["judge_scores"] = judge_scores
-        save_result(
-            skill_id,
-            result.get("version", ""),
-            result.get("model_key", ""),
-            result.get("doc_name", ""),
-            result,
-        )
+        db.save_judge_scores(result["eval_id"], judge_scores)
         return result
 
     completed = 0
@@ -464,7 +475,7 @@ def rescore_saved_results(skill_id: str) -> int:
     """
     from judge import compute_composite_scores
 
-    all_results = load_results(skill_id)
+    all_results = db.load_results(skill_id)
     count = 0
 
     for result in all_results:
@@ -494,82 +505,16 @@ def rescore_saved_results(skill_id: str) -> int:
         judge["issues_found"] = composite["issues_found"]
         judge["issues_total"] = composite["issues_total"]
 
-        save_result(
-            skill_id,
-            result.get("version", ""),
-            result.get("model_key", ""),
-            doc_name,
-            result,
-        )
+        # Re-save as new judge_scores row
+        db.save_judge_scores(result["eval_id"], judge)
         count += 1
 
     return count
 
 
 # ---------------------------------------------------------------------------
-# Result I/O
+# Result I/O — delegated to db.py
 # ---------------------------------------------------------------------------
 
-def save_result(
-    skill_id: str,
-    version: str,
-    model_key: str,
-    doc_name: str,
-    result: dict,
-) -> Path:
-    """Save a result dict. Path: results/{skill_id}/{version}/{model_key}__{doc}.json"""
-    out_dir = RESULTS_DIR / skill_id / version
-    out_dir.mkdir(parents=True, exist_ok=True)
-
-    filename = f"{model_key}__{doc_name}.json"
-    out_path = out_dir / filename
-
-    out_path.write_text(
-        json.dumps(result, indent=2, ensure_ascii=False),
-        encoding="utf-8",
-    )
-    return out_path
-
-
-def load_results(skill_id: str) -> list[dict]:
-    """Load all saved results for a skill."""
-    results = []
-    skill_results_dir = RESULTS_DIR / skill_id
-    if not skill_results_dir.exists():
-        return results
-
-    for path in skill_results_dir.rglob("*.json"):
-        try:
-            data = json.loads(path.read_text(encoding="utf-8"))
-            results.append(data)
-        except (json.JSONDecodeError, OSError):
-            continue
-
-    return results
-
-
-def build_results_map(
-    skill_id: str,
-    doc_name: str | None = None,
-    model_filter: set[str] | None = None,
-) -> tuple[dict[tuple[str, str], dict], set[str]]:
-    """Build a {(version, model_key): result} dict from saved results.
-
-    Returns (results_map, model_keys_seen). Filters by doc_name and/or
-    model_filter when provided.
-    """
-    results_map = {}
-    model_keys_seen: set[str] = set()
-    for r in load_results(skill_id):
-        v = r.get("version", "")
-        mk = r.get("model_key", "")
-        dn = r.get("doc_name", "")
-        if not v or not mk:
-            continue
-        if doc_name and dn != doc_name:
-            continue
-        if model_filter and mk not in model_filter:
-            continue
-        results_map[(v, mk)] = r
-        model_keys_seen.add(mk)
-    return results_map, model_keys_seen
+# Re-export for backward compatibility with imports
+from db import save_result, load_results, build_results_map  # noqa: E402, F401
