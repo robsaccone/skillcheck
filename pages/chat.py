@@ -99,13 +99,19 @@ if prompt := st.chat_input("Ask about your evaluation data"):
 
         with st.spinner("Thinking..."):
             client = ai.Client()
+            # OpenAI newer models require max_completion_tokens
+            token_kwarg = (
+                {"max_completion_tokens": 4096}
+                if provider_key == "openai"
+                else {"max_tokens": 4096}
+            )
             try:
                 response = client.chat.completions.create(
                     model=aisuite_model,
                     messages=api_messages,
                     tools=TOOLS,
                     max_turns=5,
-                    max_tokens=4096,
+                    **token_kwarg,
                 )
             except Exception as e:
                 st.error(f"Error: {e}")
