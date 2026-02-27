@@ -1,0 +1,235 @@
+{
+  "doc_id": "startup_investor",
+  "doc_title": "Investor NDA — Apex Ventures / Startup Company",
+  "perspective": "Company (the startup disclosing information to an investor)",
+  "overall_risk": "GREEN",
+  "overall_risk_rationale": "A well-drafted, standard unilateral investor NDA that appropriately protects the Company's confidential information while accommodating the legitimate needs of a venture capital fund. The agreement is properly structured as one-way (Company discloses, Investor protects) which is standard for this context. Five minor issues worth noting but none that should prevent execution. The Investor's broader permitted disclosure list (including LPs and co-investors) is appropriate for fund operations and should NOT be treated as a red flag.",
+
+  "scoring_guidance": {
+    "must_catch": [],
+    "should_catch": ["ISSUE-01", "ISSUE-02"],
+    "nice_to_catch": ["ISSUE-03", "ISSUE-04", "ISSUE-05"],
+    "weights": { "must_catch": 3, "should_catch": 2, "nice_to_catch": 1 }
+  },
+
+  "scoring_notes": "This document primarily tests CONTEXT AWARENESS. The key question is whether the reviewer understands the investor NDA context and avoids false positives. A reviewer who treats the one-way structure, broad permitted disclosures, or fund-specific provisions as red flags is demonstrating lack of context awareness. A response that correctly classifies this as GREEN with appropriate investor-context notes scores highest. This is the complement to vanilla_mutual — both test precision and restraint, but this one adds the dimension of context-specific judgment.",
+
+  "document_level_rubric": {
+    "overall_classification": {
+      "question": "What overall risk classification did the response assign (RED/YELLOW/GREEN or equivalent)?",
+      "correct_answer": "GREEN — this is a standard, well-drafted investor NDA suitable for execution with minor notes",
+      "scoring": "GREEN=3, YELLOW=1, RED=0"
+    },
+    "completeness": {
+      "question": "How many of the 5 planted issues did the response identify?"
+    },
+    "precision": {
+      "question": "Did the response flag any provisions as problematic that are actually standard for the investor NDA context? Count each distinct false positive. This document has many provisions that LOOK problematic in a mutual NDA context but are completely standard for investor NDAs. See false_positive_traps for the full list."
+    },
+    "professional_quality": {
+      "question": "Does the response demonstrate investor NDA context awareness? A high-quality review will: (1) recognize this as a standard unilateral investor NDA, (2) correctly identify that the one-way structure is appropriate, (3) understand that broad permitted disclosures to LPs and co-investors are standard for fund operations, (4) note that the lack of a non-circumvention clause is a strategic consideration rather than a drafting deficiency. The tone should be 'good agreement with minor improvements' rather than 'problematic agreement needing major revision.'",
+      "scale": "0-10"
+    }
+  },
+
+  "false_positive_traps": [
+    {
+      "provision": "Unilateral structure (only Company discloses, only Investor has obligations)",
+      "why_its_standard": "Investor NDAs are inherently one-way. The startup discloses sensitive information; the investor receives it. The investor typically has no proprietary information at risk in this context. Flagging the unilateral structure is a significant false positive."
+    },
+    {
+      "provision": "§2.2 — Broad permitted disclosures (LPs, co-investors, prospective co-investors)",
+      "why_its_standard": "Venture funds have fiduciary and contractual obligations to their limited partners. They also routinely syndicate deals with co-investors. The permitted disclosure to 'general and limited partners, members, directors, officers, employees, agents, investment advisors, co-investors, prospective co-investors, and professional advisors' is standard for fund operations. Flagging this as 'too broad' demonstrates lack of investor NDA experience."
+    },
+    {
+      "provision": "§2.2 — Disclosure for 'management, administration, or reporting obligations of Investor's fund'",
+      "why_its_standard": "Funds have legal obligations to report to LPs. Allowing disclosure for fund administration purposes is standard and necessary. Flagging this expanded purpose as a red flag is a false positive."
+    },
+    {
+      "provision": "§4 — Retention for 'investment evaluation process' documentation",
+      "why_its_standard": "Investment funds are required to document their investment decision-making process for regulatory, tax, and LP reporting purposes. Allowing retention of internal records documenting the evaluation is standard practice and protects both parties."
+    },
+    {
+      "provision": "§5.2 — Securities law disclaimer ('shall not constitute an offer to sell or solicitation')",
+      "why_its_standard": "Standard and legally required disclaimer for investor NDAs. The NDA is not a securities offering document. Flagging this is a false positive."
+    },
+    {
+      "provision": "§7.1 — One-way injunctive relief (only Company can seek)",
+      "why_its_standard": "In a unilateral NDA where only one party has information at risk, one-way injunctive relief is entirely appropriate. The Investor has no Confidential Information to protect. Flagging this as asymmetric is a false positive — it's correctly structured for the context."
+    },
+    {
+      "provision": "§8.3 — Assignment to successor fund or entity under common management",
+      "why_its_standard": "Fund succession is a standard feature of VC/PE operations. When Fund III's investment period ends, the relationship may continue through Fund IV. Allowing assignment to successor funds without consent is standard and appropriate."
+    },
+    {
+      "provision": "§6.2 — Three-year survival plus trade secret carve-out",
+      "why_its_standard": "A three-year survival period with a trade secret extension is well within market standard for investor NDAs. This is balanced and appropriate."
+    }
+  ],
+
+  "issues": [
+    {
+      "id": "ISSUE-01",
+      "section": "N/A (absent)",
+      "title": "No Non-Circumvention Provision",
+      "severity": "MODERATE",
+      "weight": 2,
+      "category": "missing_provision",
+      "description": "The agreement does not include a non-circumvention clause. In an investor NDA context, a non-circumvention provision would prevent the Investor from using the Confidential Information to bypass Company and deal directly with Company's customers, partners, suppliers, or other business relationships. For an early-stage startup revealing its customer pipeline, strategic partners, or supplier relationships to a well-connected VC fund, the absence of non-circumvention means the Investor could theoretically leverage those relationships independently. This is a standard enhancement for startup-investor NDAs, though not universally included.",
+      "what_good_looks_like": "Notes the absence of a non-circumvention clause, explains why it matters in the investor context (well-connected fund could leverage startup's relationships), frames it as a standard improvement rather than a critical gap, and suggests adding a non-circumvention provision.",
+
+      "rubric": {
+        "identified": "Did the response note the absence of a non-circumvention provision?",
+        "correctly_characterized": "Did the response explain why non-circumvention matters in the investor context — specifically the risk that a well-connected fund could bypass the startup and deal directly with disclosed relationships?",
+        "severity_appropriate": "Did the response treat this as moderate rather than critical? (Non-circumvention is a nice-to-have in investor NDAs, not a requirement.)",
+        "actionable": "Did the response recommend adding a non-circumvention clause?"
+      },
+
+      "interaction_with": [],
+      "cuad_categories": ["Non-Circumvention"],
+      "false_positive_risk": "HIGH — many reviewers won't know to look for non-circumvention in this context",
+      "common_mistakes": [
+        "Not knowing what a non-circumvention clause is or why it matters",
+        "Treating the absence as critical when it's a moderate improvement",
+        "Not considering the investor context (a well-connected fund has more leverage to circumvent)"
+      ],
+
+      "quick_screen_keywords": [
+        "non-circumvention", "circumvention", "bypass",
+        "deal directly", "customer relationships", "business relationships",
+        "partners", "suppliers", "missing provision"
+      ]
+    },
+    {
+      "id": "ISSUE-02",
+      "section": "Recitals / §1.1",
+      "title": "No Time Limit on the Purpose",
+      "severity": "MODERATE",
+      "weight": 2,
+      "category": "purpose_scope",
+      "description": "The Purpose is defined as Investor's 'evaluation of a potential equity investment in Company' — which is appropriately specific. However, there is no time limit on how long the evaluation period lasts. The agreement term is two years (§6.1), but the Purpose itself has no expiration. This means Investor could claim that information disclosed at any point during the two-year term is 'in connection with the Purpose' even if the investment evaluation was effectively abandoned months earlier. A tighter formulation might specify that the Purpose continues for a defined evaluation period (e.g., 90-180 days) after which the return/destruction obligations are triggered.",
+      "what_good_looks_like": "Notes that the Purpose has no time limit distinct from the agreement term, explains that this could allow indefinite retention of information under the guise of ongoing evaluation, and suggests adding an evaluation period or auto-trigger for return/destruction.",
+
+      "rubric": {
+        "identified": "Did the response note that the investment evaluation Purpose has no defined time limit?",
+        "correctly_characterized": "Did the response explain the practical concern — that the two-year term without a defined evaluation period allows indefinite information access under the Purpose?",
+        "severity_appropriate": "Did the response treat this as moderate? (An open-ended evaluation period is common in VC and not necessarily problematic.)",
+        "actionable": "Did the response suggest a time-limited evaluation period or auto-trigger?"
+      },
+
+      "interaction_with": [],
+      "cuad_categories": ["Purpose"],
+      "false_positive_risk": "HIGH — open-ended evaluation periods are very common in VC NDAs",
+      "common_mistakes": [
+        "Treating the two-year agreement term as the evaluation period limit (it's not — the term governs the NDA, not the evaluation)",
+        "Over-flagging this as critical when it's a standard feature of investor NDAs",
+        "Not flagging it at all (acceptable — this is a subtle point)"
+      ],
+
+      "quick_screen_keywords": [
+        "evaluation period", "time limit", "no deadline",
+        "purpose duration", "ongoing evaluation", "open-ended",
+        "potential equity investment", "how long"
+      ]
+    },
+    {
+      "id": "ISSUE-03",
+      "section": "N/A (absent)",
+      "title": "No Residuals Clause — Appropriate Absence",
+      "severity": "LOW",
+      "weight": 1,
+      "category": "residuals",
+      "description": "The agreement does not include a residuals clause. Unlike in a mutual technology NDA where residuals clauses protect both parties' personnel, in a unilateral investor NDA the absence of a residuals clause is actually FAVORABLE to Company — it means Investor cannot claim the right to use information retained in memory for any purpose. However, if Company is considering requesting the addition of a residuals clause to protect its own employees who may interact with Investor's deal team, the absence is worth noting. The key insight: a residuals clause in this context would primarily benefit Investor, not Company.",
+      "what_good_looks_like": "Notes the absence of a residuals clause and correctly identifies that in a unilateral investor NDA, this absence FAVORS Company. A sophisticated response will note that Company should NOT request a residuals clause because it would create a loophole for Investor. If the response suggests adding a residuals clause as an improvement, this demonstrates a lack of context awareness.",
+
+      "rubric": {
+        "identified": "Did the response note the absence of a residuals clause?",
+        "correctly_characterized": "Did the response correctly analyze the direction — that in a unilateral NDA, the absence of a residuals clause PROTECTS Company (the discloser)? Recommending that Company add a residuals clause is a miscalibration that demonstrates lack of understanding of who benefits.",
+        "severity_appropriate": "Did the response treat this as LOW or merely an observation?",
+        "actionable": "Did the response correctly advise that Company should NOT add a residuals clause in this context?"
+      },
+
+      "interaction_with": [],
+      "cuad_categories": ["Residual Knowledge"],
+      "false_positive_risk": "HIGH — this is a TRAP. A reviewer who suggests adding a residuals clause is actually recommending something that would hurt Company. The 'correct' advice is to leave it out or to note that its absence protects Company.",
+      "common_mistakes": [
+        "Recommending that Company add a residuals clause (this would create a loophole for Investor)",
+        "Treating the absence of a residuals clause as a deficiency when it's actually a protection",
+        "Applying mutual NDA thinking to a unilateral context",
+        "Not flagging it at all (acceptable)"
+      ],
+
+      "quick_screen_keywords": [
+        "residuals", "residual knowledge", "unaided memory",
+        "absent", "missing", "no residuals clause",
+        "general knowledge", "retained in memory"
+      ]
+    },
+    {
+      "id": "ISSUE-04",
+      "section": "8.3",
+      "title": "Assignment to 'Common Management' Entities — Undefined Scope",
+      "severity": "LOW",
+      "weight": 1,
+      "category": "assignment",
+      "description": "Section 8.3 allows Investor to assign the agreement to 'any entity under common management with Investor.' While assignment to successor funds is standard (and appropriate), 'under common management' is broader — it could include affiliated funds with different investment strategies, SPVs, or management company entities. The scope depends on how 'common management' is interpreted. In practice, VC management companies often manage multiple funds with overlapping personnel but different strategies and LP bases. A tighter formulation might specify 'successor fund managed by the same general partner.'",
+      "what_good_looks_like": "Notes that 'common management' is slightly broader than the typical 'successor fund' formulation, explains the potential scope (affiliated funds with different strategies), and suggests tightening to 'successor fund' if Company wants to limit the chain of assignment.",
+
+      "rubric": {
+        "identified": "Did the response note that the 'common management' assignment language is potentially broader than necessary?",
+        "correctly_characterized": "Did the response explain what 'common management' could include beyond successor funds?",
+        "severity_appropriate": "Did the response treat this as LOW? (Fund assignment is standard and this is a minor drafting point.)",
+        "actionable": "Did the response suggest tightening the language?"
+      },
+
+      "interaction_with": [],
+      "cuad_categories": ["Assignment"],
+      "false_positive_risk": "HIGH — fund assignment provisions are standard and this is a very minor point",
+      "common_mistakes": [
+        "Treating fund assignment as a significant red flag when it's standard VC practice",
+        "Not flagging it at all (acceptable — this is a minor point)",
+        "Over-flagging the entire assignment clause when the successor fund provision is entirely standard"
+      ],
+
+      "quick_screen_keywords": [
+        "common management", "successor fund", "assignment",
+        "affiliated fund", "management company", "8.3",
+        "under common", "assign without consent"
+      ]
+    },
+    {
+      "id": "ISSUE-05",
+      "section": "7.2",
+      "title": "Mutual Consequential Damages Exclusion May Hurt Company",
+      "severity": "LOW",
+      "weight": 1,
+      "category": "remedies",
+      "description": "Section 7.2 provides a mutual exclusion of consequential damages. While mutual consequential damages exclusions are standard in NDAs, in a unilateral NDA where only Company has information at risk, the exclusion primarily benefits Investor. If Investor breaches and Company's trade secrets are disclosed, Company's primary damages would likely be consequential (loss of competitive advantage, reduced valuation, lost partnerships) rather than direct. The mutual exclusion means Company waives the very type of damages it's most likely to suffer. However, this is a standard provision and most investors will not agree to remove it.",
+      "what_good_looks_like": "Notes that the mutual consequential damages exclusion disproportionately affects Company in a unilateral NDA context, explains that Company's primary damages from a breach would be consequential, and acknowledges that while this is standard, Company could negotiate for a breach-of-confidentiality carve-out.",
+
+      "rubric": {
+        "identified": "Did the response note that the mutual consequential damages exclusion may disproportionately affect Company?",
+        "correctly_characterized": "Did the response explain the directional analysis — that in a unilateral NDA, the party with information at risk (Company) is more likely to suffer consequential damages from a breach?",
+        "severity_appropriate": "Did the response treat this as LOW? (This is standard and most investors won't negotiate it.)",
+        "actionable": "Did the response suggest a carve-out for breach of confidentiality obligations, or acknowledge that this is standard and likely non-negotiable?"
+      },
+
+      "interaction_with": [],
+      "cuad_categories": ["Limitation of Liability"],
+      "false_positive_risk": "HIGH — mutual consequential damages exclusions are ubiquitous in NDAs",
+      "common_mistakes": [
+        "Treating the mutual consequential damages exclusion as standard without considering the unilateral context",
+        "Over-flagging this as a major issue when it's a subtle directional observation",
+        "Not flagging it at all (acceptable)"
+      ],
+
+      "quick_screen_keywords": [
+        "consequential damages", "indirect damages", "special damages",
+        "mutual exclusion", "waiver", "7.2", "disproportionate",
+        "company's damages", "competitive advantage"
+      ]
+    }
+  ],
+
+  "meta_issues": []
+}

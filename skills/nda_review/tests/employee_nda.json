@@ -1,0 +1,412 @@
+{
+  "doc_id": "employee_nda",
+  "doc_title": "Employee Confidentiality Agreement — Vanguard Data Systems",
+  "perspective": "Employee (the individual signing the agreement)",
+  "overall_risk": "RED",
+  "overall_risk_rationale": "This agreement is labeled as a confidentiality agreement but functions as a comprehensive restrictive covenant package. The overbroad CI definition (covering 'general knowledge and experience'), perpetual duration, IP assignment clause, employee non-solicitation, customer non-solicitation, compensation clawback, and missing standard exclusions collectively create an agreement that would severely restrict Employee's ability to work in the AI/ML industry after leaving Vanguard. Several provisions are likely unenforceable under California law (particularly the de facto non-compete effect), but the chilling effect on Employee is real regardless of enforceability.",
+
+  "scoring_guidance": {
+    "must_catch": ["ISSUE-01", "ISSUE-02", "ISSUE-07"],
+    "should_catch": ["ISSUE-03", "ISSUE-04", "ISSUE-06", "ISSUE-08"],
+    "nice_to_catch": ["ISSUE-05", "ISSUE-09", "ISSUE-10"],
+    "weights": { "must_catch": 3, "should_catch": 2, "nice_to_catch": 1 }
+  },
+
+  "scoring_notes": "This document tests whether the reviewer can identify an NDA functioning as a de facto non-compete — the Yale Law Journal pattern. The meta-issue (NDA as restrictive covenant) is arguably the most important thing to catch. A reviewer who flags individual issues but misses the overall pattern of weaponization gets partial credit. A reviewer who catches the pattern and explains the California enforceability dimension gets bonus credit. The DTSA notice (§9.7) is a positive feature and should NOT be flagged as an issue.",
+
+  "document_level_rubric": {
+    "overall_classification": {
+      "question": "What overall risk classification did the response assign (RED/YELLOW/GREEN or equivalent)?",
+      "correct_answer": "RED — this agreement functions as a comprehensive restrictive covenant disguised as a confidentiality agreement, with multiple provisions that would severely limit Employee's future employment",
+      "scoring": "RED=3, YELLOW=1, GREEN=0"
+    },
+    "completeness": {
+      "question": "How many of the 10 planted issues did the response identify?"
+    },
+    "precision": {
+      "question": "Did the response flag any provisions as problematic that are actually standard? Standard provisions that should NOT be flagged include: the standard of care clause (§2.3), the no-removal provision (§2.4), the Prior Inventions disclosure requirement (§3.1), the cooperation clause (§3.4), the DTSA notice (§9.7), and the severability clause (§9.4). The DTSA notice is actually a POSITIVE feature — flagging it as an issue is a significant false positive."
+    },
+    "professional_quality": {
+      "question": "Does the response demonstrate understanding of employment law context? A high-quality review will: (1) identify California law implications (particularly Cal. Bus. & Prof. Code §16600 barring non-competes), (2) flag the agreement as functioning as a de facto non-compete, (3) note which provisions are likely unenforceable vs. which create legitimate chilling effects, and (4) provide specific, actionable recommendations for narrowing the agreement to enforceable bounds.",
+      "scale": "0-10"
+    }
+  },
+
+  "false_positive_traps": [
+    {
+      "provision": "§2.3 — Standard of care ('same degree of care... as a reasonably prudent person')",
+      "why_its_standard": "While the standard is high ('most valuable confidential information'), this is a common formulation in employment NDAs. Flagging this as an issue when the CI definition itself is the real problem would be a misallocation of attention."
+    },
+    {
+      "provision": "§3.1 — Prior Inventions disclosure on Exhibit A",
+      "why_its_standard": "Requiring employees to list prior inventions is standard in technology company employment agreements and actually protects the employee by establishing what was created before employment."
+    },
+    {
+      "provision": "§9.7 — DTSA Whistleblower Notice",
+      "why_its_standard": "This is a REQUIRED notice under the Defend Trade Secrets Act of 2016. Its inclusion is a positive feature demonstrating compliance with federal law. Flagging it as an issue is a significant false positive."
+    },
+    {
+      "provision": "§9.4 — Severability",
+      "why_its_standard": "Standard provision. The 'reformed to minimum extent necessary' language is common and reasonable."
+    },
+    {
+      "provision": "§3.4 — Cooperation at Company's expense",
+      "why_its_standard": "Standard IP cooperation clause. The 'at Company's expense' language is actually employee-favorable."
+    }
+  ],
+
+  "issues": [
+    {
+      "id": "ISSUE-01",
+      "section": "1.1(d)",
+      "title": "CI Definition Covers General Knowledge and Experience",
+      "severity": "CRITICAL",
+      "weight": 3,
+      "category": "definition_scope",
+      "description": "Section 1.1(d) includes in the definition of Confidential Information 'methods, processes, procedures, techniques, and general knowledge and experience applicable to Company's Business.' The phrase 'general knowledge and experience' is the critical poison pill. Every court recognizes that an employee's general knowledge, skills, and experience belong to the employee, not the employer. By defining CI to include these, the agreement attempts to prevent the employee from using their own accumulated expertise — effectively making it impossible to work in the AI/ML industry without violating the agreement. This is the definitional mechanism that transforms a confidentiality agreement into a de facto non-compete.",
+      "what_good_looks_like": "Identifies §1.1(d) as covering general knowledge and experience, explains that this effectively prevents the employee from working in AI/ML without breaching the agreement, connects it to the de facto non-compete pattern, and recommends striking 'general knowledge and experience' or adding a carve-out for general skills.",
+
+      "rubric": {
+        "identified": "Did the response identify that the CI definition includes 'general knowledge and experience' in §1.1(d)?",
+        "correctly_characterized": "Did the response explain WHY this is dangerous — that it effectively prevents the employee from using their own accumulated professional skills and expertise, creating a de facto non-compete?",
+        "severity_appropriate": "Did the response treat this as a critical issue — the key mechanism that converts a confidentiality agreement into a restrictive covenant?",
+        "actionable": "Did the response recommend striking 'general knowledge and experience' or adding a carve-out that preserves the employee's right to use general professional skills?"
+      },
+
+      "interaction_with": ["ISSUE-02", "META-01"],
+      "cuad_categories": ["Definition of Confidential Information"],
+      "false_positive_risk": "LOW — this is clearly overbroad",
+      "common_mistakes": [
+        "Flagging the CI definition as 'broad' without specifically identifying §1.1(d)'s 'general knowledge and experience' as the problem",
+        "Treating the entire CI list as equally problematic rather than identifying §1.1(d) as the critical provision",
+        "Missing 'general knowledge and experience' because the surrounding terms (methods, processes, procedures, techniques) sound reasonable"
+      ],
+
+      "quick_screen_keywords": [
+        "general knowledge", "general experience", "knowledge and experience",
+        "methods processes procedures techniques", "1.1(d)",
+        "overbroad", "too broad", "de facto non-compete",
+        "cannot work", "future employment", "industry"
+      ]
+    },
+    {
+      "id": "ISSUE-02",
+      "section": "7.1",
+      "title": "Perpetual Confidentiality Duration for Non-Trade-Secret Information",
+      "severity": "CRITICAL",
+      "weight": 3,
+      "category": "duration",
+      "description": "Section 7.1 provides that Employee's obligations 'shall continue in perpetuity following the termination of Employee's employment.' While perpetual protection is appropriate for trade secrets (and §7.2 correctly references the DTSA), applying perpetual duration to ALL Confidential Information — including the overbroad definition in §1.1 that covers 'general knowledge and experience' — means the employee is bound forever. Combined with the overbroad CI definition (ISSUE-01), this creates a lifetime restraint on the employee's ability to work in the field. Most employment NDAs limit confidentiality obligations for non-trade-secret information to 1-3 years post-employment.",
+      "what_good_looks_like": "Identifies the perpetual duration, connects it to the overbroad CI definition to explain the compounding effect, distinguishes between trade secret and non-trade-secret information, notes that 1-3 years is market standard for non-trade-secrets, and recommends bifurcated duration.",
+
+      "rubric": {
+        "identified": "Did the response identify the perpetual duration in §7.1 as problematic?",
+        "correctly_characterized": "Did the response explain the COMPOUNDING EFFECT — that perpetual duration + overbroad CI definition = lifetime restraint on employment? And/or did it note that while perpetuity is acceptable for trade secrets, it's excessive for the non-trade-secret CI included in the definition?",
+        "severity_appropriate": "Did the response treat this as a critical issue?",
+        "actionable": "Did the response recommend bifurcated duration — perpetual for trade secrets, 1-3 years for other CI?"
+      },
+
+      "interaction_with": ["ISSUE-01", "META-01"],
+      "cuad_categories": ["Survival Period"],
+      "false_positive_risk": "LOW",
+      "common_mistakes": [
+        "Flagging perpetuity as the issue without connecting it to the overbroad CI definition",
+        "Accepting perpetuity because §7.2 references trade secret protection without recognizing that §7.1 applies perpetuity to ALL CI including non-trade-secrets",
+        "Not distinguishing between trade secret and non-trade-secret CI"
+      ],
+
+      "quick_screen_keywords": [
+        "perpetuity", "in perpetuity", "perpetual", "forever",
+        "continue indefinitely", "no time limit", "lifetime",
+        "7.1", "duration", "non-trade-secret", "bifurcated"
+      ]
+    },
+    {
+      "id": "ISSUE-03",
+      "section": "1.2",
+      "title": "Missing Standard Exclusions — Only Two of Five Present",
+      "severity": "HIGH",
+      "weight": 2,
+      "category": "exclusions",
+      "description": "Section 1.2 provides only two exclusions from the CI definition: (a) information already in the public domain, and (b) information that becomes public through no fault of the employee. Missing are three standard exclusions: (1) information already known to the employee prior to employment, (2) information independently developed by the employee, and (3) information received from a third party without restriction. The absence of 'prior knowledge' is particularly problematic — it means information the employee knew before joining Company is retroactively captured as CI. The absence of 'independent development' means any work the employee does on their own time that happens to relate to Company's broad definition of 'Business' could be claimed as CI (compounding ISSUE-04, the IP assignment).",
+      "what_good_looks_like": "Identifies the three missing exclusions by name, explains the practical impact of each absence (particularly 'prior knowledge'), and recommends adding all five standard exclusions.",
+
+      "rubric": {
+        "identified": "Did the response identify that standard exclusions are missing — specifically prior knowledge, independent development, and third-party receipt?",
+        "correctly_characterized": "Did the response explain the practical impact — particularly that information known before employment is retroactively captured?",
+        "severity_appropriate": "Did the response treat this as at least a high-severity issue?",
+        "actionable": "Did the response recommend adding the missing standard exclusions with specific language?"
+      },
+
+      "interaction_with": ["ISSUE-01", "ISSUE-04"],
+      "cuad_categories": ["Exclusions from Confidential Information"],
+      "false_positive_risk": "LOW",
+      "common_mistakes": [
+        "Noting 'limited exclusions' without specifying which standard exclusions are missing",
+        "Identifying one missing exclusion but missing the others",
+        "Not connecting the missing prior-knowledge exclusion to the retroactive capture problem"
+      ],
+
+      "quick_screen_keywords": [
+        "missing exclusion", "only two", "two exclusions", "standard exclusions",
+        "prior knowledge", "already known", "independent development",
+        "third party", "third-party receipt", "1.2", "incomplete"
+      ]
+    },
+    {
+      "id": "ISSUE-04",
+      "section": "3.2",
+      "title": "Overbroad IP Assignment — 'Relate to Company's Business'",
+      "severity": "HIGH",
+      "weight": 2,
+      "category": "scope_creep",
+      "description": "Section 3.2(c) assigns to Company all inventions that 'relate to Company's Business or to Company's actual or demonstrably anticipated research or development.' Company's Business is defined broadly in the Recitals as 'artificial intelligence, machine learning, data analytics, and related technologies and services.' This scope is extremely broad — virtually any work an employee does involving AI/ML could be claimed to 'relate to Company's Business.' Under California Labor Code §2870, employers cannot require assignment of inventions developed entirely on the employee's own time without using company resources, unless they relate to the employer's business. But the Business definition is so broad that the statutory protection is effectively nullified. Note: This IP assignment clause goes beyond confidentiality into employment IP territory — it's scope creep in a document titled 'Confidentiality Agreement.'",
+      "what_good_looks_like": "Identifies the IP assignment as overbroad due to the broad Business definition, notes that this goes beyond confidentiality into employment IP territory (scope creep), references Cal. Lab. Code §2870 if aware of it, and recommends narrowing the Business definition or adding an explicit §2870 carve-out.",
+
+      "rubric": {
+        "identified": "Did the response identify the IP assignment clause as overbroad and/or note that it's scope creep beyond a confidentiality agreement?",
+        "correctly_characterized": "Did the response explain the mechanism — that the broad 'Business' definition combined with 'relate to' captures virtually all AI/ML work?",
+        "severity_appropriate": "Did the response treat this as at least a moderate-to-high issue?",
+        "actionable": "Did the response recommend narrowing the scope or adding employee protections (e.g., §2870 carve-out, time/resource limitation)?"
+      },
+
+      "interaction_with": ["ISSUE-01", "META-01"],
+      "cuad_categories": ["IP Assignment"],
+      "false_positive_risk": "MODERATE — IP assignment clauses are common in employment agreements",
+      "common_mistakes": [
+        "Accepting the IP assignment as standard without examining the Business definition",
+        "Flagging the IP assignment but missing the connection to the overbroad Business definition",
+        "Not recognizing that IP assignment in a 'Confidentiality Agreement' is itself scope creep"
+      ],
+
+      "quick_screen_keywords": [
+        "IP assignment", "invention assignment", "assign to company",
+        "relate to company's business", "business definition", "3.2",
+        "scope creep", "beyond confidentiality", "own time",
+        "labor code", "2870", "artificial intelligence"
+      ]
+    },
+    {
+      "id": "ISSUE-05",
+      "section": "4",
+      "title": "Compelled Disclosure Requires Legal Counsel Opinion",
+      "severity": "MODERATE",
+      "weight": 1,
+      "category": "compelled_disclosure",
+      "description": "Section 4 states that 'the prior written opinion of legal counsel that such disclosure is required may be necessary before any such disclosure is made.' The phrase 'may be necessary' is ambiguous — it suggests Company could require Employee to obtain (and presumably pay for) a legal opinion before complying with a court order, subpoena, or regulatory request. This creates an unreasonable burden on the employee and could delay legally compelled disclosure, potentially exposing the employee to contempt or other sanctions. Standard compelled disclosure provisions require notice and cooperation but do not condition disclosure on a legal opinion.",
+      "what_good_looks_like": "Identifies the 'prior written opinion of legal counsel' language as unusual and burdensome, explains the practical problems (cost, delay, potential exposure to sanctions), and recommends removing the legal opinion requirement.",
+
+      "rubric": {
+        "identified": "Did the response identify the 'written opinion of legal counsel' requirement in §4 as problematic?",
+        "correctly_characterized": "Did the response explain WHY this is burdensome — cost to employee, potential delay in complying with legal obligations, exposure to contempt?",
+        "severity_appropriate": "Did the response treat this as at least a moderate concern?",
+        "actionable": "Did the response recommend removing the legal opinion requirement?"
+      },
+
+      "interaction_with": [],
+      "cuad_categories": ["Compelled Disclosure"],
+      "false_positive_risk": "MODERATE — this language appears in some real agreements and may not be recognized as unusual",
+      "common_mistakes": [
+        "Missing the 'may be necessary' legal opinion language entirely",
+        "Reading 'may be necessary' as merely permissive rather than recognizing its chilling effect",
+        "Treating §4 as standard because the notice-and-cooperation structure is familiar"
+      ],
+
+      "quick_screen_keywords": [
+        "written opinion", "legal counsel", "opinion of counsel",
+        "may be necessary", "compelled disclosure", "section 4",
+        "court order", "subpoena", "burden"
+      ]
+    },
+    {
+      "id": "ISSUE-06",
+      "section": "6.1 / 6.2",
+      "title": "Non-Solicitation Clauses in a Confidentiality Agreement",
+      "severity": "HIGH",
+      "weight": 2,
+      "category": "scope_creep",
+      "description": "Section 6 includes both employee non-solicitation (§6.1) and customer non-solicitation (§6.2), each extending 18 months post-termination. These are restrictive covenants that have no place in a confidentiality agreement. The customer non-solicitation in §6.2 is particularly aggressive — it prohibits offering 'products or services that are competitive with those offered by Company' to any customer or prospective customer. Given the broad definition of Company's Business, this effectively prevents the employee from working for any AI/ML company that serves overlapping customers. Note: In California, non-solicitation of customers clauses are likely unenforceable under Bus. & Prof. Code §16600, but the chilling effect remains.",
+      "what_good_looks_like": "Identifies both non-solicitation provisions as scope creep beyond a confidentiality agreement, flags the customer non-solicitation as particularly problematic given the broad Business definition, notes potential unenforceability under California law, and recommends removing both provisions or moving them to a separate agreement.",
+
+      "rubric": {
+        "identified": "Did the response identify the non-solicitation provisions in §6 as inappropriate for a confidentiality agreement?",
+        "correctly_characterized": "Did the response explain both the scope-creep issue (doesn't belong in an NDA) AND the substantive concern (particularly the customer non-solicitation's breadth)?",
+        "severity_appropriate": "Did the response treat this as at least a high-severity concern?",
+        "actionable": "Did the response recommend removing the provisions or providing California enforceability analysis?"
+      },
+
+      "interaction_with": ["META-01"],
+      "cuad_categories": ["Non-Solicitation"],
+      "false_positive_risk": "LOW",
+      "common_mistakes": [
+        "Treating non-solicitation in an employment context as routine without noting it's in a 'confidentiality agreement'",
+        "Focusing only on employee non-solicitation and missing the more aggressive customer non-solicitation",
+        "Not considering California enforceability"
+      ],
+
+      "quick_screen_keywords": [
+        "non-solicitation", "solicit recruit", "customer solicitation",
+        "18 months", "eighteen months", "section 6",
+        "scope creep", "restrictive covenant", "California"
+      ]
+    },
+    {
+      "id": "ISSUE-07",
+      "section": "1.1(e)",
+      "title": "Existence of Agreement and Nature of Work Deemed Confidential",
+      "severity": "CRITICAL",
+      "weight": 3,
+      "category": "definition_scope",
+      "description": "Section 1.1(e) defines as Confidential Information 'the existence and terms of this Agreement and the nature of Employee's work for Company.' This means the employee cannot tell a prospective employer what they did at Vanguard, what their job responsibilities were, or even that they signed this agreement. This creates a practical impossibility: the employee cannot interview for jobs without describing their experience, but describing their work at Vanguard would breach the confidentiality agreement. This provision also prevents the employee from seeking legal advice about the agreement's enforceability without technically breaching it (though attorney-client privilege would likely protect such disclosures). Combined with the overbroad CI definition and perpetual duration, this provision is designed to maximize the chilling effect on the employee.",
+      "what_good_looks_like": "Identifies §1.1(e) as making the employee's work history confidential, explains the practical impossibility of job searching without describing one's experience, connects it to the chilling effect on employee mobility, and recommends striking this provision or narrowing it to specific sensitive projects.",
+
+      "rubric": {
+        "identified": "Did the response identify §1.1(e) as making the employee's own work history and the existence of the agreement confidential?",
+        "correctly_characterized": "Did the response explain the PRACTICAL IMPACT — that the employee cannot describe their work experience to prospective employers, effectively preventing job searching?",
+        "severity_appropriate": "Did the response treat this as a critical issue given its impact on employee mobility?",
+        "actionable": "Did the response recommend striking this provision or narrowing it?"
+      },
+
+      "interaction_with": ["ISSUE-01", "ISSUE-02", "META-01"],
+      "cuad_categories": ["Definition of Confidential Information"],
+      "false_positive_risk": "LOW",
+      "common_mistakes": [
+        "Missing §1.1(e) entirely while focusing on the more obvious §1.1(d)",
+        "Noting the provision without explaining the practical impossibility of job searching",
+        "Treating this as a moderate issue when it's actually one of the most impactful provisions"
+      ],
+
+      "quick_screen_keywords": [
+        "existence and terms", "nature of work", "job duties",
+        "cannot discuss", "cannot describe", "work history",
+        "1.1(e)", "chilling effect", "job search", "interview"
+      ]
+    },
+    {
+      "id": "ISSUE-08",
+      "section": "8.3",
+      "title": "Compensation Clawback for Breach",
+      "severity": "HIGH",
+      "weight": 2,
+      "category": "remedies",
+      "description": "Section 8.3 provides that upon breach, Company can 'recover from Employee any compensation, including bonuses, equity awards, or other incentive compensation, paid to Employee during the period of such breach.' This is an extraordinary remedy in a confidentiality agreement — it means the employee risks losing earned compensation if Company alleges a breach. Given the overbroad CI definition (where merely using 'general knowledge and experience' could constitute a breach), this creates a powerful financial deterrent against any employee who considers leaving for a competitor. The provision is also potentially unconscionable — it allows recovery of compensation already earned for services rendered.",
+      "what_good_looks_like": "Identifies the clawback as extraordinary and unusual for a confidentiality agreement, explains how it functions as a financial deterrent to leaving, connects it to the overbroad CI definition (any new job using general skills = breach = clawback), and recommends removing it.",
+
+      "rubric": {
+        "identified": "Did the response identify the compensation clawback in §8.3 as unusual or problematic?",
+        "correctly_characterized": "Did the response explain the deterrent effect — particularly when combined with the overbroad CI definition, any new job could be alleged as a breach triggering clawback of earned compensation?",
+        "severity_appropriate": "Did the response treat this as at least a moderate-to-high issue?",
+        "actionable": "Did the response recommend removing or significantly narrowing the clawback provision?"
+      },
+
+      "interaction_with": ["ISSUE-01", "META-01"],
+      "cuad_categories": ["Remedies"],
+      "false_positive_risk": "LOW",
+      "common_mistakes": [
+        "Missing the clawback provision entirely",
+        "Noting it without connecting it to the overbroad CI definition",
+        "Treating it as a standard remedies provision"
+      ],
+
+      "quick_screen_keywords": [
+        "clawback", "recovery of compensation", "bonuses", "equity awards",
+        "incentive compensation", "8.3", "recover from employee",
+        "deterrent", "earned compensation", "unconscionable"
+      ]
+    },
+    {
+      "id": "ISSUE-09",
+      "section": "3.5",
+      "title": "Irrevocable Power of Attorney for IP Assignment",
+      "severity": "MODERATE",
+      "weight": 1,
+      "category": "ip_rights",
+      "description": "Section 3.5 appoints Company as Employee's 'attorney-in-fact for the limited purpose of executing any documents necessary to perfect the assignments.' While power-of-attorney clauses appear in some IP assignment agreements, the 'irrevocable' designation combined with 'unable or unwilling' language is aggressive. 'Unable' covers situations like incapacity or unreachability, which is reasonable. 'Unwilling' means Company can execute documents on Employee's behalf even if Employee actively objects — for example, if Employee disputes whether an invention falls within the assignment scope.",
+      "what_good_looks_like": "Identifies the irrevocable POA as aggressive, explains the 'unwilling' problem (Company can override Employee's objections), and recommends removing 'unwilling' or limiting the POA to situations where Employee is 'unable' to execute.",
+
+      "rubric": {
+        "identified": "Did the response identify the irrevocable power of attorney provision in §3.5?",
+        "correctly_characterized": "Did the response explain the 'unwilling' problem — that Company can execute assignments over Employee's active objection?",
+        "severity_appropriate": "Did the response treat this as a moderate concern?",
+        "actionable": "Did the response recommend limiting to 'unable' or removing 'unwilling'?"
+      },
+
+      "interaction_with": ["ISSUE-04"],
+      "cuad_categories": ["IP Assignment"],
+      "false_positive_risk": "MODERATE — POA clauses appear in many IP agreements",
+      "common_mistakes": [
+        "Treating the POA as standard without reading the 'unwilling' language",
+        "Over-flagging the 'limited purpose' POA as more concerning than it is",
+        "Missing this provision entirely in favor of the more obvious issues"
+      ],
+
+      "quick_screen_keywords": [
+        "attorney-in-fact", "power of attorney", "irrevocable",
+        "unable or unwilling", "execute documents", "3.5",
+        "on behalf of", "assignments"
+      ]
+    },
+    {
+      "id": "ISSUE-10",
+      "section": "1.1(c)",
+      "title": "Personnel Information as Confidential Information",
+      "severity": "MODERATE",
+      "weight": 1,
+      "category": "definition_scope",
+      "description": "Section 1.1(c) includes 'personnel information, including organizational structure, compensation data, employee skills and capabilities, recruiting strategies, and workforce plans' in the CI definition. While some personnel information is legitimately confidential (compensation data, recruiting strategies), 'organizational structure' and 'employee skills and capabilities' are information the employee would naturally know from working at the company. Combined with the non-solicitation clause (§6.1), this means the employee cannot even acknowledge knowing who works at the company or what they do — making the non-solicitation effectively broader than its face terms suggest. Additionally, under the National Labor Relations Act, employees have the right to discuss wages and working conditions — treating all 'compensation data' as confidential may conflict with §7 rights.",
+      "what_good_looks_like": "Identifies the personnel CI definition as overbroad, notes the NLRA tension with treating compensation data as confidential, connects it to the non-solicitation clause, and recommends narrowing to specific sensitive categories.",
+
+      "rubric": {
+        "identified": "Did the response identify the personnel information CI definition in §1.1(c) as overbroad?",
+        "correctly_characterized": "Did the response explain why 'organizational structure' and 'employee skills' as CI is problematic, and/or note the NLRA tension?",
+        "severity_appropriate": "Did the response treat this as a moderate concern?",
+        "actionable": "Did the response recommend narrowing the definition?"
+      },
+
+      "interaction_with": ["ISSUE-06"],
+      "cuad_categories": ["Definition of Confidential Information"],
+      "false_positive_risk": "MODERATE — personnel information protections are common",
+      "common_mistakes": [
+        "Treating personnel information CI as standard without examining the specific categories",
+        "Missing the NLRA issue entirely",
+        "Not connecting this to the non-solicitation provisions"
+      ],
+
+      "quick_screen_keywords": [
+        "personnel information", "organizational structure", "compensation data",
+        "employee skills", "workforce plans", "1.1(c)",
+        "NLRA", "section 7", "wages", "working conditions"
+      ]
+    }
+  ],
+
+  "meta_issues": [
+    {
+      "id": "META-01",
+      "title": "Confidentiality Agreement Functioning as De Facto Non-Compete",
+      "severity": "META",
+      "weight": 3,
+      "description": "This is not merely a confidentiality agreement — it is a comprehensive restrictive covenant package disguised as a 'Confidentiality and Proprietary Information Agreement.' The combination of: (1) CI definition covering 'general knowledge and experience' (§1.1(d)), (2) perpetual duration (§7.1), (3) CI covering the employee's own work history (§1.1(e)), (4) overbroad IP assignment (§3.2), (5) employee and customer non-solicitation (§6), and (6) compensation clawback (§8.3) creates a de facto non-compete that would prevent the employee from working in AI/ML for any competitor. Under California law (Bus. & Prof. Code §16600), non-compete agreements are generally void. The FTC's Final Rule (April 2024) further restricts non-competes nationally. A sophisticated reviewer will identify the pattern: the drafter used a 'confidentiality agreement' vehicle specifically because non-competes are increasingly unenforceable — but the practical effect is the same. This is the pattern identified in the Yale Law Journal's analysis of NDAs as de facto non-competes and the Holland & Knight '12 Points' guidance.",
+
+      "rubric": {
+        "identified": "Did the response identify the overall pattern — that this confidentiality agreement functions as a de facto non-compete?",
+        "synthesized": "Did the response connect at least three individual issues into the pattern (e.g., overbroad CI + perpetual duration + non-solicitation + IP assignment = cannot work in the industry)?",
+        "strategic": "Did the response consider enforceability under California law and/or the FTC Rule, and frame its recommendations accordingly — e.g., 'regardless of enforceability, the chilling effect is the real concern' or 'Employee should push back aggressively given California's strong policy against non-competes'?"
+      },
+
+      "common_mistakes": [
+        "Identifying individual issues without connecting them into the de facto non-compete pattern",
+        "Missing the California enforceability dimension",
+        "Recommending clause-by-clause fixes without recognizing the agreement needs fundamental restructuring",
+        "Not recognizing that a 'Confidentiality Agreement' can function as a non-compete"
+      ],
+
+      "quick_screen_keywords": [
+        "de facto non-compete", "non-compete", "restrictive covenant",
+        "cannot work", "future employment", "competitive employment",
+        "California", "16600", "unenforceable", "chilling effect",
+        "disguised", "pattern", "comprehensive restriction"
+      ]
+    }
+  ]
+}

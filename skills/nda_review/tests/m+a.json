@@ -1,0 +1,328 @@
+{
+  "doc_id": "m_and_a",
+  "doc_title": "M&A Confidentiality Agreement — Sterling Acquisition Corp. / Cascade Systems",
+  "perspective": "Cascade Systems (the Target company being evaluated for acquisition)",
+  "overall_risk": "YELLOW",
+  "overall_risk_rationale": "A professionally drafted M&A NDA that includes many standard Target-protective provisions (standstill, securities acknowledgment, non-solicitation). However, several provisions contain subtle gaps or aggressive terms that favor the Potential Acquirer. The agreement is YELLOW because the issues are real but addressable through negotiation — unlike the trojan_horse where the issues are subtle, here they are identifiable by a reviewer familiar with M&A practice. The agreement is not GREEN because the standstill fall-away, the missing 'don't ask / don't waive' provision, and the exclusion language create meaningful gaps in Target's protection.",
+
+  "scoring_guidance": {
+    "must_catch": ["ISSUE-01"],
+    "should_catch": ["ISSUE-02", "ISSUE-03", "ISSUE-05"],
+    "nice_to_catch": ["ISSUE-04", "ISSUE-06", "ISSUE-07"],
+    "weights": { "must_catch": 3, "should_catch": 2, "nice_to_catch": 1 }
+  },
+
+  "scoring_notes": "This document tests M&A-SPECIFIC LEGAL KNOWLEDGE. The issues require familiarity with M&A NDA practice — standstill provisions, cleansing mechanisms, fall-away triggers, 'don't ask / don't waive' provisions, and securities law acknowledgments. A reviewer who applies commercial NDA thinking (looking for asymmetric definitions, one-sided remedies, etc.) will miss the M&A-specific issues. This tests the ceiling of specialized legal expertise.",
+
+  "document_level_rubric": {
+    "overall_classification": {
+      "question": "What overall risk classification did the response assign (RED/YELLOW/GREEN or equivalent)?",
+      "correct_answer": "YELLOW — professionally drafted M&A NDA with several negotiable gaps in Target protection",
+      "scoring": "YELLOW=3, GREEN=1 (missed the M&A-specific issues), RED=1 (overcautious)"
+    },
+    "completeness": {
+      "question": "How many of the 7 planted issues did the response identify?"
+    },
+    "precision": {
+      "question": "Did the response flag standard M&A NDA provisions as problematic? Standard provisions that should NOT be flagged include: the unilateral structure (standard for M&A), the 'Evaluation Material' terminology (standard M&A nomenclature), broad CI definition including deal existence (standard), permitted disclosures to financing sources (standard for M&A), the securities law acknowledgment (standard and legally required), the non-solicitation of employees (standard in M&A), the standstill provision itself (standard Target protection), and the Delaware Court of Chancery forum selection (industry standard for M&A)."
+    },
+    "professional_quality": {
+      "question": "Does the response demonstrate M&A NDA expertise? A high-quality review will: (1) recognize this as a standard M&A confidentiality agreement, (2) use M&A-specific terminology correctly (standstill, fall-away, cleansing, MNPI), (3) identify the strategic implications of each issue (not just the legal mechanics), and (4) frame recommendations in terms of Target's negotiating position. Consider whether an M&A partner would view this analysis as demonstrating the reviewer's deal sophistication.",
+      "scale": "0-10"
+    }
+  },
+
+  "false_positive_traps": [
+    {
+      "provision": "Unilateral structure (Target discloses, Potential Acquirer receives)",
+      "why_its_standard": "M&A NDAs are inherently one-way. The Target is opening its books; the acquirer receives information. Flagging this as asymmetric is a significant false positive."
+    },
+    {
+      "provision": "§1.1 — 'Evaluation Material' covers deal existence and terms",
+      "why_its_standard": "In M&A, the fact that a company is exploring a sale is itself material non-public information. Including deal existence in the CI definition is standard and legally necessary."
+    },
+    {
+      "provision": "§2.2 — Permitted disclosures include 'lenders' and 'financing sources'",
+      "why_its_standard": "An acquirer needs to discuss the target with potential financing sources to structure and fund the deal. This is standard M&A practice."
+    },
+    {
+      "provision": "§6 — Non-solicitation of employees",
+      "why_its_standard": "In M&A context, non-solicitation of Target's employees is a standard Target-protective provision. Unlike in a commercial NDA where it's scope creep, here it prevents the acquirer from poaching talent before closing."
+    },
+    {
+      "provision": "§7 — Standstill provision",
+      "why_its_standard": "Standstill provisions are standard in M&A NDAs. They prevent the acquirer from making a hostile bid while receiving confidential information. The standstill itself is not the issue — the specific terms of the fall-away and the missing 'don't ask / don't waive' are the issues."
+    },
+    {
+      "provision": "§8 — Securities law acknowledgment",
+      "why_its_standard": "Standard and legally advisable. The acquirer is receiving MNPI and needs to acknowledge insider trading restrictions."
+    },
+    {
+      "provision": "§11.2 — Delaware Court of Chancery forum selection",
+      "why_its_standard": "The Court of Chancery is the standard forum for M&A disputes. Both parties are Delaware entities. This is entirely appropriate."
+    },
+    {
+      "provision": "§10.1 — One-way injunctive relief for Target",
+      "why_its_standard": "In a unilateral NDA, only Target has information at risk. One-way injunctive relief is correctly structured."
+    }
+  ],
+
+  "issues": [
+    {
+      "id": "ISSUE-01",
+      "section": "7.2",
+      "title": "Aggressive Standstill Fall-Away Provision",
+      "severity": "HIGH",
+      "weight": 3,
+      "category": "standstill",
+      "description": "Section 7.2 provides that the standstill automatically terminates if (a) Target enters into a definitive agreement with a third party, OR (b) a third party commences a tender offer for >50% and Target's board fails to recommend against it within 10 business days. Trigger (b) is aggressive: it means any unsolicited third-party bid where Target's board doesn't immediately reject it frees Potential Acquirer from the standstill — even if Target's board is still evaluating the offer. The 10-business-day window is short; boards routinely need more time to evaluate unsolicited offers. More critically, the fall-away effectively allows Potential Acquirer to sit back and wait for a third party to bid, then jump in once the standstill falls away — potentially disrupting a deal that Target's board preferred. The standard formulation would require Target's board to affirmatively recommend the third-party transaction, not merely fail to reject it within an arbitrary window.",
+      "what_good_looks_like": "Identifies the fall-away trigger (b) as aggressive, explains the 10-business-day window problem, distinguishes between 'fails to recommend against' and the more Target-protective 'affirmatively recommends,' and recommends either extending the window, changing the trigger to require affirmative recommendation, or removing trigger (b) entirely.",
+
+      "rubric": {
+        "identified": "Did the response identify the standstill fall-away in §7.2 as problematic?",
+        "correctly_characterized": "Did the response explain the SPECIFIC MECHANISM — that 'fails to recommend against within 10 business days' is different from and more aggressive than 'affirmatively recommends,' and that this allows Potential Acquirer to exploit unsolicited third-party bids?",
+        "severity_appropriate": "Did the response treat this as a high-to-critical issue?",
+        "actionable": "Did the response recommend specific changes to the fall-away trigger?"
+      },
+
+      "interaction_with": ["ISSUE-02"],
+      "cuad_categories": ["Standstill"],
+      "false_positive_risk": "LOW — but requires M&A expertise to identify",
+      "common_mistakes": [
+        "Treating the standstill provision as standard without examining the fall-away terms",
+        "Missing the distinction between 'fails to recommend against' and 'affirmatively recommends'",
+        "Not recognizing that the 10-business-day window is unreasonably short",
+        "Flagging the standstill itself as problematic rather than the specific fall-away trigger"
+      ],
+
+      "quick_screen_keywords": [
+        "fall-away", "standstill termination", "automatically terminate",
+        "fails to recommend", "recommend against", "10 business days",
+        "ten business days", "third party", "tender offer",
+        "7.2", "hostile", "unsolicited"
+      ]
+    },
+    {
+      "id": "ISSUE-02",
+      "section": "7.1(e)",
+      "title": "Missing 'Don't Ask / Don't Waive' Provision — and Prohibition on Requesting Waiver",
+      "severity": "HIGH",
+      "weight": 2,
+      "category": "standstill",
+      "description": "Section 7.1(e) prohibits Potential Acquirer from requesting Target to 'amend, waive, or terminate any provision of this Section 7.' This is sometimes called a 'don't ask / don't waive' (DADW) restriction. Post-Martin Marietta Materials v. Vulcan Materials (Del. Ch. 2012), DADW provisions have been controversial. From TARGET's perspective, the issue is subtle: the DADW actually HELPS the Potential Acquirer in one important way — if Target's board later wants to invite Potential Acquirer back into the process (e.g., because the initial preferred bidder fell through), Potential Acquirer could argue that because the DADW prevents them from asking for a waiver, Target is locked into a less competitive process. Conversely, without a DADW, a well-funded acquirer could repeatedly pressure Target's board to waive the standstill, which is disruptive. The optimal provision from Target's perspective would be a DADW that reserves Target's board's right to grant a waiver at any time in its sole discretion — preserving board flexibility while preventing acquirer harassment.",
+      "what_good_looks_like": "Identifies §7.1(e) as a DADW provision, discusses the Martin Marietta implications, explains the double-edged nature from Target's perspective, and recommends adding a savings clause preserving the board's right to grant waivers in its discretion.",
+
+      "rubric": {
+        "identified": "Did the response identify §7.1(e) as a 'don't ask / don't waive' provision and discuss its implications?",
+        "correctly_characterized": "Did the response explain the nuanced implications — that the DADW has both benefits (prevents acquirer harassment) and costs (may limit Target board flexibility) for Target?",
+        "severity_appropriate": "Did the response treat this as at least a moderate-to-high concern?",
+        "actionable": "Did the response recommend a savings clause preserving board discretion to grant waivers?"
+      },
+
+      "interaction_with": ["ISSUE-01"],
+      "cuad_categories": ["Standstill"],
+      "false_positive_risk": "MODERATE — requires sophisticated M&A knowledge",
+      "common_mistakes": [
+        "Missing §7.1(e) entirely because it looks like standard standstill language",
+        "Identifying the DADW without understanding its double-edged implications",
+        "Treating the DADW as purely protective for Target without recognizing how it can backfire",
+        "Not knowing what a DADW provision is"
+      ],
+
+      "quick_screen_keywords": [
+        "don't ask", "don't waive", "DADW", "request to amend",
+        "request waiver", "7.1(e)", "Martin Marietta", "Vulcan",
+        "board discretion", "board flexibility"
+      ]
+    },
+    {
+      "id": "ISSUE-03",
+      "section": "1.2(a)",
+      "title": "Exclusion Requires Violation — Not Fault — Reducing Protection",
+      "severity": "HIGH",
+      "weight": 2,
+      "category": "exclusions",
+      "description": "Section 1.2(a) excludes information that 'was or becomes generally available to the public other than as a result of a disclosure by Potential Acquirer or its Representatives in violation of this Agreement.' The standard formulation excludes information that becomes public 'other than as a result of disclosure by the Receiving Party' or 'through no fault of the Receiving Party.' The 'in violation of this Agreement' qualifier is narrower — it means if Potential Acquirer discloses information in a way that technically doesn't violate a specific provision of this Agreement (e.g., through a disclosure that falls outside the defined obligations), and that information becomes public, it would be excluded from protection. The standard should be broader: any disclosure by Potential Acquirer or its Representatives that results in the information becoming public should negate the exclusion, regardless of whether the specific disclosure violated a specific provision.",
+      "what_good_looks_like": "Identifies the 'in violation of this Agreement' language as narrower than standard, explains the gap (technical non-violations that still result in public disclosure), and recommends broadening to 'other than as a result of disclosure by Potential Acquirer or its Representatives.'",
+
+      "rubric": {
+        "identified": "Did the response identify the 'in violation of this Agreement' language as problematic or narrower than standard?",
+        "correctly_characterized": "Did the response explain the specific gap — that disclosures not technically violating a specific provision but still causing public availability would trigger the exclusion?",
+        "severity_appropriate": "Did the response treat this as at least a moderate-to-high concern?",
+        "actionable": "Did the response recommend broadening the language?"
+      },
+
+      "interaction_with": [],
+      "cuad_categories": ["Exclusions from Confidential Information"],
+      "false_positive_risk": "LOW — but requires careful reading",
+      "common_mistakes": [
+        "Reading 'in violation of this Agreement' as equivalent to 'through the fault of'",
+        "Checking the exclusions for completeness (all four present) without examining specific language",
+        "Treating this as standard because the exclusion structure looks familiar"
+      ],
+
+      "quick_screen_keywords": [
+        "in violation", "violation of this agreement", "exclusion",
+        "generally available", "public domain", "1.2(a)",
+        "standard language", "fault", "narrower"
+      ]
+    },
+    {
+      "id": "ISSUE-04",
+      "section": "N/A (absent)",
+      "title": "No Cleansing Provision for Evaluation Material",
+      "severity": "MODERATE",
+      "weight": 1,
+      "category": "missing_provision",
+      "description": "The agreement does not include a 'cleansing' provision — a clause that would allow Target to publicly disclose Evaluation Material (thereby removing it from the confidentiality obligations) if Target determines that public disclosure is necessary or desirable (e.g., in connection with SEC filings, press releases, or a public auction process). Without a cleansing provision, if Target needs to share the same information with other potential acquirers in a broader process, or needs to make public disclosures, the information remains technically 'Evaluation Material' subject to this Agreement. A cleansing provision would state that Evaluation Material ceases to be confidential if Target itself publicly discloses it.",
+      "what_good_looks_like": "Notes the absence of a cleansing provision, explains why it matters in M&A context (Target may need to run a broader process or make public disclosures), and recommends adding a cleansing clause.",
+
+      "rubric": {
+        "identified": "Did the response note the absence of a cleansing provision?",
+        "correctly_characterized": "Did the response explain why a cleansing provision matters in M&A — Target's need to run a competitive process and make public disclosures?",
+        "severity_appropriate": "Did the response treat this as moderate? (The absence is notable but not deal-breaking.)",
+        "actionable": "Did the response recommend adding a cleansing clause?"
+      },
+
+      "interaction_with": [],
+      "cuad_categories": ["Cleansing"],
+      "false_positive_risk": "HIGH — most reviewers won't know to look for a cleansing provision",
+      "common_mistakes": [
+        "Not knowing what a cleansing provision is",
+        "Treating the standard public domain exclusion as sufficient (it's not — it requires information to become 'generally available,' which is a higher bar than Target's targeted disclosure)",
+        "Not flagging this at all (acceptable for reviewers without M&A experience)"
+      ],
+
+      "quick_screen_keywords": [
+        "cleansing", "cleanse", "publicly disclose",
+        "target discloses", "broader process", "auction",
+        "competitive process", "SEC filing", "public disclosure"
+      ]
+    },
+    {
+      "id": "ISSUE-05",
+      "section": "6",
+      "title": "Non-Solicitation Covers 'Key Employees' — Undefined Term",
+      "severity": "MODERATE",
+      "weight": 2,
+      "category": "non_solicitation",
+      "description": "Section 6 prohibits solicitation of 'any officer, director, or key employee of Target.' While non-solicitation of officers and directors is standard in M&A NDAs, 'key employee' is undefined and potentially very broad. Any employee could be characterized as 'key' after the fact. This creates uncertainty for Potential Acquirer and a potential overreach for Target. Standard formulations either list specific titles/levels (e.g., 'vice president or above') or limit the restriction to employees with whom Potential Acquirer had 'material contact' (which this provision also includes, creating a double filter). The 'key employee' language should either be defined or removed, relying instead on the 'material contact' limitation as the primary scope control.",
+      "what_good_looks_like": "Identifies 'key employee' as undefined and potentially overbroad, notes the double filter with 'material contact,' and recommends either defining 'key employee' or removing it in favor of the material-contact limitation alone.",
+
+      "rubric": {
+        "identified": "Did the response identify 'key employee' as undefined and potentially overbroad?",
+        "correctly_characterized": "Did the response explain the ambiguity — that any employee could be characterized as 'key' after the fact, creating uncertainty?",
+        "severity_appropriate": "Did the response treat this as moderate?",
+        "actionable": "Did the response recommend defining the term or removing it?"
+      },
+
+      "interaction_with": [],
+      "cuad_categories": ["Non-Solicitation"],
+      "false_positive_risk": "MODERATE — the overall non-solicitation provision is standard for M&A",
+      "common_mistakes": [
+        "Flagging the non-solicitation as out of scope (it IS in scope for M&A NDAs, unlike commercial NDAs)",
+        "Missing the 'key employee' ambiguity because the surrounding language is standard",
+        "Treating the entire §6 as standard without parsing the specific scope"
+      ],
+
+      "quick_screen_keywords": [
+        "key employee", "undefined", "any officer director",
+        "material contact", "non-solicitation", "section 6",
+        "overbroad", "ambiguous", "vague"
+      ]
+    },
+    {
+      "id": "ISSUE-06",
+      "section": "5.1",
+      "title": "Broad Disclaimer of Liability for Evaluation Material Accuracy",
+      "severity": "MODERATE",
+      "weight": 1,
+      "category": "warranties",
+      "description": "Section 5.1 states that 'neither Target nor any of its Representatives shall have any liability to Potential Acquirer or its Representatives relating to or arising from the use of the Evaluation Material or any errors therein or omissions therefrom.' While no-warranty disclaimers are standard, this goes further by disclaiming all liability for errors and omissions — not just warranty claims. This means if Target knowingly provides inaccurate financial data during due diligence, Potential Acquirer has no claim under this Agreement (claims would need to be based on fraud or the representations in a future definitive agreement). The 'only those representations in a final definitive agreement' savings clause is standard M&A practice, but the breadth of the disclaimer during the evaluation phase is worth noting.",
+      "what_good_looks_like": "Notes that the disclaimer goes beyond standard no-warranty to disclaim all liability for errors and omissions, explains the implication for the evaluation phase, acknowledges the definitive agreement savings clause as standard, and notes this is an area to address in the definitive agreement's representations and warranties.",
+
+      "rubric": {
+        "identified": "Did the response identify the broad liability disclaimer in §5.1?",
+        "correctly_characterized": "Did the response explain that this goes beyond standard no-warranty to disclaim ALL liability including for knowing errors?",
+        "severity_appropriate": "Did the response treat this as moderate? (The definitive agreement savings clause mitigates significantly.)",
+        "actionable": "Did the response note that this needs to be addressed in the definitive agreement's reps and warranties?"
+      },
+
+      "interaction_with": [],
+      "cuad_categories": ["Warranty"],
+      "false_positive_risk": "MODERATE — this is standard M&A language but worth noting",
+      "common_mistakes": [
+        "Treating the no-warranty disclaimer as standard without reading the broader liability disclaimer",
+        "Not recognizing the definitive agreement savings clause as standard M&A practice",
+        "Over-flagging this as critical when the definitive agreement addresses it"
+      ],
+
+      "quick_screen_keywords": [
+        "no liability", "errors omissions", "accuracy completeness",
+        "disclaimer", "no warranty", "5.1", "definitive agreement",
+        "representations warranties", "use of evaluation material"
+      ]
+    },
+    {
+      "id": "ISSUE-07",
+      "section": "9",
+      "title": "Survival Runs from Termination, Not Disclosure",
+      "severity": "LOW",
+      "weight": 1,
+      "category": "survival",
+      "description": "Section 9 provides that confidentiality obligations survive for three years 'from the date of such termination or expiration.' In the vanilla_mutual NDA, survival ran 'from the date of disclosure of such Confidential Information,' which means each disclosure gets its own survival clock. Here, all disclosures share a single survival clock that starts when the Agreement terminates. This means information disclosed early in the evaluation process gets a longer effective survival period, while information disclosed late (right before termination) gets only three years. For information disclosed on the last day of the two-year term, total protection would be five years from the Agreement date. For information disclosed on the first day, total protection would also be five years. This is simpler but less protective than the per-disclosure approach — an important distinction in a long-running M&A evaluation.",
+      "what_good_looks_like": "Notes the survival-from-termination structure as less protective than survival-from-disclosure for late-disclosed information, explains the practical difference with an example, and suggests either switching to per-disclosure survival or extending the post-termination period.",
+
+      "rubric": {
+        "identified": "Did the response note the survival-from-termination structure?",
+        "correctly_characterized": "Did the response explain WHY this matters — that late-disclosed information gets less total protection?",
+        "severity_appropriate": "Did the response treat this as LOW? (Both approaches are used in practice.)",
+        "actionable": "Did the response recommend per-disclosure survival or a longer post-termination period?"
+      },
+
+      "interaction_with": [],
+      "cuad_categories": ["Survival Period"],
+      "false_positive_risk": "HIGH — both survival approaches are common and this is a subtle distinction",
+      "common_mistakes": [
+        "Not flagging this at all (acceptable — this is a subtle point)",
+        "Treating three-year survival as the issue rather than the survival-from-termination structure",
+        "Not understanding the difference between survival-from-termination and survival-from-disclosure"
+      ],
+
+      "quick_screen_keywords": [
+        "survival", "three years", "from termination", "from expiration",
+        "from disclosure", "survival period", "section 9",
+        "late disclosed", "protection period"
+      ]
+    }
+  ],
+
+  "meta_issues": [
+    {
+      "id": "META-01",
+      "title": "Well-Drafted M&A NDA with Negotiable Target Protections",
+      "severity": "META",
+      "weight": 2,
+      "description": "This is a professionally drafted M&A NDA that includes the key Target-protective provisions (standstill, non-solicitation, securities acknowledgment). However, the specific terms of several provisions — particularly the standstill fall-away, the missing DADW savings clause, and the exclusion language — create gaps that a sophisticated acquirer could exploit. The pattern is not one of aggressive one-sided drafting (as in the one_sided_mutual) or hidden traps (as in the trojan_horse), but rather of an agreement where the Target's counsel should push for incremental improvements in specific provisions. The strategic recommendation is to negotiate rather than reject.",
+
+      "rubric": {
+        "identified": "Did the response recognize this as a negotiable M&A NDA rather than a fundamentally problematic agreement?",
+        "synthesized": "Did the response connect the standstill fall-away (ISSUE-01) with the DADW provision (ISSUE-02) as the most strategically important areas for negotiation?",
+        "strategic": "Did the response frame its recommendations in terms of Target's negotiating position and M&A process management?"
+      },
+
+      "common_mistakes": [
+        "Treating this as a standard commercial NDA rather than an M&A NDA",
+        "Recommending rejection rather than negotiation",
+        "Missing the M&A-specific issues entirely and focusing on generic NDA concerns",
+        "Flagging standard M&A provisions (standstill, non-solicitation) as problematic"
+      ],
+
+      "quick_screen_keywords": [
+        "M&A", "acquisition", "target", "standstill",
+        "negotiable", "process", "competitive",
+        "board", "fiduciary", "deal"
+      ]
+    }
+  ]
+}
