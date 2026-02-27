@@ -9,6 +9,9 @@ anthropic>=0.79
 openai>=2.20
 google-genai>=1.63
 
+# Multi-provider tool calling for data-aware chat
+aisuite>=0.1.14
+
 # Database
 duckdb>=1.2
 
