@@ -329,7 +329,7 @@ def run_evaluation(
             yield version, model_key, result
 
         # Phase 2: Run all judge scoring in parallel (if configured)
-        if judge_model_key and answer_key:
+        if (judge_model_key or judge_model_keys) and answer_key:
             judge_futures = {}
             for (v, mk), result in eval_results.items():
                 if "error" not in result:
