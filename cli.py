@@ -142,13 +142,14 @@ def cmd_run_eval(args: argparse.Namespace) -> None:
         print("Error: no models available. Check API keys in .env.", file=sys.stderr)
         sys.exit(1)
 
-    judge_key = args.judge or "claude-opus-4-6"
+    judge_keys = [k.strip() for k in (args.judge or "claude-opus-4-6").split(",")]
+    panel_mode = len(judge_keys) > 1
 
     print(f"Skill:    {skill_id}")
     print(f"Versions: {', '.join(versions)}")
     print(f"Docs:     {', '.join(docs)}")
     print(f"Models:   {len(model_ids)} ({', '.join(model_ids)})")
-    print(f"Judge:    {judge_key}")
+    print(f"Judge:    {', '.join(judge_keys)}{' (panel)' if panel_mode else ''}")
     print()
 
     # Track results for summary
@@ -161,7 +162,8 @@ def cmd_run_eval(args: argparse.Namespace) -> None:
 
         for version, model_key, result in run_evaluation(
             skill_id, model_ids, doc,
-            judge_model_key=judge_key,
+            judge_model_key=judge_keys[0] if not panel_mode else None,
+            judge_model_keys=judge_keys if panel_mode else None,
             version_filter=versions,
             business_context=biz_ctx,
         ):
@@ -434,7 +436,7 @@ Examples:
     p_run.add_argument("--version", help="Comma-separated versions (default: all)")
     p_run.add_argument("--docs", help="Comma-separated doc names (default: all)")
     p_run.add_argument("--models", help="Comma-separated model keys (default: all available)")
-    p_run.add_argument("--judge", default="claude-opus-4-6", help="Judge model key (default: claude-opus-4-6)")
+    p_run.add_argument("--judge", default="claude-opus-4-6", help="Comma-separated judge model keys (default: claude-opus-4-6). Multiple = panel mode.")
     p_run.set_defaults(func=cmd_run_eval)
 
     # compare
