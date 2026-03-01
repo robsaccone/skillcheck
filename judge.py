@@ -28,9 +28,12 @@ Enhancements informed by:
 """
 
 import json
+import logging
 import re
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
+
+log = logging.getLogger(__name__)
 
 from config import RECOMMENDATION_BONUS, FP_PENALTY_PER, SEVERITY_WEIGHTS
 from models import MODEL_CONFIGS, call_model
@@ -458,6 +461,14 @@ def judge_panel(
         return None
 
     n = len(individual_results)
+    requested = len(judge_model_keys)
+
+    if n < requested:
+        failed = set(judge_model_keys) - {r["judge_model"] for r in individual_results}
+        log.warning(
+            "Panel quorum degraded: %d/%d judges returned (failed: %s)",
+            n, requested, ", ".join(sorted(failed)),
+        )
 
     # --- Aggregate per-issue scores via majority vote ---
     all_issue_ids = set()
@@ -502,13 +513,13 @@ def judge_panel(
     if rec_reasonings:
         aggregated_reasoning["recommendation"] = " | ".join(rec_reasonings)
 
-    # --- Aggregate false positives: average count, union of items ---
-    fp_counts = [r.get("false_positive_count", 0) for r in individual_results]
-    agg_fp_count = round(sum(fp_counts) / n)
-
+    # --- Aggregate false positives: union of unique items, count = list length ---
+    # Previous approach averaged counts but unioned lists, creating a mismatch.
+    # Now count always equals len(list) for consistency.
     all_fps = set()
     for r in individual_results:
         all_fps.update(r.get("false_positives", []))
+    agg_fp_count = len(all_fps)
 
     # --- Compute composite on aggregated output ---
     aggregated_output = {
@@ -541,11 +552,17 @@ def judge_panel(
         "judge_elapsed_seconds": total_elapsed,
         # Panel metadata
         "panel_size": n,
+        "panel_requested": requested,
         "panel_judges": [r["judge_model"] for r in individual_results],
         "panel_scores": [
             {
                 "judge_model": r["judge_model"],
                 "composite_score": r["composite_score"],
+                "issues": r.get("issues", {}),
+                "recommendation": r.get("recommendation", {}),
+                "recommendation_match": r.get("recommendation_match", False),
+                "false_positive_count": r.get("false_positive_count", 0),
+                "false_positives": r.get("false_positives", []),
             }
             for r in individual_results
         ],
