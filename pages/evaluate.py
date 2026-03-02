@@ -134,20 +134,26 @@ if "eval_skill" not in st.session_state:
 
 # Restore judge selections from localStorage (saved by judges page)
 if "judge1" not in st.session_state:
+    # Default panel: cheap, fast models from different families
+    _default_judges = ["claude-haiku-4-5", "gpt-5-nano", "gemini-3-flash"]
     judge_ls = LocalStorage(key="judges_storage")
     saved = judge_ls.getItem("judge1")
     if saved and saved in model_options:
         st.session_state.judge1 = saved
     else:
-        st.session_state.judge1 = model_options[0] if model_options else None
+        st.session_state.judge1 = next((k for k in _default_judges if k in model_options), model_options[0] if model_options else None)
     st.session_state.judge2 = None
     saved2 = judge_ls.getItem("judge2")
     if saved2 and saved2 in model_options:
         st.session_state.judge2 = saved2
+    else:
+        st.session_state.judge2 = next((k for k in _default_judges[1:] if k in model_options and k != st.session_state.judge1), None)
     st.session_state.judge3 = None
     saved3 = judge_ls.getItem("judge3")
     if saved3 and saved3 in model_options:
         st.session_state.judge3 = saved3
+    else:
+        st.session_state.judge3 = next((k for k in _default_judges[2:] if k in model_options and k not in (st.session_state.judge1, st.session_state.judge2)), None)
 
 # Doc restoration happens after skill is resolved (options depend on skill)
 

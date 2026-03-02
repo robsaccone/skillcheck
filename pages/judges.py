@@ -16,12 +16,22 @@ if not available:
 
 model_keys = list(available.keys())
 
+# Default panel: cheap, fast models from different families (PoLL best practice)
+DEFAULT_JUDGES = ["claude-haiku-4-5", "gpt-5-nano", "gemini-3-flash"]
+
 st.caption(
     "Select up to three models to act as LLM judges. "
     "When multiple are selected, scores are aggregated via majority vote "
     "([PoLL methodology](https://arxiv.org/abs/2404.18796)). "
     "For best results, use judges from different model families."
 )
+
+def _default_index(options, preferred):
+    """Return index of preferred key in options, or 0."""
+    try:
+        return options.index(preferred)
+    except ValueError:
+        return 0
 
 col1, col2, col3 = st.columns(3)
 
@@ -30,6 +40,7 @@ with col1:
     judge1 = st.selectbox(
         "Judge 1",
         options=model_keys,
+        index=_default_index(model_keys, DEFAULT_JUDGES[0]),
         format_func=lambda k: MODEL_CONFIGS[k]["display_name"],
         label_visibility="collapsed",
         key="judge1_select",
@@ -41,6 +52,7 @@ with col2:
     judge2 = st.selectbox(
         "Judge 2",
         options=judge2_options,
+        index=_default_index(judge2_options, DEFAULT_JUDGES[1]),
         format_func=lambda k: MODEL_CONFIGS[k]["display_name"] if k else "— None —",
         label_visibility="collapsed",
         key="judge2_select",
@@ -52,6 +64,7 @@ with col3:
     judge3 = st.selectbox(
         "Judge 3",
         options=judge3_options,
+        index=_default_index(judge3_options, DEFAULT_JUDGES[2]),
         format_func=lambda k: MODEL_CONFIGS[k]["display_name"] if k else "— None —",
         label_visibility="collapsed",
         key="judge3_select",
