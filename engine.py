@@ -269,17 +269,20 @@ def run_evaluation(
         panel_keys = judge_model_keys or ([judge_model_key] if judge_model_key else [])
         panel_keys = [k for k in panel_keys if k]
 
+        # Use version-specific judge prompt if configured, else fall back to session/global
+        effective_judge_prompt = get_version_judge_prompt(skill_id, version) or judge_system_prompt
+
         try:
             if len(panel_keys) > 1:
                 # Multi-judge panel (PoLL methodology)
                 judge_scores = judge_panel(
                     doc_text, answer_key, result["response_text"],
-                    panel_keys, judge_system_prompt, skill_meta,
+                    panel_keys, effective_judge_prompt, skill_meta,
                 )
             elif panel_keys:
                 judge_scores = judge_response(
                     doc_text, answer_key, result["response_text"],
-                    panel_keys[0], judge_system_prompt, skill_meta,
+                    panel_keys[0], effective_judge_prompt, skill_meta,
                 )
             else:
                 judge_scores = None
@@ -347,6 +350,27 @@ def load_skill_meta(skill_id: str) -> dict | None:
     path = SKILLS_DIR / skill_id / "skill.json"
     if path.exists():
         return json.loads(path.read_text(encoding="utf-8"))
+    return None
+
+
+def get_version_judge_prompt(skill_id: str, version: str) -> str | None:
+    """Load a version-specific judge system prompt if configured in skill.json.
+
+    Checks skill.json versions dict for a 'judge_system_prompt_file' key.
+    Returns the file contents, or None to fall back to the global/session prompt.
+    """
+    meta = load_skill_meta(skill_id)
+    if not meta:
+        return None
+    info = meta.get("versions", {}).get(version)
+    if not isinstance(info, dict):
+        return None
+    prompt_file = info.get("judge_system_prompt_file")
+    if not prompt_file:
+        return None
+    path = SKILLS_DIR / skill_id / prompt_file
+    if path.exists():
+        return path.read_text(encoding="utf-8")
     return None
 
 
@@ -435,15 +459,18 @@ def judge_saved_results(
 
     def _judge_one(item):
         result, doc_text, answer_key, response_text = item
+        # Use version-specific judge prompt if configured
+        version = result.get("version", "")
+        effective_prompt = get_version_judge_prompt(skill_id, version) or judge_system_prompt
         if len(panel_keys) > 1:
             judge_scores = judge_panel(
                 doc_text, answer_key, response_text,
-                panel_keys, judge_system_prompt, skill_meta,
+                panel_keys, effective_prompt, skill_meta,
             )
         else:
             judge_scores = judge_response(
                 doc_text, answer_key, response_text,
-                panel_keys[0], judge_system_prompt, skill_meta,
+                panel_keys[0], effective_prompt, skill_meta,
             )
         result["judge_scores"] = judge_scores
         db.save_judge_scores(result["eval_id"], judge_scores)

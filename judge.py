@@ -29,6 +29,7 @@ Enhancements informed by:
 
 import json
 import logging
+import math
 import re
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -368,12 +369,16 @@ def judge_response(
     if rec_reasoning:
         reasoning["recommendation"] = rec_reasoning
 
+    # Normalize false positives to strings (judges sometimes return dicts)
+    raw_fps = parsed.get("false_positives", [])
+    fps = [fp.get("description", "") or str(fp) if isinstance(fp, dict) else str(fp) for fp in raw_fps]
+
     # Compute composite with flat issues
     normalized_output = {
         "recommendation": rec,
         "issues": flat_issues,
         "false_positive_count": parsed.get("false_positive_count", 0),
-        "false_positives": parsed.get("false_positives", []),
+        "false_positives": fps,
     }
     composite = compute_composite_scores(normalized_output, answer_key)
 
@@ -382,7 +387,7 @@ def judge_response(
         "recommendation": rec,
         "issues": flat_issues,
         "false_positive_count": parsed.get("false_positive_count", 0),
-        "false_positives": parsed.get("false_positives", []),
+        "false_positives": fps,
         "composite_score": composite["composite_score"],
         "weighted_hit_rate": composite["weighted_hit_rate"],
         "recommendation_match": composite["recommendation_match"],
@@ -405,7 +410,8 @@ def judge_response(
 # Aggregation strategy:
 # - Binary per-issue scores (0/1): majority vote
 # - Recommendation match: majority vote
-# - False positives: union of unique items, count = average
+# - False positive count: average across judges (consensus), rounded up
+# - False positive list: union for human reference (does not drive scoring)
 # - Reasoning: concatenated from all judges
 # ---------------------------------------------------------------------------
 
@@ -513,13 +519,20 @@ def judge_panel(
     if rec_reasonings:
         aggregated_reasoning["recommendation"] = " | ".join(rec_reasonings)
 
-    # --- Aggregate false positives: union of unique items, count = list length ---
-    # Previous approach averaged counts but unioned lists, creating a mismatch.
-    # Now count always equals len(list) for consistency.
+    # --- Aggregate false positives: average count (consensus), union list (reference) ---
+    # Each judge independently assesses FP count. Averaging follows the same
+    # consensus principle as majority vote on issues/recommendation (PoLL).
+    # The descriptive list is kept as a union for human review but does NOT
+    # drive scoring — only the averaged count does.
+    fp_counts = [r.get("false_positive_count", 0) for r in individual_results]
+    agg_fp_count = math.ceil(sum(fp_counts) / len(fp_counts))
     all_fps = set()
     for r in individual_results:
-        all_fps.update(r.get("false_positives", []))
-    agg_fp_count = len(all_fps)
+        for fp in r.get("false_positives", []):
+            # Judges sometimes return dicts instead of strings; normalize
+            if isinstance(fp, dict):
+                fp = fp.get("description", "") or str(fp)
+            all_fps.add(str(fp))
 
     # --- Compute composite on aggregated output ---
     aggregated_output = {

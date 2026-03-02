@@ -1,4 +1,4 @@
-"""Judges page — select up to two LLM judges for evaluation grading."""
+"""Judges page — select up to three LLM judges for evaluation grading."""
 
 import streamlit as st
 from streamlit_local_storage import LocalStorage
@@ -17,12 +17,13 @@ if not available:
 model_keys = list(available.keys())
 
 st.caption(
-    "Select one or two models to act as LLM judges. "
-    "When two are selected, scores are aggregated via majority vote "
-    "([PoLL methodology](https://arxiv.org/abs/2404.18796))."
+    "Select up to three models to act as LLM judges. "
+    "When multiple are selected, scores are aggregated via majority vote "
+    "([PoLL methodology](https://arxiv.org/abs/2404.18796)). "
+    "For best results, use judges from different model families."
 )
 
-col1, col2 = st.columns(2)
+col1, col2, col3 = st.columns(3)
 
 with col1:
     st.markdown("**Judge 1**")
@@ -45,21 +46,32 @@ with col2:
         key="judge2_select",
     )
 
+with col3:
+    st.markdown("**Judge 3** (panel mode)")
+    judge3_options = [None] + [k for k in model_keys if k not in (judge1, judge2)]
+    judge3 = st.selectbox(
+        "Judge 3",
+        options=judge3_options,
+        format_func=lambda k: MODEL_CONFIGS[k]["display_name"] if k else "— None —",
+        label_visibility="collapsed",
+        key="judge3_select",
+    )
+
 # Persist selections in session_state for other pages
 st.session_state.judge1 = judge1
 st.session_state.judge2 = judge2
+st.session_state.judge3 = judge3
 
 # Panel status indicator
-panel_keys = [k for k in [judge1, judge2] if k]
+panel_keys = [k for k in [judge1, judge2, judge3] if k]
 if len(panel_keys) > 1:
     judge_names = [MODEL_CONFIGS.get(k, {}).get("display_name", k) for k in panel_keys]
     st.success(f"Panel mode: {' + '.join(judge_names)} (majority vote aggregation)")
     # Same-family warning
-    j1_provider = MODEL_CONFIGS.get(judge1, {}).get("provider", "")
-    j2_provider = MODEL_CONFIGS.get(judge2, {}).get("provider", "")
-    if j1_provider and j1_provider == j2_provider:
+    providers = [MODEL_CONFIGS.get(k, {}).get("provider", "") for k in panel_keys]
+    if len(set(p for p in providers if p)) < len(panel_keys):
         st.warning(
-            f"Both judges are from the same provider ({j1_provider}). "
+            "Some judges share the same provider. "
             "For best results, use judges from different model families to reduce "
             "correlated bias ([Verga et al., 2024](https://arxiv.org/abs/2404.18796))."
         )
@@ -85,7 +97,7 @@ with col_how:
         "**Anti-verbosity:** The prompt explicitly instructs the judge not to reward "
         "length, counteracting a known ~15% inflation bias "
         "([Zheng et al., 2024](https://arxiv.org/abs/2306.05685)).\n\n"
-        "**Panel mode:** When two judges are selected, each scores independently "
+        "**Panel mode:** When multiple judges are selected, each scores independently "
         "and results are aggregated via majority vote — reducing individual bias "
         "and improving alignment with human judgments "
         "([Verga et al., 2024](https://arxiv.org/abs/2404.18796))."
@@ -138,3 +150,4 @@ with st.expander("Research references"):
 ls = LocalStorage(key="judges_storage")
 ls.setItem("judge1", judge1 or "", key="save_judge1")
 ls.setItem("judge2", judge2 or "", key="save_judge2")
+ls.setItem("judge3", judge3 or "", key="save_judge3")

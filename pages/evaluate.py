@@ -144,6 +144,10 @@ if "judge1" not in st.session_state:
     saved2 = judge_ls.getItem("judge2")
     if saved2 and saved2 in model_options:
         st.session_state.judge2 = saved2
+    st.session_state.judge3 = None
+    saved3 = judge_ls.getItem("judge3")
+    if saved3 and saved3 in model_options:
+        st.session_state.judge3 = saved3
 
 # Doc restoration happens after skill is resolved (options depend on skill)
 
@@ -251,8 +255,9 @@ if running:
     # Always judge if configured — supports multi-judge panel (PoLL)
     judge_model_key = st.session_state.get("judge1")
     judge2 = st.session_state.get("judge2")
+    judge3 = st.session_state.get("judge3")
     judge_system_prompt = st.session_state.get("judge_system_prompt") if judge_model_key else None
-    judge_model_keys = [k for k in [judge_model_key, judge2] if k]
+    judge_model_keys = [k for k in [judge_model_key, judge2, judge3] if k]
 
     st.markdown("### Results")
     table_placeholder = st.empty()
@@ -381,7 +386,8 @@ if not running and judge_configured and selected_doc:
     all_existing = load_results(selected_skill)
     unjudged = [r for r in all_existing if r.get("judge_scores") is None]
     j2 = st.session_state.get("judge2")
-    panel_keys = [k for k in [st.session_state.get("judge1"), j2] if k]
+    j3 = st.session_state.get("judge3")
+    panel_keys = [k for k in [st.session_state.get("judge1"), j2, j3] if k]
     panel_label = f" (panel: {len(panel_keys)} judges)" if len(panel_keys) > 1 else ""
     if unjudged:
         if st.button(f"Judge unjudged results ({len(unjudged)}){panel_label}", type="secondary"):

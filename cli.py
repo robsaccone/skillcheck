@@ -142,14 +142,13 @@ def cmd_run_eval(args: argparse.Namespace) -> None:
         print("Error: no models available. Check API keys in .env.", file=sys.stderr)
         sys.exit(1)
 
-    judge_keys = [k.strip() for k in (args.judge or "claude-opus-4-6").split(",")]
-    panel_mode = len(judge_keys) > 1
+    judge_keys = [k.strip() for k in args.judge.split(",")]
 
     print(f"Skill:    {skill_id}")
     print(f"Versions: {', '.join(versions)}")
     print(f"Docs:     {', '.join(docs)}")
     print(f"Models:   {len(model_ids)} ({', '.join(model_ids)})")
-    print(f"Judge:    {', '.join(judge_keys)}{' (panel)' if panel_mode else ''}")
+    print(f"Judge:    {', '.join(judge_keys)}" + (" (panel)" if len(judge_keys) > 1 else ""))
     print()
 
     # Track results for summary
@@ -162,10 +161,10 @@ def cmd_run_eval(args: argparse.Namespace) -> None:
 
         for version, model_key, result in run_evaluation(
             skill_id, model_ids, doc,
-            judge_model_key=judge_keys[0] if not panel_mode else None,
-            judge_model_keys=judge_keys if panel_mode else None,
+            judge_model_key=judge_keys[0],
             version_filter=versions,
             business_context=biz_ctx,
+            judge_model_keys=judge_keys if len(judge_keys) > 1 else None,
         ):
             if "error" in result:
                 print(f"  {model_key}: ERROR - {result['error']}")
@@ -436,7 +435,8 @@ Examples:
     p_run.add_argument("--version", help="Comma-separated versions (default: all)")
     p_run.add_argument("--docs", help="Comma-separated doc names (default: all)")
     p_run.add_argument("--models", help="Comma-separated model keys (default: all available)")
-    p_run.add_argument("--judge", default="claude-opus-4-6", help="Comma-separated judge model keys (default: claude-opus-4-6). Multiple = panel mode.")
+    p_run.add_argument("--judge", default="claude-haiku-4-5,gpt-5-nano,gemini-3-flash",
+                       help="Comma-separated judge model keys for PoLL panel (default: claude-haiku-4-5,gpt-5-nano,gemini-3-flash)")
     p_run.set_defaults(func=cmd_run_eval)
 
     # compare

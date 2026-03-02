@@ -19,34 +19,46 @@ from config import DB_PATH, RESULTS_DIR
 # Connection management
 # ---------------------------------------------------------------------------
 
-_local = threading.local()
-_write_lock = threading.Lock()
+_write_lock = threading.RLock()
+_shared_con: duckdb.DuckDBPyConnection | None = None
+_shared_lock = threading.Lock()
 
 
 def get_connection() -> duckdb.DuckDBPyConnection:
-    """Return a thread-local DuckDB connection, creating schema on first call.
+    """Return a single shared DuckDB connection (process-wide singleton).
 
-    DuckDB locks the file — only one process at a time (e.g. one Streamlit
-    instance). A clear error is raised if the file is already locked.
+    DuckDB allows multiple threads to share one connection; the library
+    handles internal locking. Using a singleton avoids file-lock conflicts
+    when Streamlit restarts script threads.
     """
-    con = getattr(_local, "con", None)
-    if con is not None:
+    global _shared_con
+
+    if _shared_con is not None:
         try:
-            con.execute("SELECT 1")
-            return con
+            _shared_con.execute("SELECT 1")
+            return _shared_con
         except Exception:
-            _local.con = None
+            _shared_con = None
 
-    try:
-        con = duckdb.connect(str(DB_PATH))
-    except duckdb.IOException as e:
-        raise RuntimeError(
-            f"Could not open {DB_PATH} — is another Streamlit instance running? ({e})"
-        ) from e
+    with _shared_lock:
+        # Double-check after acquiring lock
+        if _shared_con is not None:
+            try:
+                _shared_con.execute("SELECT 1")
+                return _shared_con
+            except Exception:
+                _shared_con = None
 
-    _ensure_schema(con)
-    _local.con = con
-    return con
+        try:
+            con = duckdb.connect(str(DB_PATH))
+        except duckdb.IOException as e:
+            raise RuntimeError(
+                f"Could not open {DB_PATH} — is another Streamlit instance running? ({e})"
+            ) from e
+
+        _ensure_schema(con)
+        _shared_con = con
+        return con
 
 
 def _ensure_schema(con: duckdb.DuckDBPyConnection) -> None:

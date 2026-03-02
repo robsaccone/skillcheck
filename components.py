@@ -109,18 +109,25 @@ def fmt_time(secs: float) -> str:
 
 
 def score_bg(val):
-    """Return background-color CSS for a score cell. Extracts % from strings like '94% · 12s · $0.18'."""
+    """Return background-color CSS for a score cell. Extracts % from strings like '94% · 12s · $0.18'.
+
+    Uses continuous HSL interpolation: red (0%) → amber (50%) → green (100%).
+    """
     if not isinstance(val, str) or "%" not in val:
         return ""
     try:
         pct = float(val.split("%")[0])
     except ValueError:
         return ""
-    if pct >= 85:
-        return "background-color: #065f46; color: #6ee7b7"
-    elif pct >= 65:
-        return "background-color: #92400e; color: #fde68a"
-    return "background-color: #7f1d1d; color: #fca5a5"
+    t = max(0.0, min(pct / 100.0, 1.0))
+    # Hue: 0° (red) → 35° (amber) at midpoint → 145° (green)
+    if t < 0.5:
+        hue = 0 + (35 - 0) * (t / 0.5)          # 0 → 35
+    else:
+        hue = 35 + (145 - 35) * ((t - 0.5) / 0.5)  # 35 → 145
+    bg = f"hsl({hue:.0f}, 65%, 22%)"
+    fg = f"hsl({hue:.0f}, 80%, 80%)"
+    return f"background-color: {bg}; color: {fg}"
 
 
 def get_cell_pct(result: dict) -> float | None:
